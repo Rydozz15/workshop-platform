@@ -32,6 +32,10 @@ export default function SessionPage({ params }) {
   const [error, setError] = useState('');
   const [joining, setJoining] = useState(false);
   const [submittingSurvey, setSubmittingSurvey] = useState(false);
+  const [historyData, setHistoryData] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [activeStepTab, setActiveStepTab] = useState(null);
+  const [activeInnerTab, setActiveInnerTab] = useState({});
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -118,6 +122,34 @@ export default function SessionPage({ params }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
+
+  useEffect(() => {
+    if (phase === 'completed') {
+      const fetchHistory = async () => {
+        setLoadingHistory(true);
+        const cuid = localStorage.getItem('chain_user_id');
+        let url = '/api/session/history?';
+        if (cuid) url += `cuid=${cuid}`;
+        else url += `sessionId=${sessionId}`;
+        
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            setHistoryData(data);
+            if (data.length > 0) {
+              setActiveStepTab(data[0].id);
+              setActiveInnerTab({ [data[0].id]: 'chat' });
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        setLoadingHistory(false);
+      };
+      fetchHistory();
+    }
+  }, [phase, sessionId]);
 
   const sendMessage = async () => {
     if (!input.trim() || streaming) return;
@@ -358,19 +390,107 @@ export default function SessionPage({ params }) {
   // COMPLETED PHASE
   if (phase === 'completed') {
     return (
-      <div className="session-welcome">
-        <div style={{ fontSize: '3rem', marginBottom: 16 }}>🎉</div>
-        <h1>Session Complete!</h1>
-        <p>Thank you for participating. Your responses have been recorded.</p>
-        <div className="glass-card" style={{ padding: 24, marginTop: 16, textAlign: 'left', width: '100%', maxWidth: 400 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Messages sent</span>
-            <span style={{ fontWeight: 600 }}>{messages.filter((m) => m.role === 'user').length}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Version</span>
-            <span style={{ fontWeight: 600 }}>{version?.title || 'N/A'}</span>
-          </div>
+      <div className="session-welcome" style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', display: 'block', height: '100vh', overflowY: 'auto' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '3rem', marginBottom: 16 }}>🎉</div>
+          <h1>Workshop Complete!</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Thank you for participating. Your responses have been recorded.</p>
+        </div>
+        
+        <div style={{ marginTop: 40, width: '100%', textAlign: 'left', paddingBottom: 40 }}>
+          <h2 style={{ marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 10 }}>📚 Your Journey Hub</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 24, fontSize: '0.9rem' }}>Review your chats and survey responses from this session.</p>
+          
+          {loadingHistory ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><div className="spinner" /></div>
+          ) : historyData.length === 0 ? (
+            <div className="glass-card" style={{ padding: 24, textAlign: 'center' }}><p>No history found.</p></div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {historyData.map((h, index) => {
+                const isExpanded = activeStepTab === h.id;
+                const innerTab = activeInnerTab[h.id] || 'chat';
+                const hasSurvey = h.survey_answers && Object.keys(h.survey_answers).length > 0;
+                
+                return (
+                  <div key={h.id} className="glass-card" style={{ padding: 0, overflow: 'hidden', border: isExpanded ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.05)' }}>
+                    <div 
+                      onClick={() => setActiveStepTab(isExpanded ? null : h.id)}
+                      style={{ padding: '16px 20px', background: isExpanded ? 'rgba(255,255,255,0.05)' : 'transparent', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    >
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Step {h.workshops?.chain_order || index + 1}: {h.workshops?.name || 'Session'}</h3>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 4 }}>{h.versions?.title}</div>
+                      </div>
+                      <div style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>{isExpanded ? '▲' : '▼'}</div>
+                    </div>
+                    
+                    {isExpanded && (
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', height: '500px' }}>
+                        {/* Tabs Header */}
+                        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.2)' }}>
+                          <button 
+                            style={{ flex: 1, padding: 12, background: innerTab === 'chat' ? 'rgba(255,255,255,0.05)' : 'transparent', border: 'none', borderBottom: innerTab === 'chat' ? '2px solid var(--accent)' : '2px solid transparent', color: innerTab === 'chat' ? 'var(--text-primary)' : 'var(--text-muted)', cursor: 'pointer', fontWeight: innerTab === 'chat' ? 600 : 400, transition: 'all 0.2s' }}
+                            onClick={() => setActiveInnerTab(prev => ({ ...prev, [h.id]: 'chat' }))}
+                          >💬 Chat Transcript</button>
+                          {hasSurvey && (
+                            <button 
+                              style={{ flex: 1, padding: 12, background: innerTab === 'survey' ? 'rgba(255,255,255,0.05)' : 'transparent', border: 'none', borderBottom: innerTab === 'survey' ? '2px solid var(--accent)' : '2px solid transparent', color: innerTab === 'survey' ? 'var(--text-primary)' : 'var(--text-muted)', cursor: 'pointer', fontWeight: innerTab === 'survey' ? 600 : 400, transition: 'all 0.2s' }}
+                              onClick={() => setActiveInnerTab(prev => ({ ...prev, [h.id]: 'survey' }))}
+                            >📝 Survey Answers</button>
+                          )}
+                        </div>
+                        
+                        {/* Tab Content */}
+                        <div style={{ flex: 1, overflowY: 'auto', padding: 20, background: 'rgba(0,0,0,0.1)' }}>
+                          {innerTab === 'chat' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                              {(!h.messages || h.messages.length === 0) ? (
+                                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 20 }}>No messages sent.</p>
+                              ) : (
+                                h.messages.map((msg, i) => (
+                                  <div key={i} className={`message ${msg.role}`} style={{ marginBottom: 0 }}>
+                                    <div className="message-avatar">{msg.role === 'user' ? '👤' : '🤖'}</div>
+                                    <div className="message-bubble" style={{ padding: '10px 14px', fontSize: '0.9rem' }}>
+                                      <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} style={{ display: 'inline' }} />
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          )}
+                          
+                          {innerTab === 'survey' && hasSurvey && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                              {Object.entries(h.survey_answers).map(([qId, ans]) => {
+                                const question = (h.workshops?.survey_config || []).find(q => q.id === qId);
+                                const qText = question ? question.text : qId;
+                                const isArray = Array.isArray(ans);
+                                return (
+                                  <div key={qId} style={{ background: 'rgba(255,255,255,0.02)', padding: '16px 20px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <div style={{ fontWeight: 600, marginBottom: 8, color: 'var(--text-secondary)' }}>{qText}</div>
+                                    <div style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                                      {isArray ? (
+                                        <ul style={{ margin: 0, paddingLeft: 20 }}>
+                                          {ans.map(a => <li key={a}>{a}</li>)}
+                                        </ul>
+                                      ) : (
+                                        ans
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     );
