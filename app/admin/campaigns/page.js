@@ -90,6 +90,17 @@ export default function CampaignsPage() {
     setSteps(newSteps);
   };
 
+  const copySurveyFromStep = (stepIndex, sourceIndex) => {
+    if (!steps[sourceIndex] || steps[sourceIndex].survey_config.length === 0) {
+      alert(`Step ${sourceIndex + 1} has no survey questions to copy.`);
+      return;
+    }
+    const newSteps = [...steps];
+    // Deep copy but retain the exact same IDs so they are fundamentally linked and comparable in analytics
+    newSteps[stepIndex].survey_config = JSON.parse(JSON.stringify(newSteps[sourceIndex].survey_config));
+    setSteps(newSteps);
+  };
+
   const handleCreate = async (e) => {
     e.preventDefault();
     await fetch('/api/admin/workshops', { 
@@ -275,7 +286,14 @@ export default function CampaignsPage() {
 
                 <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <label className="form-label" style={{ margin: 0 }}>Post-Session Survey</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <label className="form-label" style={{ margin: 0 }}>Post-Session Survey</label>
+                      {index > 0 && (
+                        <button type="button" onClick={() => copySurveyFromStep(index, 0)} className="btn btn-secondary btn-sm" style={{ padding: '2px 8px', fontSize: '0.75rem' }} title="Copy the exact same questions from Step 1 to make them strictly comparable in Analytics">
+                          📋 Copy from Step 1
+                        </button>
+                      )}
+                    </div>
                     <button type="button" onClick={() => addSurveyQuestion(index)} className="btn btn-secondary btn-sm">+ Add Question</button>
                   </div>
                   
