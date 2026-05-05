@@ -3,7 +3,7 @@ import { getSession, updateSession, getWorkshop, getNextWorkshopInChain } from '
 
 export async function POST(request, { params }) {
   try {
-    const { sessionId } = params;
+    const { sessionId } = await params;
     const body = await request.json();
     const { survey_answers, chain_user_id } = body;
 
