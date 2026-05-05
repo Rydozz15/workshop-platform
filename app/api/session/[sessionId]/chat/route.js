@@ -50,22 +50,13 @@ export async function POST(request, { params }) {
     // Build conversation history from stored messages
     const storedMessages = await getMessages(sessionId);
     
-    // Use custom system prompt if defined for this campaign, otherwise naive mode
-    const version = await getVersion(session.version_id);
+    // Use custom system prompt if defined for this campaign
     const conversationHistory = [];
     
-    let finalSystemPrompt = '';
-    if (workshop?.system_prompt) {
-      finalSystemPrompt += workshop.system_prompt + '\n\n';
-    }
-    if (version?.case_content) {
-      finalSystemPrompt += `--- ESCENARIO / CASO ---\n${version.case_content}`;
-    }
-
-    if (finalSystemPrompt.trim() !== '') {
+    if (workshop?.system_prompt && workshop.system_prompt.trim() !== '') {
       conversationHistory.push({
         role: 'system',
-        content: finalSystemPrompt.trim()
+        content: workshop.system_prompt.trim()
       });
     }
 
