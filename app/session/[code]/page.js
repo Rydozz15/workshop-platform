@@ -397,16 +397,18 @@ export default function SessionPage({ params }) {
           <p style={{ color: 'var(--text-muted)' }}>Thank you for participating. Your responses have been recorded.</p>
         </div>
         
-        <div style={{ marginTop: 40, width: '100%', textAlign: 'left', paddingBottom: 40 }}>
-          <h2 style={{ marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 10 }}>📚 Your Journey Hub</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 24, fontSize: '0.9rem' }}>Review your chats and survey responses from this session.</p>
+        <div style={{ marginTop: 40, width: '100%', paddingBottom: 40 }}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ marginBottom: 20, paddingBottom: 10 }}>📚 Your Journey Hub</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: 24, fontSize: '0.9rem' }}>Review your chats and survey responses from this session.</p>
+          </div>
           
           {loadingHistory ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><div className="spinner" /></div>
           ) : historyData.length === 0 ? (
             <div className="glass-card" style={{ padding: 24, textAlign: 'center' }}><p>No history found.</p></div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
               {historyData.map((h, index) => {
                 const isExpanded = activeStepTab === h.id;
                 const innerTab = activeInnerTab[h.id] || 'chat';
