@@ -94,7 +94,7 @@ export async function POST(request, { params }) {
         // Pass through the raw SSE data
         controller.enqueue(chunk);
       },
-      flush() {
+      async flush() {
         // Save the complete assistant response when stream ends
         if (fullResponse) {
           await createMessage({
