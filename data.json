@@ -1,0 +1,328 @@
+{
+  "versions": [
+    {
+      "id": "74839968-b805-4890-ad6c-35c04047d1d8",
+      "title": "Version A — Baseline Scenario",
+      "case_content": "# Baseline Scenario\n\nYou are a **customer service representative** at a major telecommunications company. A customer has called in complaining about unexpected charges on their monthly bill.\n\n## Your Task\n\n- Listen to the customer's concerns\n- Try to understand the root cause of the charges\n- Propose a reasonable resolution\n- Maintain a professional and empathetic tone throughout\n\n## Key Details\n\n- The customer has been with the company for 5 years\n- The extra charges amount to $47.50\n- The charges appear to be from a premium service add-on\n- The customer claims they never authorized the add-on\n\n## Success Criteria\n\nYour interaction will be evaluated on:\n1. Empathy and active listening\n2. Problem-solving approach\n3. Resolution quality\n4. Overall communication effectiveness",
+      "is_active": true,
+      "created_at": "2026-05-05T01:40:39.235Z",
+      "updated_at": "2026-05-05T01:40:39.235Z"
+    },
+    {
+      "id": "b8c93049-03c9-4872-98ba-cbb13d336831",
+      "title": "Version B — Escalation Scenario",
+      "case_content": "# Escalation Scenario\n\nYou are a **technical support engineer** at a cloud computing company. A client's production environment has been experiencing intermittent outages for the past 48 hours.\n\n## Your Task\n\n- Gather diagnostic information from the client\n- Walk them through basic troubleshooting steps\n- Determine if the issue needs to be escalated\n- Communicate technical information clearly to a non-technical stakeholder\n\n## Key Details\n\n- The client runs an e-commerce platform\n- They are losing approximately $10,000/hour during outages\n- The outages last 5-15 minutes each and occur randomly\n- Initial logs suggest a memory leak in the application layer\n\n## Success Criteria\n\nYour interaction will be evaluated on:\n1. Systematic troubleshooting approach\n2. Clear technical communication\n3. Urgency management\n4. Escalation decision-making",
+      "is_active": true,
+      "created_at": "2026-05-05T01:40:39.235Z",
+      "updated_at": "2026-05-05T01:40:39.235Z"
+    },
+    {
+      "id": "dc34fe06-504b-4b53-aeb5-467b9da9b398",
+      "title": "Version C — Negotiation Scenario",
+      "case_content": "# Negotiation Scenario\n\nYou are a **project manager** at a software development firm. Your client wants to add significant new features to an ongoing project without extending the deadline or increasing the budget.\n\n## Your Task\n\n- Understand the client's new requirements\n- Explain the impact on scope, timeline, and budget\n- Negotiate a realistic compromise\n- Document the agreed-upon changes\n\n## Key Details\n\n- Original project: 6-month timeline, $150,000 budget\n- Currently at month 4 (67% complete)\n- New features would add approximately 2 months of work\n- Client's product launch date is fixed and cannot move\n\n## Success Criteria\n\nYour interaction will be evaluated on:\n1. Negotiation strategy\n2. Stakeholder management\n3. Realistic expectation setting\n4. Win-win solution finding",
+      "is_active": true,
+      "created_at": "2026-05-05T01:40:39.235Z",
+      "updated_at": "2026-05-05T01:40:39.235Z"
+    }
+  ],
+  "workshops": [
+    {
+      "id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
+      "name": "Test Workshop 1",
+      "share_code": "2s864r",
+      "selected_version_ids": [
+        "74839968-b805-4890-ad6c-35c04047d1d8",
+        "b8c93049-03c9-4872-98ba-cbb13d336831",
+        "dc34fe06-504b-4b53-aeb5-467b9da9b398"
+      ],
+      "openrouter_model": "llama-3.3-70b-versatile",
+      "ai_provider": "groq",
+      "is_active": true,
+      "created_at": "2026-05-05T01:41:42.375Z"
+    },
+    {
+      "id": "eafeabb5-e660-45bf-a543-af6657c2ac04",
+      "name": "Test 2",
+      "share_code": "ay0zk1",
+      "selected_version_ids": [
+        "74839968-b805-4890-ad6c-35c04047d1d8",
+        "b8c93049-03c9-4872-98ba-cbb13d336831",
+        "dc34fe06-504b-4b53-aeb5-467b9da9b398"
+      ],
+      "openrouter_model": "qwen/qwen3-32b",
+      "ai_provider": "groq",
+      "is_active": true,
+      "created_at": "2026-05-05T03:04:35.843Z"
+    },
+    {
+      "id": "b4d4753c-fbcd-4ac0-8171-aa61a45a1bb4",
+      "name": "Test 2B",
+      "share_code": "gd0s7y",
+      "selected_version_ids": [
+        "74839968-b805-4890-ad6c-35c04047d1d8",
+        "b8c93049-03c9-4872-98ba-cbb13d336831",
+        "dc34fe06-504b-4b53-aeb5-467b9da9b398"
+      ],
+      "openrouter_model": "qwen/qwen3-32b",
+      "ai_provider": "groq",
+      "is_active": true,
+      "created_at": "2026-05-05T03:05:20.138Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "dc271477-1bd3-4444-bd33-2a8525e1f8ec",
+      "workshop_id": "59fb2996-78a9-4d92-aa0e-90f1042da4b8",
+      "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
+      "participant_name": "Sandra",
+      "status": "active",
+      "interaction_count": 1,
+      "started_at": "2026-05-05T03:00:58.180Z",
+      "completed_at": null
+    },
+    {
+      "id": "9e4d6fff-c8eb-49be-b5e4-3149e69d081a",
+      "workshop_id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
+      "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
+      "participant_name": "Jose Jose",
+      "status": "active",
+      "interaction_count": 1,
+      "started_at": "2026-05-05T02:55:39.946Z",
+      "completed_at": null
+    },
+    {
+      "id": "19a12e2a-b643-4801-bd5b-1963a90a7c42",
+      "workshop_id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
+      "version_id": "74839968-b805-4890-ad6c-35c04047d1d8",
+      "participant_name": "Anonymous",
+      "status": "active",
+      "interaction_count": 2,
+      "started_at": "2026-05-05T02:53:13.892Z",
+      "completed_at": null
+    },
+    {
+      "id": "46a1540b-8a87-4731-889b-15e5991430fa",
+      "workshop_id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
+      "version_id": "dc34fe06-504b-4b53-aeb5-467b9da9b398",
+      "participant_name": "Juan",
+      "status": "active",
+      "interaction_count": 1,
+      "started_at": "2026-05-05T02:51:22.472Z",
+      "completed_at": null
+    },
+    {
+      "id": "63f52dc9-15d3-46a6-8c58-c2c14178fd93",
+      "workshop_id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
+      "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
+      "participant_name": "Test User",
+      "status": "active",
+      "interaction_count": 1,
+      "started_at": "2026-05-05T01:42:44.595Z",
+      "completed_at": null
+    },
+    {
+      "id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "workshop_id": "eafeabb5-e660-45bf-a543-af6657c2ac04",
+      "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
+      "participant_name": "Jose Jose",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-05-05T03:04:46.201Z",
+      "completed_at": "2026-05-05T03:15:05.859Z"
+    },
+    {
+      "id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "workshop_id": "b4d4753c-fbcd-4ac0-8171-aa61a45a1bb4",
+      "version_id": "dc34fe06-504b-4b53-aeb5-467b9da9b398",
+      "participant_name": "JuanJose",
+      "status": "active",
+      "interaction_count": 3,
+      "started_at": "2026-05-05T03:05:28.352Z",
+      "completed_at": null
+    }
+  ],
+  "messages": [
+    {
+      "id": "75902ad1-e120-49fe-8780-72f373079b50",
+      "session_id": "63f52dc9-15d3-46a6-8c58-c2c14178fd93",
+      "role": "user",
+      "content": "Hello, I need help with a billing issue",
+      "created_at": "2026-05-05T01:43:03.190Z"
+    },
+    {
+      "id": "50c9adaa-74c2-4cea-8b10-47c30b9f4650",
+      "session_id": "63f52dc9-15d3-46a6-8c58-c2c14178fd93",
+      "role": "assistant",
+      "content": "I'm a demo chatbot. Please configure the OPENROUTER_API_KEY environment variable to enable real AI responses.",
+      "created_at": "2026-05-05T01:43:03.953Z"
+    },
+    {
+      "id": "c706e0df-a4a6-4d11-a52e-220de489e644",
+      "session_id": "46a1540b-8a87-4731-889b-15e5991430fa",
+      "role": "user",
+      "content": "Buenas tardes!",
+      "created_at": "2026-05-05T02:51:40.029Z"
+    },
+    {
+      "id": "4056829c-1433-4aad-83de-af30b46935cc",
+      "session_id": "46a1540b-8a87-4731-889b-15e5991430fa",
+      "role": "assistant",
+      "content": "I'm a demo chatbot. Please configure the OPENROUTER_API_KEY environment variable to enable real AI responses.",
+      "created_at": "2026-05-05T02:51:40.798Z"
+    },
+    {
+      "id": "4e66d466-e985-40ae-a415-49a207026a47",
+      "session_id": "19a12e2a-b643-4801-bd5b-1963a90a7c42",
+      "role": "user",
+      "content": "Buenas tardes",
+      "created_at": "2026-05-05T02:53:17.507Z"
+    },
+    {
+      "id": "5c9a78ba-9360-4129-af73-2576641b4f83",
+      "session_id": "19a12e2a-b643-4801-bd5b-1963a90a7c42",
+      "role": "assistant",
+      "content": "**Buenas tardes.** ¿En qué puedo ayudarte hoy?",
+      "created_at": "2026-05-05T02:53:18.947Z"
+    },
+    {
+      "id": "6dd134bd-447e-4819-b4a8-0bfa49651035",
+      "session_id": "19a12e2a-b643-4801-bd5b-1963a90a7c42",
+      "role": "user",
+      "content": "que modelo eres?",
+      "created_at": "2026-05-05T02:53:27.577Z"
+    },
+    {
+      "id": "0c68e43a-b694-4bf6-bef5-b99ce93c3b2a",
+      "session_id": "19a12e2a-b643-4801-bd5b-1963a90a7c42",
+      "role": "assistant",
+      "content": "**Sobre mí**\n\nSoy un modelo deenguaje artificial llamado Llama. Llama significa \"Meta de modelo de lenguaje grande\". Fui creado por Meta AI, una empresa que se enfoca en el desarrollo de tecnologías de inteligencia artificial.\n\n**CaracterísticasAlgunas de mis características incluyen:\n\n Puedo entender y responder a preguntas y mensajes en varios idiomas, incluyendo el español.\n* Puedo generar texto coherente y relevante basado en la entrada del usuario.\n* Puedo aprender y mejorar constantemente a través de la interacción con los usuarios.\n* Puedo ser utilizado para una variedad de tareas, como responder a preguntas, proporcionar información, traducir texto y más.\n\n**Limitaciones**\n\nEs importante tener en cuenta que, aunque soy un modelo avanzado, también tengo limitaciones. Por ejemplo:\n\n* No tengo la capacidad de experimentar emociones o sentimientos como los seres humanos.\n* No puedo acceder a información en tiempo real o realizar acciones físicas.\n* Mi comprensión y respuesta pueden ser limitadas por la calidad y la precisión de mi entrenamiento.\n\nEspero que esta información sea útil. ¿Tienes alguna otra pregunta sobre mí o sobre cómo puedo ayudarte?",
+      "created_at": "2026-05-05T02:53:28.974Z"
+    },
+    {
+      "id": "8ab6f9fc-7168-44d6-afb3-152a668632d6",
+      "session_id": "9e4d6fff-c8eb-49be-b5e4-3149e69d081a",
+      "role": "user",
+      "content": "Cuentame un chiste",
+      "created_at": "2026-05-05T02:55:45.759Z"
+    },
+    {
+      "id": "39c52fa8-196e-42a1-9e39-0be9304285fd",
+      "session_id": "9e4d6fff-c8eb-49be-b5e4-3149e69d081a",
+      "role": "assistant",
+      "content": "¡Claro! Aquí te dejo uno:\n\n¿Por qué la computadora fue al?\n\n(Pausa para crear suspense...)\n\n¡Porque tenía un virus!",
+      "created_at": "2026-05-05T02:55:46.162Z"
+    },
+    {
+      "id": "ac79f064-4421-42ad-83ed-b962c14b3215",
+      "session_id": "dc271477-1bd3-4444-bd33-2a8525e1f8ec",
+      "role": "user",
+      "content": "Aloooooo",
+      "created_at": "2026-05-05T03:01:02.602Z"
+    },
+    {
+      "id": "bc3c4173-09d2-4c7a-8bf1-ee3d926029a0",
+      "session_id": "dc271477-1bd3-4444-bd33-2a8525e1f8ec",
+      "role": "assistant",
+      "content": "I'm a demo chatbot. Please configure the OPENROUTER_API_KEY environment variable to enable real AI responses.",
+      "created_at": "2026-05-05T03:01:03.368Z"
+    },
+    {
+      "id": "0291f681-fb8b-4a1f-8941-c702db51d338",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "user",
+      "content": "Buenas",
+      "created_at": "2026-05-05T03:04:48.095Z"
+    },
+    {
+      "id": "4df9a1dd-49c3-4e27-96ae-4428883fdb99",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "assistant",
+      "content": "\nOkay, the user wrote \"Buenas.\" That's Spanish for \"Good\" but it's usually part of a greeting like \"Buenas noches\" (good night) or \"Buenas tardes\" (good afternoon). They might be starting a conversation but didn't finish the greeting. Maybe they didn't realize they need to say the full phrase or they're just practicing Spanish. I should respond in kind, maybe offer a friendly greeting in Spanish and ask how I can help. Let me check if there's a common phrase to use here. Also, since they might be a language learner, keeping the response simple and encouraging would be good. I'll go with something like \"¡Buenas! ¿Cómo estás? ¿En qué puedo ayudarte?\" which means \"Hello! How are you? How can I help you?\" that should cover it.\n</think>\n\n¡Buenas! ¿Cómo estás? ¿En qué puedo ayudarte? 😊",
+      "created_at": "2026-05-05T03:04:49.104Z"
+    },
+    {
+      "id": "72d7abfd-e8d5-4411-8129-1d784f4ee564",
+      "session_id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "role": "user",
+      "content": "Hola",
+      "created_at": "2026-05-05T03:05:30.010Z"
+    },
+    {
+      "id": "88030a89-26a5-4e59-b6e5-c8d83be0cb88",
+      "session_id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "role": "assistant",
+      "content": "<think>\nOkay, the user wrote \"Hola\" which is Spanish for \"Hello\". Let me respond in a friendly and helpful manner. Since they used Spanish, maybe they're more comfortable in Spanish, but I should respond in the same language they used unless they indicate otherwise. However, looking at the previous messages, all the examples were in English. Wait, the user's message is just \"Hola\". The previous interactions show that when users used Spanish, the assistant responded in Spanish. For example, in one case, the user said \"Hola\" and the assistant replied in Spanish. But in another case, the user wrote \"Hello\" and the assistant responded in English. So maybe the assistant should mirror the language the user used. Let me check the user's current message again. It's \"Hola\", so the assistant should reply in Spanish. But the user's current query is \"Hola\" and the previous history is in English. Hmm, maybe the user is testing or just greeting. I should respond in Spanish to match their initial message. But I need to make sure not to switch languages. Wait, the user's last message was \"Hola\", and the history includes other interactions where the user used English. Maybe the user is bilingual and just saying a quick greeting. In any case, the standard response for \"Hola\" would be \"¡Hola! ¿Cómo estás?\" in Spanish. But since the user might want a response in English, but their initial message was in Spanish. Alternatively, the assistant's previous responses were in English, so maybe the user is expecting English. This is a bit confusing. Let me look at the examples again. In a previous example, the user wrote \"Hello\" and the assistant replied in English. When the user wrote \"Hola\", the assistant replied in Spanish. So the pattern is to respond in the same language as the user's message. Therefore, I should reply in Spanish. But in the current case, the user wrote \"Hola\", so the assistant should respond in Spanish. However, the user's current query is \"Hola\" and the history includes other interactions. Let me confirm the standard response for such cases. The correct approach is to respond in the language the user used. So since the user wrote \"Hola\", the assistant should respond in Spanish. So the correct response is to say hello in Spanish. But I need to make sure the response is friendly and offers assistance. Let me construct a proper response in Spanish: \"¡Hola! ¿Cómo puedo ayudarte hoy?\" which means \"Hello! How can I help you today?\" That should be appropriate.\n</think>\n\n¡Hola! ¿Cómo puedoo ayudarte hoy?",
+      "created_at": "2026-05-05T03:05:31.639Z"
+    },
+    {
+      "id": "2619ae10-c84b-496b-9b4d-4698eff013fb",
+      "session_id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "role": "user",
+      "content": "Hola",
+      "created_at": "2026-05-05T03:11:12.934Z"
+    },
+    {
+      "id": "802646a5-993b-4da9-b189-f42a696b0b6c",
+      "session_id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "role": "assistant",
+      "content": "<think>\nOkay, the user just said \"Hola\" again. They might be testing if I'm paying attention or maybe they're in a hurry and want a quicker response. Since my previous reply was in Spanish, maybe they prefer that. Let me respond again in Spanish but keep it friendly and open-ended. I should make sure to acknowledge their message and ask how I can help. Let me check for any typos and keep the tone warm.\n</think>\n\n¡Hola! ¿En qué puedo ayudarte? 😊",
+      "created_at": "2026-05-05T03:11:18.507Z"
+    },
+    {
+      "id": "6386344d-5b91-4143-bd33-783c9c157e1d",
+      "session_id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "role": "user",
+      "content": "Hola",
+      "created_at": "2026-05-05T03:12:14.833Z"
+    },
+    {
+      "id": "68d1d62d-24be-43c4-b0eb-6ad5d1f38e2c",
+      "session_id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
+      "role": "assistant",
+      "content": "<think>\n</think>\n\n¡Hola de nuevo! ¿Tienes alguna pregunta o necesitas ayuda con algo? 😊",
+      "created_at": "2026-05-05T03:12:15.257Z"
+    },
+    {
+      "id": "c946a574-850d-4a6e-a2a0-2035f550b2dd",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "user",
+      "content": "Hola",
+      "created_at": "2026-05-05T03:12:39.406Z"
+    },
+    {
+      "id": "82a38fbe-9819-4ee1-9a2a-2cb7b8c633a3",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n¡Hola! ¿En qué puedo ayudarte hoy? 😊",
+      "created_at": "2026-05-05T03:12:39.923Z"
+    },
+    {
+      "id": "3651400e-e5c3-4cf8-aaee-7e69e0118cd1",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "user",
+      "content": "Buenas",
+      "created_at": "2026-05-05T03:12:46.428Z"
+    },
+    {
+      "id": "6fc1d1f0-fe79-4aa0-af7b-4e6cee96357b",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "assistant",
+      "content": "<think>\n\n</think>\n\n¡Buenas! Un gusto verte de nuevo. ¿En qué puedo ayudarte? 😊",
+      "created_at": "2026-05-05T03:12:46.787Z"
+    },
+    {
+      "id": "ff757e2e-877c-4516-81f1-09c188503c57",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "user",
+      "content": "Buenas buenas",
+      "created_at": "2026-05-05T03:14:59.800Z"
+    },
+    {
+      "id": "08870bf9-3fa8-4582-a439-a992a6aec65e",
+      "session_id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
+      "role": "assistant",
+      "content": "<think>\n</think>\n\n¡Buenas buenas! ¿Qué tal tu día? ¿En qué te puedo echar una mano? 😊",
+      "created_at": "2026-05-05T03:15:00.198Z"
+    }
+  ]
+}

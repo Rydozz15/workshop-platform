@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ISSDE Workshop Chatbot Platform
 
-## Getting Started
+A complete web platform designed for running interactive, AI-driven case-based workshops. Administrators can create custom scenarios (versions), organize them into campaigns, and share dynamic QR codes or links with participants. Participants are randomly assigned a case and interact with a ChatGPT-like AI to resolve the scenario.
 
-First, run the development server:
+## Features
 
+*   **Two Separate Experiences**: A secure admin dashboard and a frictionless participant interface.
+*   **Campaigns & QR Codes**: Group different case versions into Campaigns. The app automatically generates shareable URLs and QR codes for easy participant access.
+*   **Dynamic Scenarios (Versions)**: Create and edit cases using Markdown. Participants can toggle a side-panel to read their specific case while chatting.
+*   **Live Metrics**: The admin dashboard tracks active sessions, completed interactions, and message counts in real-time.
+*   **AI Integration**: Connects directly to the OpenRouter API (supporting models like Llama 3, Claude, Gemini).
+*   **No-Setup Dev Mode**: Runs out of the box using an in-memory JSON database. Can be easily switched to Supabase (PostgreSQL) for production.
+
+---
+
+## 🚀 Quick Start (Local Development)
+
+### 1. Prerequisites
+*   Node.js (v18 or higher recommended)
+*   npm
+
+### 2. Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Navigate to the project directory
+cd workshop-app
+
+# Install dependencies
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Environment Configuration
+Create a `.env.local` file in the root of the `workshop-app` directory (one is already provided as a template).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```env
+# Get your API key at https://openrouter.ai/keys
+OPENROUTER_API_KEY=your-openrouter-api-key-here
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Password to access the /admin dashboard
+ADMIN_PASSWORD=workshop2025
 
-## Learn More
+# Database provider: "memory" (for local testing) or "supabase" (for production)
+DB_PROVIDER=memory
 
-To learn more about Next.js, take a look at the following resources:
+# Base URL for generating shareable links (update this when deploying)
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Default OpenRouter model
+DEFAULT_MODEL=meta-llama/llama-3.1-8b-instruct
+```
+*(Note: If `OPENROUTER_API_KEY` is not set, the chatbot will run in a "demo mode" and return canned responses).*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Run the Development Server
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📖 How to Use the Platform
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application has two main entry points:
+
+### 1. The Admin Dashboard (`/admin`)
+Navigate to `http://localhost:3000/admin` and log in using the password defined in `ADMIN_PASSWORD` (default: `workshop2025`).
+
+From here you can:
+1.  **Versions**: Create the base text/scenarios. You can use Markdown to format the cases. (The app comes with 3 seed versions).
+2.  **Campaigns**: Create a new campaign, select which *Versions* you want to include, and optionally specify an AI model.
+3.  Once a Campaign is created, you will be given a **Shareable Link and a QR Code**.
+4.  **Dashboard**: Monitor the incoming sessions, how many messages are being sent, and the distribution of assigned cases in real-time.
+
+### 2. The Participant Interface (`/session/[code]`)
+Participants will scan the QR code or click the link provided by the Campaign.
+1.  They enter their name (optional).
+2.  They are **randomly and evenly** assigned one of the versions selected for that campaign.
+3.  They chat with the AI to resolve their scenario. They can view the case details by clicking the **"📋 Case"** toggle.
+4.  When finished, they click "Mark Session as Complete".
+
+---
+
+## 🌍 Production Deployment
+
+This project is built with Next.js App Router and is optimized to be deployed for free using Vercel and Supabase.
+
+### Step 1: Database (Supabase)
+1. Create a free account at [Supabase](https://supabase.com/).
+2. Create a new project.
+3. Go to the SQL Editor and run the schema provided at the bottom of `lib/db-supabase.js`.
+4. Get your `Project URL` and `anon public` API key.
+
+### Step 2: Deployment (Vercel)
+1. Push your code to a GitHub repository.
+2. Go to [Vercel](https://vercel.com/) and import your repository.
+3. Add the following Environment Variables in Vercel:
+    *   `OPENROUTER_API_KEY`
+    *   `ADMIN_PASSWORD`
+    *   `DB_PROVIDER=supabase`
+    *   `SUPABASE_URL=your_supabase_url`
+    *   `SUPABASE_ANON_KEY=your_supabase_anon_key`
+    *   `NEXT_PUBLIC_BASE_URL=https://your-production-url.vercel.app`
+4. Click Deploy!
