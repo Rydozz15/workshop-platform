@@ -23,6 +23,7 @@ export async function GET(request, { params }) {
       ...session,
       messages,
       workshop_name: workshop ? workshop.name : '',
+      system_prompt: workshop ? workshop.system_prompt : null,
       version: version
         ? { id: version.id, title: version.title, case_content: version.case_content }
         : null,

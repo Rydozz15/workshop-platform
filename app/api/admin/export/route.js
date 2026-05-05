@@ -40,6 +40,7 @@ export async function GET(request) {
           version_id: session.version_id,
           ai_provider: workshop ? workshop.ai_provider : 'unknown',
           ai_model: workshop ? workshop.openrouter_model : 'unknown',
+          system_prompt: workshop ? workshop.system_prompt : null,
           status: session.status,
           interaction_count: session.interaction_count,
           started_at: session.started_at,

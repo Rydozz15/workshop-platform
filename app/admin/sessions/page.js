@@ -111,7 +111,7 @@ export default function SessionsPage() {
       // Flatten: one row per message, with session metadata repeated
       const headers = [
         'session_id', 'participant_name', 'campaign_name', 'campaign_id',
-        'version_title', 'version_id', 'ai_provider', 'ai_model',
+        'version_title', 'version_id', 'ai_provider', 'ai_model', 'campaign_system_prompt',
         'session_status', 'interaction_count', 'session_started_at', 'session_completed_at',
         'message_order', 'message_role', 'message_content', 'message_created_at'
       ];
@@ -131,7 +131,7 @@ export default function SessionsPage() {
           // Still include sessions with no messages
           rows.push([
             s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
-            s.version_title, s.version_id, s.ai_provider, s.ai_model,
+            s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
             s.status, s.interaction_count, s.started_at, s.completed_at || '',
             '', '', '', ''
           ].map(escapeCSV).join(','));
@@ -139,7 +139,7 @@ export default function SessionsPage() {
           for (const m of s.messages) {
             rows.push([
               s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
-              s.version_title, s.version_id, s.ai_provider, s.ai_model,
+              s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
               s.status, s.interaction_count, s.started_at, s.completed_at || '',
               m.message_order, m.role, m.content, m.created_at
             ].map(escapeCSV).join(','));
@@ -253,6 +253,9 @@ export default function SessionsPage() {
                     <span>📋 {transcript.version?.title || 'Unknown'}</span>
                     <span>📅 {new Date(transcript.started_at).toLocaleString()}</span>
                     <span className={`badge ${transcript.status === 'completed' ? 'badge-completed' : 'badge-active'}`}>{transcript.status}</span>
+                  </div>
+                  <div style={{ marginTop: 12, fontSize: '0.85rem', padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-color)' }}>
+                    <strong>System Prompt:</strong> {transcript.system_prompt ? <span style={{ color: 'var(--text-primary)' }}>{transcript.system_prompt}</span> : <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None (Naive Mode)</span>}
                   </div>
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
