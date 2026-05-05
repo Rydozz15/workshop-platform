@@ -190,7 +190,7 @@ export default function CampaignsPage() {
             </div>
             <div className="form-group">
               <label className="form-label">AI Model</label>
-              <input className="input" value={form.openrouter_model} onChange={(e) => setForm({ ...form, openrouter_model: e.target.value })} placeholder={form.ai_provider === 'groq' ? "gemma2-9b-it" : "meta-llama/llama-3.1-8b-instruct"} />
+              <input className="input" value={form.openrouter_model} onChange={(e) => setForm({ ...form, openrouter_model: e.target.value })} placeholder={form.ai_provider === 'groq' ? "llama-3.3-70b-versatile" : "meta-llama/llama-3.1-8b-instruct"} />
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Leave blank for default model</span>
             </div>
             <div className="form-group" style={{ marginTop: 16 }}>

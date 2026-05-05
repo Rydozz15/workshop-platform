@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, selected_version_ids, openrouter_model, ai_provider } = body;
+    const { name, selected_version_ids, openrouter_model, ai_provider, system_prompt } = body;
 
     if (!name || !selected_version_ids || selected_version_ids.length === 0) {
       return NextResponse.json(
@@ -27,7 +27,7 @@ export async function POST(request) {
       );
     }
 
-    const workshop = await createWorkshop({ name, selected_version_ids, openrouter_model, ai_provider });
+    const workshop = await createWorkshop({ name, selected_version_ids, openrouter_model, ai_provider, system_prompt });
     return NextResponse.json(workshop, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
