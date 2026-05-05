@@ -20,6 +20,7 @@ export default function SessionsPage() {
   const [transcript, setTranscript] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingTranscript, setLoadingTranscript] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const fetchData = async () => {
     const [wRes, dRes] = await Promise.all([
@@ -66,6 +67,101 @@ export default function SessionsPage() {
     setTranscript(null);
   };
 
+  const fetchExportData = async () => {
+    const url = selectedCampaign
+      ? `/api/admin/export?workshopId=${selectedCampaign}`
+      : '/api/admin/export';
+    const res = await fetch(url);
+    return res.json();
+  };
+
+  const downloadFile = (content, filename, type) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportJSON = async () => {
+    setExporting(true);
+    try {
+      const data = await fetchExportData();
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const campaignLabel = selectedCampaign
+        ? campaigns.find(c => c.id === selectedCampaign)?.name?.replace(/\s+/g, '_') || 'campaign'
+        : 'all_campaigns';
+      downloadFile(
+        JSON.stringify(data, null, 2),
+        `workshop_export_${campaignLabel}_${timestamp}.json`,
+        'application/json'
+      );
+    } catch (e) {
+      alert('Export failed: ' + e.message);
+    }
+    setExporting(false);
+  };
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const data = await fetchExportData();
+      // Flatten: one row per message, with session metadata repeated
+      const headers = [
+        'session_id', 'participant_name', 'campaign_name', 'campaign_id',
+        'version_title', 'version_id', 'ai_provider', 'ai_model',
+        'session_status', 'interaction_count', 'session_started_at', 'session_completed_at',
+        'message_order', 'message_role', 'message_content', 'message_created_at'
+      ];
+
+      const escapeCSV = (val) => {
+        if (val === null || val === undefined) return '';
+        const str = String(val);
+        if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+
+      const rows = [headers.join(',')];
+      for (const s of data) {
+        if (!s.messages || s.messages.length === 0) {
+          // Still include sessions with no messages
+          rows.push([
+            s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
+            s.version_title, s.version_id, s.ai_provider, s.ai_model,
+            s.status, s.interaction_count, s.started_at, s.completed_at || '',
+            '', '', '', ''
+          ].map(escapeCSV).join(','));
+        } else {
+          for (const m of s.messages) {
+            rows.push([
+              s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
+              s.version_title, s.version_id, s.ai_provider, s.ai_model,
+              s.status, s.interaction_count, s.started_at, s.completed_at || '',
+              m.message_order, m.role, m.content, m.created_at
+            ].map(escapeCSV).join(','));
+          }
+        }
+      }
+
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const campaignLabel = selectedCampaign
+        ? campaigns.find(c => c.id === selectedCampaign)?.name?.replace(/\s+/g, '_') || 'campaign'
+        : 'all_campaigns';
+      downloadFile(
+        rows.join('\n'),
+        `workshop_export_${campaignLabel}_${timestamp}.csv`,
+        'text/csv'
+      );
+    } catch (e) {
+      alert('Export failed: ' + e.message);
+    }
+    setExporting(false);
+  };
+
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><div className="spinner" /></div>;
 
   return (
@@ -75,11 +171,19 @@ export default function SessionsPage() {
         <p>Browse participant sessions and view conversation transcripts</p>
       </div>
 
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 24, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <select className="select" style={{ maxWidth: 300 }} value={selectedCampaign} onChange={(e) => setSelectedCampaign(e.target.value)}>
           <option value="">All Campaigns</option>
           {campaigns.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
         </select>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+          <button className="btn btn-secondary btn-sm" onClick={exportCSV} disabled={exporting || sessions.length === 0}>
+            {exporting ? '⏳' : '📊'} Export CSV
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={exportJSON} disabled={exporting || sessions.length === 0}>
+            {exporting ? '⏳' : '📦'} Export JSON
+          </button>
+        </div>
       </div>
 
       {sessions.length === 0 ? (
