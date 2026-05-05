@@ -7,8 +7,10 @@ A complete web platform designed for running interactive, AI-driven case-based w
 *   **Two Separate Experiences**: A secure admin dashboard and a frictionless participant interface.
 *   **Campaigns & QR Codes**: Group different case versions into Campaigns. The app automatically generates shareable URLs and QR codes for easy participant access.
 *   **Dynamic Scenarios (Versions)**: Create and edit cases using Markdown. Participants can toggle a side-panel to read their specific case while chatting.
-*   **Live Metrics**: The admin dashboard tracks active sessions, completed interactions, and message counts in real-time.
-*   **AI Integration**: Connects directly to the OpenRouter API (supporting models like Llama 3, Claude, Gemini).
+*   **Custom AI Personas**: Set a custom system prompt per Campaign to control how the AI behaves (e.g., naive mode, strict tutor, casual peer).
+*   **Live Metrics & Transcripts**: The admin dashboard tracks active sessions and message counts in real-time, and allows viewing full conversation transcripts.
+*   **Data Export**: Export sessions and full chat transcripts to CSV or JSON for data analysis (e.g., using Pandas or qualitative coding).
+*   **AI Integration**: Connects directly to OpenRouter or Groq APIs (supporting models like Llama 3, Gemini, Mixtral).
 *   **No-Setup Dev Mode**: Runs out of the box using an in-memory JSON database. Can be easily switched to Supabase (PostgreSQL) for production.
 
 ---
@@ -35,6 +37,9 @@ Create a `.env.local` file in the root of the `workshop-app` directory (one is a
 # Get your API key at https://openrouter.ai/keys
 OPENROUTER_API_KEY=your-openrouter-api-key-here
 
+# Get your API key at https://console.groq.com/keys
+GROQ_API_KEY=your-groq-api-key-here
+
 # Password to access the /admin dashboard
 ADMIN_PASSWORD=workshop2025
 
@@ -47,7 +52,6 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 # Default OpenRouter model
 DEFAULT_MODEL=meta-llama/llama-3.1-8b-instruct
 ```
-*(Note: If `OPENROUTER_API_KEY` is not set, the chatbot will run in a "demo mode" and return canned responses).*
 
 ### 4. Run the Development Server
 ```bash
@@ -65,9 +69,9 @@ Navigate to `http://localhost:3000/admin` and log in using the password defined 
 
 From here you can:
 1.  **Versions**: Create the base text/scenarios. You can use Markdown to format the cases. (The app comes with 3 seed versions).
-2.  **Campaigns**: Create a new campaign, select which *Versions* you want to include, and optionally specify an AI model.
+2.  **Campaigns**: Create a new campaign, select which *Versions* you want to include, select an AI provider (Groq or OpenRouter), specify an AI model, and optionally set a Custom System Prompt.
 3.  Once a Campaign is created, you will be given a **Shareable Link and a QR Code**.
-4.  **Dashboard**: Monitor the incoming sessions, how many messages are being sent, and the distribution of assigned cases in real-time.
+4.  **Dashboard & Sessions**: Monitor incoming sessions in real-time, read full chat transcripts, and export data to CSV/JSON.
 
 ### 2. The Participant Interface (`/session/[code]`)
 Participants will scan the QR code or click the link provided by the Campaign.
@@ -78,43 +82,43 @@ Participants will scan the QR code or click the link provided by the Campaign.
 
 ---
 
-## 🐣 Guía de Despliegue Paso a Paso (Para Principiantes)
+## 🐣 Step-by-Step Deployment Guide (For Beginners)
 
-Si nunca has subido una página web, ¡no te preocupes! Aquí tienes el paso a paso exacto para publicar esta plataforma gratis y que cualquiera pueda entrar desde su celular. Son 3 pasos grandes: **GitHub** (para guardar tu código), **Supabase** (la base de datos) y **Vercel** (donde vive la página web).
+If you've never deployed a web app before, here is the exact step-by-step process to host this platform for free so anyone can access it from their phone. We will use three services: **GitHub** (to host your code), **Supabase** (for the database), and **Vercel** (to host the live website).
 
-### Paso 1: Guarda tu código en GitHub
-1. Entra a [GitHub](https://github.com/) y créate una cuenta si no tienes.
-2. En la esquina superior derecha, haz clic en el botón **"+"** y elige **"New repository"**.
-3. Ponle un nombre (ej. `mi-workshop`) y haz clic en **"Create repository"** (el botón verde abajo).
-4. Abre la terminal en la carpeta de tu proyecto (donde está este código) y escribe estos comandos, uno por uno, presionando Enter:
+### Step 1: Save your code to GitHub
+1. Go to [GitHub](https://github.com/) and create an account.
+2. In the top right corner, click the **"+"** button and select **"New repository"**.
+3. Give it a name (e.g., `my-workshop`) and click **"Create repository"**.
+4. Open the terminal in your project folder and run these commands one by one:
    ```bash
    git init
    git add .
-   git commit -m "Mi primer commit"
+   git commit -m "Initial commit"
    git branch -M main
-   # Copia el comando que GitHub te da que empieza con "git remote add origin..." y pégalo.
+   # Copy the command GitHub gives you starting with "git remote add origin..." and paste it here.
    git push -u origin main
    ```
-¡Listo! Tu código ya está en la nube.
+Your code is now safely backed up in the cloud.
 
-### Paso 2: Configura la Base de Datos en Supabase
-1. Entra a [Supabase](https://supabase.com/) y créate una cuenta (te recomiendo usar el botón "Continue with GitHub").
-2. Haz clic en **"New Project"**, elige un nombre y una contraseña segura, y dale a crear. (Tardará un par de minutos).
-3. **Crea las Tablas:** En el menú izquierdo de Supabase, ve a **"SQL Editor"** y haz clic en "New Query". 
-   Ve al archivo `lib/db-supabase.js` en tu código, copia toooodo el texto (SQL) que está comentado al final del archivo, pégalo en Supabase y presiona el botón verde **"Run"**. Saldrá un mensaje de "Success".
-   *(Nota: si te sale un aviso sobre "RLS", elige la opción "Run without RLS").*
-4. **Copia tus claves:** En Supabase, ve abajo a la izquierda a la "ruedita" de configuración (**Project Settings**), luego a **API**. Deja esta pantalla abierta, necesitaremos copiar la `Project URL` y la `anon / public key` (también llamada Publishable key) en el siguiente paso.
+### Step 2: Set up the Database in Supabase
+1. Go to [Supabase](https://supabase.com/) and sign up (using "Continue with GitHub" is recommended).
+2. Click **"New Project"**, choose a name and a secure password, and wait a few minutes for it to provision.
+3. **Create the Tables:** On the left menu in Supabase, go to **"SQL Editor"** and click "New Query". 
+   Open the `lib/db-supabase.js` file in your code, copy all the commented SQL text at the very bottom of the file, paste it into the Supabase SQL editor, and click the green **"Run"** button. You should see a "Success" message.
+   *(Note: If prompted about "RLS", choose "Run without RLS" for now).*
+4. **Copy your keys:** In Supabase, go to the bottom left gear icon (**Project Settings**), then to **API**. Leave this tab open; you will need to copy the `Project URL` and the `anon / public key` (Publishable key) in the next step.
 
-### Paso 3: Publica la Web en Vercel
-1. Entra a [Vercel](https://vercel.com/) y regístrate usando "Continue with GitHub".
-2. En tu panel principal, haz clic en el botón negro **"Add New..."** y elige **"Project"**.
-3. Verás el repositorio de GitHub que creaste en el Paso 1. Haz clic en el botón **"Import"**.
-4. **¡Importante! Las Variables de Entorno:** Antes de darle a desplegar, abre la pestaña "Environment Variables" y añade estas variables una por una:
-   - Nombre: `DB_PROVIDER` / Valor: `supabase`
-   - Nombre: `SUPABASE_URL` / Valor: *(Pega aquí la URL que dejaste abierta en Supabase)*
-   - Nombre: `SUPABASE_ANON_KEY` / Valor: *(Pega aquí la key de Supabase)*
-   - Nombre: `OPENROUTER_API_KEY` / Valor: *(Tu clave secreta de OpenRouter)*
-   - Nombre: `ADMIN_PASSWORD` / Valor: *(La contraseña que quieras para entrar al panel de administrador)*
-5. Una vez que añadas todas, haz clic en el botón **"Deploy"**.
+### Step 3: Deploy the Website on Vercel
+1. Go to [Vercel](https://vercel.com/) and sign up using "Continue with GitHub".
+2. On your main dashboard, click the black **"Add New..."** button and select **"Project"**.
+3. You will see the GitHub repository you created in Step 1. Click **"Import"**.
+4. **Important! Environment Variables:** Before clicking deploy, open the "Environment Variables" section and add these variables one by one:
+   - Name: `DB_PROVIDER` / Value: `supabase`
+   - Name: `SUPABASE_URL` / Value: *(Paste the URL from Supabase here)*
+   - Name: `SUPABASE_ANON_KEY` / Value: *(Paste the anon key from Supabase here)*
+   - Name: `GROQ_API_KEY` or `OPENROUTER_API_KEY` / Value: *(Your secret AI provider key)*
+   - Name: `ADMIN_PASSWORD` / Value: *(The password you want to use for the /admin dashboard)*
+5. Once all variables are added, click the **"Deploy"** button.
 
-¡Magia! Vercel cargará todo y en 2 minutos te dará una URL (ej. `mi-workshop.vercel.app`). **¡Tu plataforma ya está oficialmente en internet!**
+Magic! Vercel will build the app and give you a live URL (e.g., `my-workshop.vercel.app`) in about 2 minutes. **Your platform is now officially on the internet!**

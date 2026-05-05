@@ -7,7 +7,7 @@ export default function CampaignsPage() {
   const [versions, setVersions] = useState([]);
   const [metrics, setMetrics] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '', selected_version_ids: [], openrouter_model: '', ai_provider: 'openrouter' });
+  const [form, setForm] = useState({ name: '', selected_version_ids: [], openrouter_model: '', ai_provider: 'openrouter', system_prompt: '' });
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
@@ -45,7 +45,7 @@ export default function CampaignsPage() {
     e.preventDefault();
     await fetch('/api/admin/workshops', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
     setShowModal(false);
-    setForm({ name: '', selected_version_ids: [], openrouter_model: '', ai_provider: 'openrouter' });
+    setForm({ name: '', selected_version_ids: [], openrouter_model: '', ai_provider: 'openrouter', system_prompt: '' });
     fetchAll();
   };
 
@@ -190,8 +190,19 @@ export default function CampaignsPage() {
             </div>
             <div className="form-group">
               <label className="form-label">AI Model</label>
-              <input className="input" value={form.openrouter_model} onChange={(e) => setForm({ ...form, openrouter_model: e.target.value })} placeholder={form.ai_provider === 'groq' ? "llama-3.3-70b-versatile" : "meta-llama/llama-3.1-8b-instruct"} />
+              <input className="input" value={form.openrouter_model} onChange={(e) => setForm({ ...form, openrouter_model: e.target.value })} placeholder={form.ai_provider === 'groq' ? "gemma2-9b-it" : "meta-llama/llama-3.1-8b-instruct"} />
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Leave blank for default model</span>
+            </div>
+            <div className="form-group" style={{ marginTop: 16 }}>
+              <label className="form-label">Custom System Prompt</label>
+              <textarea 
+                className="input" 
+                rows={3} 
+                value={form.system_prompt} 
+                onChange={(e) => setForm({ ...form, system_prompt: e.target.value })} 
+                placeholder="Optional: Provide custom instructions for the AI behavior. Leave blank for naive mode." 
+              />
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Defines the AI persona/behavior for this specific campaign.</span>
             </div>
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>

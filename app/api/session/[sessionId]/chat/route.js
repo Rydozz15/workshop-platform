@@ -49,19 +49,20 @@ export async function POST(request, { params }) {
     // Build conversation history from stored messages
     const storedMessages = await getMessages(sessionId);
     
-    // We are testing naive behavior without a strict system prompt
-    const conversationHistory = [
-      /*
-      {
+    // Use custom system prompt if defined for this campaign, otherwise naive mode
+    const conversationHistory = [];
+    if (workshop?.system_prompt) {
+      conversationHistory.push({
         role: 'system',
-        content: 'You are a helpful conversational AI assistant. CRITICAL RULES YOU MUST ALWAYS FOLLOW:\n1. NEVER show your internal reasoning, thoughts, or analysis.\n2. NEVER start your response with phrases like "Okay, the user said...", "Let me think...", "I should respond...", or any meta-commentary.\n3. Reply DIRECTLY to the user in the same language they use.\n4. Keep responses concise, natural, and conversational.\n5. If the user greets you, simply greet them back warmly. Nothing more.'
-      },
-      */
-      ...storedMessages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }))
-    ];
+        content: workshop.system_prompt
+      });
+    }
+
+    // Append all previous messages
+    conversationHistory.push(...storedMessages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })));
 
     // Get streaming response from AI provider
     const stream = await streamChat(conversationHistory, model, provider);
