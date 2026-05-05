@@ -61,6 +61,7 @@ export default function AdminLayout({ children }) {
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/versions', label: 'Versions', icon: '📋' },
     { href: '/admin/campaigns', label: 'Campaigns', icon: '🚀' },
+    { href: '/admin/sessions', label: 'Sessions', icon: '💬' },
   ];
 
   return (
