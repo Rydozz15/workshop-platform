@@ -10,7 +10,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const workshopId = searchParams.get('workshopId');
-    const metrics = getDashboardMetrics(workshopId || null);
+    const metrics = await getDashboardMetrics(workshopId || null);
     return NextResponse.json(metrics);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

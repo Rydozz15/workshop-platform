@@ -9,15 +9,15 @@ import { getSession, updateSession, getMessages, getVersion, getWorkshop } from 
 export async function GET(request, { params }) {
   try {
     const { sessionId } = await params;
-    const session = getSession(sessionId);
+    const session = await getSession(sessionId);
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    const messages = getMessages(sessionId);
-    const version = getVersion(session.version_id);
+    const messages = await getMessages(sessionId);
+    const version = await getVersion(session.version_id);
 
-    const workshop = getWorkshop(session.workshop_id);
+    const workshop = await getWorkshop(session.workshop_id);
 
     return NextResponse.json({
       ...session,
@@ -42,7 +42,7 @@ export async function PUT(request, { params }) {
       body.completed_at = new Date().toISOString();
     }
 
-    const session = updateSession(sessionId, body);
+    const session = await updateSession(sessionId, body);
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }

@@ -10,7 +10,7 @@ import { getVersion, updateVersion, deleteVersion } from '@/lib/db';
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    const version = getVersion(id);
+    const version = await getVersion(id);
     if (!version) {
       return NextResponse.json({ error: 'Version not found' }, { status: 404 });
     }
@@ -24,7 +24,7 @@ export async function PUT(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const version = updateVersion(id, body);
+    const version = await updateVersion(id, body);
     if (!version) {
       return NextResponse.json({ error: 'Version not found' }, { status: 404 });
     }
@@ -37,7 +37,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
-    const success = deleteVersion(id);
+    const success = await deleteVersion(id);
     if (!success) {
       return NextResponse.json({ error: 'Version not found' }, { status: 404 });
     }

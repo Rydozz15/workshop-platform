@@ -22,7 +22,7 @@ export async function POST(request, { params }) {
     }
 
     // Validate session exists
-    const session = getSession(sessionId);
+    const session = await getSession(sessionId);
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
@@ -32,22 +32,22 @@ export async function POST(request, { params }) {
     }
 
     // Get the workshop model
-    const workshop = getWorkshop(session.workshop_id);
+    const workshop = await getWorkshop(session.workshop_id);
     const model = workshop?.openrouter_model || process.env.DEFAULT_MODEL;
     const provider = workshop?.ai_provider || 'openrouter';
 
     // Save the user message
-    createMessage({
+    await createMessage({
       session_id: sessionId,
       role: 'user',
       content: message,
     });
 
     // Increment interaction count
-    incrementInteractionCount(sessionId);
+    await incrementInteractionCount(sessionId);
 
     // Build conversation history from stored messages
-    const storedMessages = getMessages(sessionId);
+    const storedMessages = await getMessages(sessionId);
     
     // Add a basic system prompt to prevent the AI from "thinking out loud", 
     // but without giving it any scenario context (keeping it a naive chatbot)
@@ -97,7 +97,7 @@ export async function POST(request, { params }) {
       flush() {
         // Save the complete assistant response when stream ends
         if (fullResponse) {
-          createMessage({
+          await createMessage({
             session_id: sessionId,
             role: 'assistant',
             content: fullResponse,

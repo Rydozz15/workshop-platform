@@ -8,7 +8,7 @@ import { getVersions, createVersion } from '@/lib/db';
 
 export async function GET() {
   try {
-    const versions = getVersions();
+    const versions = await getVersions();
     return NextResponse.json(versions);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -24,7 +24,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Title and case content are required' }, { status: 400 });
     }
 
-    const version = createVersion({ title, case_content });
+    const version = await createVersion({ title, case_content });
     return NextResponse.json(version, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

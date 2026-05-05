@@ -78,24 +78,43 @@ Participants will scan the QR code or click the link provided by the Campaign.
 
 ---
 
-## 🌍 Production Deployment
+## 🐣 Guía de Despliegue Paso a Paso (Para Principiantes)
 
-This project is built with Next.js App Router and is optimized to be deployed for free using Vercel and Supabase.
+Si nunca has subido una página web, ¡no te preocupes! Aquí tienes el paso a paso exacto para publicar esta plataforma gratis y que cualquiera pueda entrar desde su celular. Son 3 pasos grandes: **GitHub** (para guardar tu código), **Supabase** (la base de datos) y **Vercel** (donde vive la página web).
 
-### Step 1: Database (Supabase)
-1. Create a free account at [Supabase](https://supabase.com/).
-2. Create a new project.
-3. Go to the SQL Editor and run the schema provided at the bottom of `lib/db-supabase.js`.
-4. Get your `Project URL` and `anon public` API key.
+### Paso 1: Guarda tu código en GitHub
+1. Entra a [GitHub](https://github.com/) y créate una cuenta si no tienes.
+2. En la esquina superior derecha, haz clic en el botón **"+"** y elige **"New repository"**.
+3. Ponle un nombre (ej. `mi-workshop`) y haz clic en **"Create repository"** (el botón verde abajo).
+4. Abre la terminal en la carpeta de tu proyecto (donde está este código) y escribe estos comandos, uno por uno, presionando Enter:
+   ```bash
+   git init
+   git add .
+   git commit -m "Mi primer commit"
+   git branch -M main
+   # Copia el comando que GitHub te da que empieza con "git remote add origin..." y pégalo.
+   git push -u origin main
+   ```
+¡Listo! Tu código ya está en la nube.
 
-### Step 2: Deployment (Vercel)
-1. Push your code to a GitHub repository.
-2. Go to [Vercel](https://vercel.com/) and import your repository.
-3. Add the following Environment Variables in Vercel:
-    *   `OPENROUTER_API_KEY`
-    *   `ADMIN_PASSWORD`
-    *   `DB_PROVIDER=supabase`
-    *   `SUPABASE_URL=your_supabase_url`
-    *   `SUPABASE_ANON_KEY=your_supabase_anon_key`
-    *   `NEXT_PUBLIC_BASE_URL=https://your-production-url.vercel.app`
-4. Click Deploy!
+### Paso 2: Configura la Base de Datos en Supabase
+1. Entra a [Supabase](https://supabase.com/) y créate una cuenta (te recomiendo usar el botón "Continue with GitHub").
+2. Haz clic en **"New Project"**, elige un nombre y una contraseña segura, y dale a crear. (Tardará un par de minutos).
+3. **Crea las Tablas:** En el menú izquierdo de Supabase, ve a **"SQL Editor"** y haz clic en "New Query". 
+   Ve al archivo `lib/db-supabase.js` en tu código, copia toooodo el texto (SQL) que está comentado al final del archivo, pégalo en Supabase y presiona el botón verde **"Run"**. Saldrá un mensaje de "Success".
+   *(Nota: si te sale un aviso sobre "RLS", elige la opción "Run without RLS").*
+4. **Copia tus claves:** En Supabase, ve abajo a la izquierda a la "ruedita" de configuración (**Project Settings**), luego a **API**. Deja esta pantalla abierta, necesitaremos copiar la `Project URL` y la `anon / public key` (también llamada Publishable key) en el siguiente paso.
+
+### Paso 3: Publica la Web en Vercel
+1. Entra a [Vercel](https://vercel.com/) y regístrate usando "Continue with GitHub".
+2. En tu panel principal, haz clic en el botón negro **"Add New..."** y elige **"Project"**.
+3. Verás el repositorio de GitHub que creaste en el Paso 1. Haz clic en el botón **"Import"**.
+4. **¡Importante! Las Variables de Entorno:** Antes de darle a desplegar, abre la pestaña "Environment Variables" y añade estas variables una por una:
+   - Nombre: `DB_PROVIDER` / Valor: `supabase`
+   - Nombre: `SUPABASE_URL` / Valor: *(Pega aquí la URL que dejaste abierta en Supabase)*
+   - Nombre: `SUPABASE_ANON_KEY` / Valor: *(Pega aquí la key de Supabase)*
+   - Nombre: `OPENROUTER_API_KEY` / Valor: *(Tu clave secreta de OpenRouter)*
+   - Nombre: `ADMIN_PASSWORD` / Valor: *(La contraseña que quieras para entrar al panel de administrador)*
+5. Una vez que añadas todas, haz clic en el botón **"Deploy"**.
+
+¡Magia! Vercel cargará todo y en 2 minutos te dará una URL (ej. `mi-workshop.vercel.app`). **¡Tu plataforma ya está oficialmente en internet!**

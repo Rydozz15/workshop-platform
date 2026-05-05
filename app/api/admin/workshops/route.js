@@ -8,7 +8,7 @@ import { getWorkshops, createWorkshop } from '@/lib/db';
 
 export async function GET() {
   try {
-    const workshops = getWorkshops();
+    const workshops = await getWorkshops();
     return NextResponse.json(workshops);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -27,7 +27,7 @@ export async function POST(request) {
       );
     }
 
-    const workshop = createWorkshop({ name, selected_version_ids, openrouter_model, ai_provider });
+    const workshop = await createWorkshop({ name, selected_version_ids, openrouter_model, ai_provider });
     return NextResponse.json(workshop, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -10,7 +10,7 @@ import { getWorkshop, updateWorkshop, deleteWorkshop } from '@/lib/db';
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    const workshop = getWorkshop(id);
+    const workshop = await getWorkshop(id);
     if (!workshop) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
     }
@@ -24,7 +24,7 @@ export async function PUT(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const workshop = updateWorkshop(id, body);
+    const workshop = await updateWorkshop(id, body);
     if (!workshop) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
     }
@@ -37,7 +37,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
-    const success = deleteWorkshop(id);
+    const success = await deleteWorkshop(id);
     if (!success) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
     }
