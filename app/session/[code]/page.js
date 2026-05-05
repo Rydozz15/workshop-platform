@@ -39,14 +39,16 @@ export default function SessionPage({ params }) {
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); };
   useEffect(scrollToBottom, [messages]);
 
-  const joinWorkshop = async (e) => {
+  const joinWorkshop = async (e, overrideName = null, overrideCuid = null) => {
     if (e) e.preventDefault();
     setJoining(true);
     setError('');
     
+    const finalName = overrideName || name || 'Anonymous';
+    
     // Check if we have a chain_user_id stored or passed via URL
     const urlParams = new URLSearchParams(window.location.search);
-    let chainUserId = urlParams.get('cuid') || localStorage.getItem('chain_user_id');
+    let chainUserId = overrideCuid || urlParams.get('cuid') || localStorage.getItem('chain_user_id');
     
     if (!chainUserId) {
       const generateId = () => {
@@ -55,14 +57,15 @@ export default function SessionPage({ params }) {
       };
       chainUserId = generateId();
     }
-    // Always store the active chain ID
+    // Always store the active chain ID and name
     localStorage.setItem('chain_user_id', chainUserId);
+    localStorage.setItem('participant_name', finalName);
 
     try {
       const res = await fetch('/api/session/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, participant_name: name || 'Anonymous', chain_user_id: chainUserId }),
+        body: JSON.stringify({ code, participant_name: finalName, chain_user_id: chainUserId }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to join'); setJoining(false); return; }
@@ -93,12 +96,27 @@ export default function SessionPage({ params }) {
             setPhase('chat');
           } else {
             localStorage.removeItem(`workshop_${code}_session`);
+            checkAutoJoin();
           }
         })
         .catch(() => {
           // If network error, maybe ignore or clear
         });
+    } else {
+      checkAutoJoin();
     }
+
+    function checkAutoJoin() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const cuid = urlParams.get('cuid');
+      const savedName = localStorage.getItem('participant_name');
+      
+      if (cuid && savedName) {
+        setName(savedName);
+        joinWorkshop(null, savedName, cuid);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
   const sendMessage = async () => {

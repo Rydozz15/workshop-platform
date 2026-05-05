@@ -22,13 +22,13 @@ export default function AnalyticsPage() {
     fetchData();
   }, []);
 
-  const handleSummarize = async (workshopId, questionId, texts) => {
+  const handleSummarize = async (workshopId, questionId, texts, ai_provider, model) => {
     setSummarizing(prev => ({ ...prev, [`${workshopId}-${questionId}`]: true }));
     try {
       const res = await fetch('/api/admin/analytics/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texts })
+        body: JSON.stringify({ texts, ai_provider, model })
       });
       const json = await res.json();
       setSummaries(prev => ({ ...prev, [`${workshopId}-${questionId}`]: json.summary }));
@@ -208,7 +208,7 @@ export default function AnalyticsPage() {
                                   {!summaries[sumKey] ? (
                                     <button 
                                       className="btn btn-secondary btn-sm" 
-                                      onClick={() => handleSummarize(w.id, q.id, answers)}
+                                      onClick={() => handleSummarize(w.id, q.id, answers, w.ai_provider, w.openrouter_model)}
                                       disabled={summarizing[sumKey]}
                                     >
                                       {summarizing[sumKey] ? '🤖 Summarizing...' : '🤖 Generate AI Summary'}

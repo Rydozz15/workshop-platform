@@ -14,57 +14,49 @@ export async function POST(request) {
     const sampledTexts = texts.slice(-50);
     const userPrompt = "Here are the responses:\n" + sampledTexts.map((t, i) => `${i + 1}. ${t}`).join('\n');
 
-    let responseText = '';
-
-    if (ai_provider === 'groq') {
-      const groqKey = process.env.GROQ_API_KEY;
-      if (!groqKey) throw new Error('GROQ_API_KEY is not configured');
-
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${groqKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: model || 'llama-3.3-70b-versatile',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          temperature: 0.3,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || 'Groq API Error');
-      responseText = data.choices[0].message.content;
-    } else {
-      const openRouterKey = process.env.OPENROUTER_API_KEY;
-      if (!openRouterKey) throw new Error('OPENROUTER_API_KEY is not configured');
-
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openRouterKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-          'X-Title': 'ISSDE Workshop Analytics',
-        },
-        body: JSON.stringify({
-          model: model || 'meta-llama/llama-3.1-8b-instruct',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
-          temperature: 0.3,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || 'OpenRouter API Error');
-      responseText = data.choices[0].message.content;
+    const openrouterKey = process.env.OPENROUTER_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
+    
+    // Fallback logic for LLM Provider
+    const provider = openrouterKey ? 'openrouter' : (groqKey ? 'groq' : null);
+    if (!provider) {
+      return NextResponse.json({ summary: "No AI provider configured (Missing API keys)." });
     }
+
+    const apiUrl = provider === 'openrouter' 
+      ? 'https://openrouter.ai/api/v1/chat/completions'
+      : 'https://api.groq.com/openai/v1/chat/completions';
+      
+    const apiKey = provider === 'openrouter' ? openrouterKey : groqKey;
+    const usedModel = provider === 'openrouter' 
+      ? (model || process.env.DEFAULT_MODEL || 'meta-llama/llama-3.1-8b-instruct')
+      : 'llama-3.3-70b-versatile';
+
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        ...(provider === 'openrouter' ? { 'HTTP-Referer': process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000', 'X-Title': 'ISSDE Workshop Analytics' } : {})
+      },
+      body: JSON.stringify({
+        model: usedModel,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('LLM error:', errText);
+      return NextResponse.json({ error: 'LLM API Error' }, { status: 500 });
+    }
+
+    const data = await res.json();
+    const responseText = data.choices?.[0]?.message?.content || "No summary generated.";
 
     return NextResponse.json({ summary: responseText });
   } catch (error) {
