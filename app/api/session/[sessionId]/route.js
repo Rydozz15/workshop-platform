@@ -24,6 +24,7 @@ export async function GET(request, { params }) {
       messages,
       workshop_name: workshop ? workshop.name : '',
       system_prompt: workshop ? workshop.system_prompt : null,
+      survey_config: workshop ? workshop.survey_config : [],
       version: version
         ? { id: version.id, title: version.title, case_content: version.case_content }
         : null,

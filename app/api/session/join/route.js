@@ -7,7 +7,7 @@ import { getWorkshopByCode, getVersion, createSession, getSessions } from '@/lib
 
 export async function POST(request) {
   try {
-    const { code, participant_name } = await request.json();
+    const { code, participant_name, chain_user_id } = await request.json();
 
     if (!code) {
       return NextResponse.json({ error: 'Workshop code is required' }, { status: 400 });
@@ -58,6 +58,7 @@ export async function POST(request) {
       workshop_id: workshop.id,
       version_id: assignedVersionId,
       participant_name: participant_name || 'Anonymous',
+      chain_user_id: chain_user_id || null,
     });
 
     return NextResponse.json({
@@ -68,6 +69,7 @@ export async function POST(request) {
         case_content: version.case_content,
       },
       workshop_name: workshop.name,
+      survey_config: workshop.survey_config || [],
     });
   } catch (error) {
     console.error('Join error:', error);

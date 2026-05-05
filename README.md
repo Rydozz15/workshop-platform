@@ -5,11 +5,12 @@ A complete web platform designed for running interactive, AI-driven case-based w
 ## Features
 
 *   **Two Separate Experiences**: A secure admin dashboard and a frictionless participant interface.
-*   **Campaigns & QR Codes**: Group different case versions into Campaigns. The app automatically generates shareable URLs and QR codes for easy participant access.
+*   **Chained Campaigns & QR Codes**: Group different case versions into Campaigns. You can chain multiple campaigns together (Step 1 -> Step 2) for an automated sequence. The app automatically generates shareable URLs and QR codes.
+*   **Post-Session Surveys**: Configure custom surveys (Likert scale, multiple choice, checkboxes, open text) that participants must fill out after completing a session.
 *   **Dynamic Scenarios (Versions)**: Create and edit cases using Markdown. Participants can toggle a side-panel to read their specific case while chatting.
-*   **Custom AI Personas**: Set a custom system prompt per Campaign to control how the AI behaves (e.g., naive mode, strict tutor, casual peer).
-*   **Live Metrics & Transcripts**: The admin dashboard tracks active sessions and message counts in real-time, and allows viewing full conversation transcripts.
-*   **Data Export**: Export sessions and full chat transcripts to CSV or JSON for data analysis (e.g., using Pandas or qualitative coding).
+*   **Custom AI Personas**: Set a custom system prompt per Campaign step to control how the AI behaves (e.g., naive mode, strict tutor, casual peer).
+*   **Advanced Analytics & Transcripts**: The dashboard tracks active sessions, computes survey distributions, visualizes Likert scale averages with charts, and uses an AI LLM to automatically summarize qualitative open-text survey responses.
+*   **Data Export**: Export sessions and full chat transcripts to CSV or JSON for data analysis.
 *   **AI Integration**: Connects directly to OpenRouter or Groq APIs (supporting models like Llama 3, Gemini, Mixtral).
 *   **No-Setup Dev Mode**: Runs out of the box using an in-memory JSON database. Can be easily switched to Supabase (PostgreSQL) for production.
 
@@ -69,9 +70,10 @@ Navigate to `http://localhost:3000/admin` and log in using the password defined 
 
 From here you can:
 1.  **Versions**: Create the base text/scenarios. You can use Markdown to format the cases. (The app comes with 3 seed versions).
-2.  **Campaigns**: Create a new campaign, select which *Versions* you want to include, select an AI provider (Groq or OpenRouter), specify an AI model, and optionally set a Custom System Prompt.
-3.  Once a Campaign is created, you will be given a **Shareable Link and a QR Code**.
-4.  **Dashboard & Sessions**: Monitor incoming sessions in real-time, read full chat transcripts, and export data to CSV/JSON.
+2.  **Campaigns**: Create a new campaign, add multiple steps if you want a chained sequence, select *Versions*, AI provider, specify an AI model, set Custom System Prompts, and add Post-Session Surveys.
+3.  Once a Campaign is created, you will be given a **Shareable Link and a QR Code** (only for the first step).
+4.  **Dashboard & Sessions**: Monitor incoming sessions in real-time, read full chat transcripts, and export data.
+5.  **Analytics**: View charts with survey results (Likert averages, multiple choice distributions) and generate AI summaries of open-text responses.
 
 ### 2. The Participant Interface (`/session/[code]`)
 Participants will scan the QR code or click the link provided by the Campaign.
@@ -79,6 +81,8 @@ Participants will scan the QR code or click the link provided by the Campaign.
 2.  They are **randomly and evenly** assigned one of the versions selected for that campaign.
 3.  They chat with the AI to resolve their scenario. They can view the case details by clicking the **"📋 Case"** toggle.
 4.  When finished, they click "Mark Session as Complete".
+5.  If configured, they fill out the **Post-Session Survey**.
+6.  If the campaign is chained, they are automatically forwarded to the next case in the sequence.
 
 ---
 
@@ -106,7 +110,7 @@ Your code is now safely backed up in the cloud.
 2. Click **"New Project"**, choose a name and a secure password, and wait a few minutes for it to provision.
 3. **Create the Tables:** On the left menu in Supabase, go to **"SQL Editor"** and click "New Query". 
    Open the `lib/db-supabase.js` file in your code, copy all the commented SQL text at the very bottom of the file, paste it into the Supabase SQL editor, and click the green **"Run"** button. You should see a "Success" message.
-   *(Note: If prompted about "RLS", choose "Run without RLS" for now).*
+   *(Note: If prompted about "RLS", choose "Run without RLS" for now. If you already had an older version installed, look at the bottom of the SQL block in `db-supabase.js` to see the ALTER statements).*
 4. **Copy your keys:** In Supabase, go to the bottom left gear icon (**Project Settings**), then to **API**. Leave this tab open; you will need to copy the `Project URL` and the `anon / public key` (Publishable key) in the next step.
 
 ### Step 3: Deploy the Website on Vercel
