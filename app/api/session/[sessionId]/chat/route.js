@@ -9,6 +9,7 @@ import {
   createMessage,
   incrementInteractionCount,
   getWorkshop,
+  getVersion,
 } from '@/lib/db';
 import { streamChat } from '@/lib/openrouter';
 
@@ -50,11 +51,21 @@ export async function POST(request, { params }) {
     const storedMessages = await getMessages(sessionId);
     
     // Use custom system prompt if defined for this campaign, otherwise naive mode
+    const version = await getVersion(session.version_id);
     const conversationHistory = [];
+    
+    let finalSystemPrompt = '';
     if (workshop?.system_prompt) {
+      finalSystemPrompt += workshop.system_prompt + '\n\n';
+    }
+    if (version?.case_content) {
+      finalSystemPrompt += `--- ESCENARIO / CASO ---\n${version.case_content}`;
+    }
+
+    if (finalSystemPrompt.trim() !== '') {
       conversationHistory.push({
         role: 'system',
-        content: workshop.system_prompt
+        content: finalSystemPrompt.trim()
       });
     }
 
