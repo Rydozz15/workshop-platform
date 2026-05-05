@@ -36,6 +36,9 @@ export async function GET(request) {
           participant_name: session.participant_name,
           campaign_name: workshop ? workshop.name : 'Unknown',
           campaign_id: session.workshop_id,
+          chain_id: workshop ? workshop.chain_id : null,
+          chain_order: workshop ? workshop.chain_order : null,
+          chain_user_id: session.chain_user_id,
           version_title: version ? version.title : 'Unknown',
           version_id: session.version_id,
           ai_provider: workshop ? workshop.ai_provider : 'unknown',
@@ -45,6 +48,7 @@ export async function GET(request) {
           interaction_count: session.interaction_count,
           started_at: session.started_at,
           completed_at: session.completed_at,
+          survey_answers: session.survey_answers,
           messages: messages.map((m, i) => ({
             message_order: i + 1,
             role: m.role,

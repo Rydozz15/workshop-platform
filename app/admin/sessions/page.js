@@ -111,14 +111,16 @@ export default function SessionsPage() {
       // Flatten: one row per message, with session metadata repeated
       const headers = [
         'session_id', 'participant_name', 'campaign_name', 'campaign_id',
+        'chain_id', 'chain_order', 'chain_user_id',
         'version_title', 'version_id', 'ai_provider', 'ai_model', 'campaign_system_prompt',
         'session_status', 'interaction_count', 'session_started_at', 'session_completed_at',
+        'survey_answers',
         'message_order', 'message_role', 'message_content', 'message_created_at'
       ];
 
       const escapeCSV = (val) => {
         if (val === null || val === undefined) return '';
-        const str = String(val);
+        const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
         if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
           return '"' + str.replace(/"/g, '""') + '"';
         }
@@ -131,16 +133,20 @@ export default function SessionsPage() {
           // Still include sessions with no messages
           rows.push([
             s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
+            s.chain_id || '', s.chain_order || '', s.chain_user_id || '',
             s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
             s.status, s.interaction_count, s.started_at, s.completed_at || '',
+            s.survey_answers || '',
             '', '', '', ''
           ].map(escapeCSV).join(','));
         } else {
           for (const m of s.messages) {
             rows.push([
               s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
+              s.chain_id || '', s.chain_order || '', s.chain_user_id || '',
               s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
               s.status, s.interaction_count, s.started_at, s.completed_at || '',
+              s.survey_answers || '',
               m.message_order, m.role, m.content, m.created_at
             ].map(escapeCSV).join(','));
           }
