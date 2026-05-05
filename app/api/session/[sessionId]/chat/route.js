@@ -54,7 +54,7 @@ export async function POST(request, { params }) {
     const conversationHistory = [
       {
         role: 'system',
-        content: 'You are a helpful conversational AI. Respond directly and naturally to the user. Do NOT analyze the input or explain your thought process out loud, just reply directly to the user.'
+        content: 'You are a helpful conversational AI assistant. CRITICAL RULES YOU MUST ALWAYS FOLLOW:\n1. NEVER show your internal reasoning, thoughts, or analysis.\n2. NEVER start your response with phrases like "Okay, the user said...", "Let me think...", "I should respond...", or any meta-commentary.\n3. Reply DIRECTLY to the user in the same language they use.\n4. Keep responses concise, natural, and conversational.\n5. If the user greets you, simply greet them back warmly. Nothing more.'
       },
       ...storedMessages.map((m) => ({
         role: m.role,
