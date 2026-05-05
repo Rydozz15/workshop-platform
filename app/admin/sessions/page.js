@@ -89,12 +89,28 @@ export default function SessionsPage() {
     setExporting(true);
     try {
       const data = await fetchExportData();
+      
+      // Map survey answers to question texts
+      const mappedData = data.map(s => {
+        if (!s.survey_answers || !s.survey_config) return s;
+        const mappedAnswers = {};
+        for (const [key, val] of Object.entries(s.survey_answers)) {
+          const question = s.survey_config.find(q => q.id === key);
+          if (question) {
+            mappedAnswers[question.text] = val;
+          } else {
+            mappedAnswers[key] = val;
+          }
+        }
+        return { ...s, survey_answers: mappedAnswers };
+      });
+      
       const timestamp = new Date().toISOString().slice(0, 10);
       const campaignLabel = selectedCampaign
         ? campaigns.find(c => c.id === selectedCampaign)?.name?.replace(/\s+/g, '_') || 'campaign'
         : 'all_campaigns';
       downloadFile(
-        JSON.stringify(data, null, 2),
+        JSON.stringify(mappedData, null, 2),
         `workshop_export_${campaignLabel}_${timestamp}.json`,
         'application/json'
       );
@@ -129,6 +145,15 @@ export default function SessionsPage() {
 
       const rows = [headers.join(',')];
       for (const s of data) {
+        let mappedAnswers = s.survey_answers;
+        if (s.survey_answers && s.survey_config) {
+          mappedAnswers = {};
+          for (const [key, val] of Object.entries(s.survey_answers)) {
+            const question = s.survey_config.find(q => q.id === key);
+            mappedAnswers[question ? question.text : key] = val;
+          }
+        }
+
         if (!s.messages || s.messages.length === 0) {
           // Still include sessions with no messages
           rows.push([
@@ -136,7 +161,7 @@ export default function SessionsPage() {
             s.chain_id || '', s.chain_order || '', s.chain_user_id || '',
             s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
             s.status, s.interaction_count, s.started_at, s.completed_at || '',
-            s.survey_answers || '',
+            mappedAnswers || '',
             '', '', '', ''
           ].map(escapeCSV).join(','));
         } else {
@@ -146,7 +171,7 @@ export default function SessionsPage() {
               s.chain_id || '', s.chain_order || '', s.chain_user_id || '',
               s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
               s.status, s.interaction_count, s.started_at, s.completed_at || '',
-              s.survey_answers || '',
+              mappedAnswers || '',
               m.message_order, m.role, m.content, m.created_at
             ].map(escapeCSV).join(','));
           }

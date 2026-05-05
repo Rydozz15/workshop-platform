@@ -48,6 +48,7 @@ export async function GET(request) {
           interaction_count: session.interaction_count,
           started_at: session.started_at,
           completed_at: session.completed_at,
+          survey_config: workshop ? workshop.survey_config : [],
           survey_answers: session.survey_answers,
           messages: messages.map((m, i) => ({
             message_order: i + 1,
