@@ -292,8 +292,8 @@ tr:hover td { background: var(--bg-glass); }
 
 /* Session welcome */
 .session-welcome {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  height: 100vh; padding: 32px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  min-height: 100vh; padding: 80px 24px; text-align: center;
 }
 .session-welcome h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .session-welcome p { color: var(--text-secondary); margin-bottom: 24px; max-width: 400px; }
