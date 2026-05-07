@@ -3,7 +3,7 @@
  * POST - Join a workshop by share code, get assigned a random version.
  */
 import { NextResponse } from 'next/server';
-import { getWorkshopByCode, getVersion, createSession, getSessions } from '@/lib/db';
+import { getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -27,26 +27,42 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No versions available for this workshop' }, { status: 400 });
     }
 
-    // Random assignment with balanced distribution
-    // Count how many sessions each version already has
-    const workshopSessions = await getSessions(workshop.id);
-    const versionCounts = {};
-    workshop.selected_version_ids.forEach((vid) => {
-      versionCounts[vid] = 0;
-    });
-    workshopSessions.forEach((s) => {
-      if (versionCounts[s.version_id] !== undefined) {
-        versionCounts[s.version_id]++;
+    // Version assignment logic
+    let assignedVersionId = null;
+
+    // If maintain_version is enabled, try to find the version from a previous session in the chain
+    if (workshop.maintain_version && chain_user_id) {
+      const lastVersionId = await getLastSessionVersion(chain_user_id);
+      
+      // Verify this version is actually available for the current workshop
+      if (lastVersionId && workshop.selected_version_ids.includes(lastVersionId)) {
+        assignedVersionId = lastVersionId;
       }
-    });
+    }
 
-    // Pick the version with the fewest sessions (balanced assignment)
-    const minCount = Math.min(...Object.values(versionCounts));
-    const leastUsedVersions = Object.entries(versionCounts)
-      .filter(([, count]) => count === minCount)
-      .map(([vid]) => vid);
+    // If no version assigned yet (not maintained or not found/invalid), use balanced random assignment
+    if (!assignedVersionId) {
+      // Count how many sessions each version already has
+      const workshopSessions = await getSessions(workshop.id);
+      const versionCounts = {};
+      workshop.selected_version_ids.forEach((vid) => {
+        versionCounts[vid] = 0;
+      });
+      workshopSessions.forEach((s) => {
+        if (versionCounts[s.version_id] !== undefined) {
+          versionCounts[s.version_id]++;
+        }
+      });
 
-    const assignedVersionId = leastUsedVersions[Math.floor(Math.random() * leastUsedVersions.length)];
+      // Pick the version with the fewest sessions (balanced assignment)
+      const minCount = Math.min(...Object.values(versionCounts));
+      const leastUsedVersions = Object.entries(versionCounts)
+        .filter(([, count]) => count === minCount)
+        .map(([vid]) => vid);
+
+      assignedVersionId = leastUsedVersions[Math.floor(Math.random() * leastUsedVersions.length)];
+    }
+
     const version = await getVersion(assignedVersionId);
 
     if (!version) {

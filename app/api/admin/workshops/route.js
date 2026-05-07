@@ -31,7 +31,7 @@ export async function POST(request) {
 
     for (let i = 0; i < workshopsData.length; i++) {
       const data = workshopsData[i];
-      const { name, selected_version_ids, openrouter_model, ai_provider, system_prompt, survey_config } = data;
+      const { name, selected_version_ids, openrouter_model, ai_provider, system_prompt, survey_config, maintain_version } = data;
 
       if (!name || !selected_version_ids || selected_version_ids.length === 0) {
         return NextResponse.json(
@@ -48,7 +48,8 @@ export async function POST(request) {
         system_prompt,
         survey_config: survey_config || [],
         chain_id,
-        chain_order: i + 1
+        chain_order: i + 1,
+        maintain_version: maintain_version || false
       });
       createdWorkshops.push(workshop);
     }
