@@ -230,16 +230,21 @@ export default function SessionPage({ params }) {
   };
 
   const finalizeSession = async (next_share_code = null) => {
-    await fetch(`/api/session/${sessionId}`, {
+    const res = await fetch(`/api/session/${sessionId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'completed' }),
     });
+    const data = await res.json();
+    
     localStorage.removeItem(`workshop_${code}_session`);
     
-    if (next_share_code) {
+    // Use the argument if provided, otherwise use the one from the response
+    const finalNextCode = next_share_code || data.next_share_code;
+    
+    if (finalNextCode) {
       const chainUserId = localStorage.getItem('chain_user_id') || '';
-      window.location.href = `/session/${next_share_code}?cuid=${chainUserId}`;
+      window.location.href = `/session/${finalNextCode}?cuid=${chainUserId}`;
     } else {
       setPhase('completed');
     }
