@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 
@@ -216,7 +218,9 @@ export default function AnalyticsPage() {
                                   ) : (
                                     <div style={{ background: 'rgba(0,0,0,0.2)', padding: 10, borderRadius: 6, fontSize: '0.85rem' }}>
                                       <div style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: 5 }}>AI Summary:</div>
-                                      <div dangerouslySetInnerHTML={{ __html: summaries[sumKey].replace(/\n/g, '<br/>') }} />
+                                      <div className="markdown-content">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaries[sumKey]}</ReactMarkdown>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
@@ -324,7 +328,9 @@ export default function AnalyticsPage() {
                               <div style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
                                 <span style={{ fontSize: '1.2rem' }}>📈</span> AI Evolution Analysis:
                               </div>
-                              <div dangerouslySetInnerHTML={{ __html: summaries[sumKey].replace(/\n/g, '<br/>') }} style={{ lineHeight: '1.6' }} />
+                              <div className="markdown-content" style={{ lineHeight: '1.6' }}>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaries[sumKey]}</ReactMarkdown>
+                              </div>
                             </div>
                           )}
                         </div>

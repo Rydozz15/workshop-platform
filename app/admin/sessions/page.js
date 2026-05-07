@@ -1,16 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-
-function renderMarkdown(text) {
-  if (!text) return '';
-  return text
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/\n/g, '<br/>');
-}
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function SessionsPage() {
   const [sessions, setSessions] = useState([]);
@@ -319,7 +310,9 @@ export default function SessionsPage() {
                             border: msg.role === 'user' ? 'none' : '1px solid var(--border-color)',
                             color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
                           }}>
-                            <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
+                            <div className="markdown-content">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                            </div>
                             <div style={{ fontSize: '0.7rem', marginTop: 6, opacity: 0.6, textAlign: 'right' }}>
                               {new Date(msg.created_at).toLocaleTimeString()}
                             </div>

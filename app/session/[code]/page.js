@@ -1,20 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, use } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
-function renderMarkdown(text) {
-  if (!text) return '';
-  return text
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br/>');
-}
 
 export default function SessionPage({ params }) {
   const { code } = use(params);
@@ -458,8 +446,8 @@ export default function SessionPage({ params }) {
                                 h.messages.map((msg, i) => (
                                   <div key={i} className={`message ${msg.role}`} style={{ marginBottom: 0 }}>
                                     <div className="message-avatar">{msg.role === 'user' ? '👤' : '🤖'}</div>
-                                    <div className="message-bubble" style={{ padding: '10px 14px', fontSize: '0.9rem' }}>
-                                      <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} style={{ display: 'inline' }} />
+                                    <div className="markdown-content" style={{ fontSize: '0.9rem' }}>
+                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                                     </div>
                                   </div>
                                 ))
@@ -531,7 +519,9 @@ export default function SessionPage({ params }) {
             <div key={i} className={`message ${msg.role}`}>
               <div className="message-avatar">{msg.role === 'user' ? '👤' : '🤖'}</div>
               <div className="message-bubble">
-                <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} style={{ display: 'inline' }} />
+                <div className="markdown-content">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                </div>
                 {streaming && i === messages.length - 1 && msg.role === 'assistant' && (
                   <span className="typing-indicator" style={{ display: 'inline-flex', marginLeft: 4, verticalAlign: 'middle' }}>
                     <span /><span /><span />
@@ -563,7 +553,9 @@ export default function SessionPage({ params }) {
           <button className="btn btn-secondary btn-sm" onClick={() => setCaseOpen(false)} style={{ padding: '4px 8px' }}>✕</button>
         </div>
         <div className="case-panel-content">
-          <div className="case-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(version?.case_content || '') }} />
+          <div className="case-content">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || ''}</ReactMarkdown>
+          </div>
         </div>
       </div>
 
