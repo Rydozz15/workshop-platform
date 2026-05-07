@@ -14,7 +14,8 @@ export default function CampaignsPage() {
     openrouter_model: '', 
     ai_provider: 'openrouter',
     system_prompt: '',
-    survey_config: [] 
+    survey_config: [],
+    maintain_version: false
   };
   
   const [steps, setSteps] = useState([{ ...defaultStep }]);
@@ -201,6 +202,7 @@ export default function CampaignsPage() {
                   <span>📋 {w.selected_version_ids.length} versions</span>
                   <span>🤖 {w.ai_provider === 'groq' ? 'Groq' : 'OpenRouter'}</span>
                   <span>📊 {w.survey_config?.length || 0} survey qs</span>
+                  {w.maintain_version && <span title="Maintains version from previous step in chain">🔄 Fixed Version</span>}
                 </div>
                 <div style={{ marginBottom: 12, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                   <strong style={{ color: 'var(--text-secondary)' }}>Versions:</strong>{' '}
@@ -283,6 +285,20 @@ export default function CampaignsPage() {
                   <label className="form-label">Custom System Prompt (Optional)</label>
                   <textarea className="input" value={step.system_prompt || ''} onChange={(e) => updateStep(index, 'system_prompt', e.target.value)} placeholder="Leave blank to use default system prompt..." rows={3} />
                 </div>
+
+                {index > 0 && (
+                  <div className="form-group" style={{ marginBottom: 16 }}>
+                    <label className="multi-select-option" style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.05)', display: 'inline-flex', cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={step.maintain_version} 
+                        onChange={(e) => updateStep(index, 'maintain_version', e.target.checked)} 
+                        style={{ marginRight: 8 }}
+                      />
+                      <span>Maintain same version from previous step</span>
+                    </label>
+                  </div>
+                )}
 
                 <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
