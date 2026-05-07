@@ -383,8 +383,8 @@ export default function SessionPage({ params }) {
   // COMPLETED PHASE
   if (phase === 'completed') {
     return (
-      <div className="session-welcome" style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', display: 'block', minHeight: '100vh', overflowY: 'auto' }}>
-        <div style={{ textAlign: 'center' }}>
+      <div className="session-welcome" style={{ maxWidth: '800px', margin: '0 auto', minHeight: '100vh', overflowY: 'auto' }}>
+        <div style={{ textAlign: 'center', width: '100%' }}>
           <div style={{ fontSize: '3rem', marginBottom: 16 }}>🎉</div>
           <h1>Workshop Complete!</h1>
           <p style={{ color: 'var(--text-muted)' }}>Thank you for participating. Your responses have been recorded.</p>
