@@ -67,3 +67,17 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    const { sessionId } = await params;
+    const { deleteSession } = await import('@/lib/db');
+    const success = await deleteSession(sessionId);
+    if (!success) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

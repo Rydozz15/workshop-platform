@@ -58,6 +58,21 @@ export default function SessionsPage() {
     setTranscript(null);
   };
 
+  const handleDeleteSession = async (id, e) => {
+    if (e) e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this session and all its messages?')) return;
+    try {
+      const res = await fetch(`/api/session/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchFilteredSessions(selectedCampaign);
+      } else {
+        alert('Failed to delete session');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  };
+
   const fetchExportData = async () => {
     const url = selectedCampaign
       ? `/api/admin/export?workshopId=${selectedCampaign}`
@@ -239,12 +254,21 @@ export default function SessionsPage() {
                     <td>{s.interaction_count}</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{new Date(s.started_at).toLocaleString()}</td>
                     <td>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={(e) => { e.stopPropagation(); viewTranscript(s.id); }}
-                      >
-                        💬 View
-                      </button>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={(e) => { e.stopPropagation(); viewTranscript(s.id); }}
+                        >
+                          💬 View
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={(e) => handleDeleteSession(s.id, e)}
+                          title="Delete Session"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
