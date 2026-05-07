@@ -53,7 +53,14 @@ export default function CampaignsPage() {
   };
 
   const addStep = () => {
-    setSteps([...steps, { ...defaultStep, name: steps[0].name + ` (Part ${steps.length + 1})` }]);
+    const lastStep = steps[steps.length - 1] || defaultStep;
+    setSteps([...steps, { 
+      ...defaultStep, 
+      name: steps[0].name + ` (Part ${steps.length + 1})`,
+      ai_provider: lastStep.ai_provider,
+      openrouter_model: lastStep.openrouter_model,
+      system_prompt: lastStep.system_prompt, // Also inherit system prompt as it's often similar
+    }]);
   };
   
   const removeStep = (index) => {
