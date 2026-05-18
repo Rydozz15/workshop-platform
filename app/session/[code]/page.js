@@ -3,6 +3,17 @@ import { useState, useEffect, useRef, use } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+/**
+ * Strips <think>...</think> reasoning blocks from AI responses.
+ * Safety net for any content that wasn't filtered server-side.
+ */
+function stripThinkingTags(text) {
+  if (!text) return text;
+  let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+  cleaned = cleaned.replace(/<think>[\s\S]*$/gi, '');
+  return cleaned.trim();
+}
+
 
 export default function SessionPage({ params }) {
   const { code } = use(params);
@@ -153,7 +164,15 @@ export default function SessionPage({ params }) {
         body: JSON.stringify({ message: userMsg }),
       });
 
-      if (!res.ok) { setMessages((prev) => [...prev, { role: 'assistant', content: 'Error: Could not get response.' }]); setStreaming(false); return; }
+      if (!res.ok) {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: 'Error: Could not get response.' };
+          return updated;
+        });
+        setStreaming(false);
+        return;
+      }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -185,15 +204,21 @@ export default function SessionPage({ params }) {
         
         if (newContent) {
           assistantMsg += newContent;
+          // Apply thinking-tag stripping as content accumulates
+          const displayMsg = stripThinkingTags(assistantMsg);
           setMessages((prev) => {
             const updated = [...prev];
-            updated[updated.length - 1] = { role: 'assistant', content: assistantMsg };
+            updated[updated.length - 1] = { role: 'assistant', content: displayMsg };
             return updated;
           });
         }
       }
     } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'Error: Connection failed.' }]);
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { role: 'assistant', content: 'Error: Connection failed.' };
+        return updated;
+      });
     }
     setStreaming(false);
     
@@ -447,7 +472,7 @@ export default function SessionPage({ params }) {
                                   <div key={i} className={`message ${msg.role}`} style={{ marginBottom: 0 }}>
                                     <div className="message-avatar">{msg.role === 'user' ? '👤' : '🤖'}</div>
                                     <div className="markdown-content" style={{ fontSize: '0.9rem' }}>
-                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripThinkingTags(msg.content)}</ReactMarkdown>
                                     </div>
                                   </div>
                                 ))
@@ -520,7 +545,7 @@ export default function SessionPage({ params }) {
               <div className="message-avatar">{msg.role === 'user' ? '👤' : '🤖'}</div>
               <div className="message-bubble">
                 <div className="markdown-content">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripThinkingTags(msg.content)}</ReactMarkdown>
                 </div>
                 {streaming && i === messages.length - 1 && msg.role === 'assistant' && (
                   <span className="typing-indicator" style={{ display: 'inline-flex', marginLeft: 4, verticalAlign: 'middle' }}>

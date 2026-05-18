@@ -52,9 +52,9 @@ export async function PUT(request, { params }) {
     // If completed, check for next workshop in chain
     let next_share_code = null;
     if (body.status === 'completed') {
-      const { getWorkshop, getNextWorkshopInChain } = await import('@/lib/db');
       const workshop = await getWorkshop(session.workshop_id);
       if (workshop && workshop.chain_id) {
+        const { getNextWorkshopInChain } = await import('@/lib/db');
         const nextWorkshop = await getNextWorkshopInChain(workshop.chain_id, (workshop.chain_order || 1) + 1);
         if (nextWorkshop) {
           next_share_code = nextWorkshop.share_code;

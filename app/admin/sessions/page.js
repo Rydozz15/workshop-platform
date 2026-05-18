@@ -3,6 +3,16 @@ import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+/**
+ * Strips <think>...</think> reasoning blocks from AI responses.
+ */
+function stripThinkingTags(text) {
+  if (!text) return text;
+  let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+  cleaned = cleaned.replace(/<think>[\s\S]*$/gi, '');
+  return cleaned.trim();
+}
+
 export default function SessionsPage() {
   const [sessions, setSessions] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
@@ -335,7 +345,7 @@ export default function SessionsPage() {
                             color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
                           }}>
                             <div className="markdown-content">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripThinkingTags(msg.content)}</ReactMarkdown>
                             </div>
                             <div style={{ fontSize: '0.7rem', marginTop: 6, opacity: 0.6, textAlign: 'right' }}>
                               {new Date(msg.created_at).toLocaleTimeString()}

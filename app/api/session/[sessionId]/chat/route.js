@@ -1,6 +1,8 @@
 /**
  * Chat endpoint with streaming support.
  * POST - Send a message and get a streamed AI response.
+ * Strips <think>...</think> reasoning tags from modern models before
+ * forwarding to the client.
  */
 import { NextResponse } from 'next/server';
 import {
@@ -11,7 +13,7 @@ import {
   getWorkshop,
   getVersion,
 } from '@/lib/db';
-import { streamChat } from '@/lib/openrouter';
+import { streamChat, stripThinkingTags } from '@/lib/openrouter';
 
 export async function POST(request, { params }) {
   try {
@@ -69,12 +71,19 @@ export async function POST(request, { params }) {
     // Get streaming response from AI provider
     const stream = await streamChat(conversationHistory, model, provider);
 
-    // Create a TransformStream to capture the full response for saving
-    let fullResponse = '';
+    // Create a TransformStream that:
+    // 1. Accumulates the raw response (with <think> tags) for proper boundary detection
+    // 2. Forwards only the clean (stripped) content to the client
+    // 3. Saves the clean content to the database
+    let fullResponseRaw = '';
+    let lastCleanLength = 0;
     let buffer = '';
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
+
     const transformStream = new TransformStream({
       transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
+        const text = decoder.decode(chunk, { stream: true });
         buffer += text;
         
         const events = buffer.split('\n\n');
@@ -87,30 +96,67 @@ export async function POST(request, { params }) {
               try {
                 const json = JSON.parse(line.slice(6));
                 const content = json.choices?.[0]?.delta?.content || '';
-                fullResponse += content;
+                fullResponseRaw += content;
               } catch (e) {
                 // Ignore parse errors for partial chunks
               }
             }
+            if (line === 'data: [DONE]') {
+              // Forward the DONE event as-is
+              controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            }
           }
         }
-        
-        // Pass through the raw SSE data
-        controller.enqueue(chunk);
+
+        // Compute the clean version and emit only the new delta
+        const cleanSoFar = stripThinkingTags(fullResponseRaw);
+        if (cleanSoFar.length > lastCleanLength) {
+          const newCleanContent = cleanSoFar.slice(lastCleanLength);
+          lastCleanLength = cleanSoFar.length;
+          // Re-encode as SSE chunk
+          const sseChunk = {
+            choices: [{ delta: { content: newCleanContent } }],
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseChunk)}\n\n`));
+        }
       },
       async flush() {
-        // Save the complete assistant response when stream ends
-        if (fullResponse) {
+        // Process any remaining buffer
+        if (buffer.trim()) {
+          const lines = buffer.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+              try {
+                const json = JSON.parse(line.slice(6));
+                const content = json.choices?.[0]?.delta?.content || '';
+                fullResponseRaw += content;
+              } catch (e) { /* ignore */ }
+            }
+          }
+        }
+
+        // Final clean pass and emit any remaining clean content
+        const finalClean = stripThinkingTags(fullResponseRaw);
+        if (finalClean.length > lastCleanLength) {
+          const remaining = finalClean.slice(lastCleanLength);
+          const sseChunk = {
+            choices: [{ delta: { content: remaining } }],
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseChunk)}\n\n`));
+        }
+
+        // Save the clean assistant response to the database
+        if (finalClean) {
           await createMessage({
             session_id: sessionId,
             role: 'assistant',
-            content: fullResponse,
+            content: finalClean,
           });
         }
       },
     });
 
-    // Pipe the OpenRouter stream through our transform
+    // Pipe the AI stream through our transform (which now re-encodes clean SSE)
     const responseStream = stream.pipeThrough(transformStream);
 
     return new Response(responseStream, {
