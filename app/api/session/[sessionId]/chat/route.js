@@ -52,13 +52,20 @@ export async function POST(request, { params }) {
     // Build conversation history from stored messages
     const storedMessages = await getMessages(sessionId);
     
-    // Use custom system prompt if defined for this campaign
+    // Use custom system prompt if defined for this campaign, otherwise use a minimal default
     const conversationHistory = [];
     
     if (workshop?.system_prompt && workshop.system_prompt.trim() !== '') {
       conversationHistory.push({
         role: 'system',
         content: workshop.system_prompt.trim()
+      });
+    } else {
+      // Minimal fallback: ensures the model responds in the user's language
+      // instead of defaulting to Chinese (common with DeepSeek/Qwen models)
+      conversationHistory.push({
+        role: 'system',
+        content: 'You are a helpful assistant. Always respond in the same language the user writes in.'
       });
     }
 
