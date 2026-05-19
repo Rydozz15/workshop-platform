@@ -48,6 +48,9 @@ export async function GET(request) {
           interaction_count: session.interaction_count,
           started_at: session.started_at,
           completed_at: session.completed_at,
+          duration_seconds: session.completed_at && session.started_at
+            ? Math.round((new Date(session.completed_at) - new Date(session.started_at)) / 1000)
+            : null,
           survey_config: workshop ? workshop.survey_config : [],
           survey_answers: session.survey_answers,
           messages: messages.map((m, i) => ({
