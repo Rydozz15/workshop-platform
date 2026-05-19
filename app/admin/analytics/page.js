@@ -40,14 +40,14 @@ export default function AnalyticsPage() {
     setSummarizing(prev => ({ ...prev, [`${workshopId}-${questionId}`]: false }));
   };
 
-  const handleEvolutionSummarize = async (chainId, questionId, stepsData) => {
+  const handleEvolutionSummarize = async (chainId, questionId, stepsData, ai_provider, model) => {
     const sumKey = `evol-${chainId}-${questionId}`;
     setSummarizing(prev => ({ ...prev, [sumKey]: true }));
     try {
       const res = await fetch('/api/admin/analytics/evolution', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stepsData })
+        body: JSON.stringify({ stepsData, ai_provider, model })
       });
       const json = await res.json();
       setSummaries(prev => ({ ...prev, [sumKey]: json.summary }));
@@ -318,7 +318,7 @@ export default function AnalyticsPage() {
                           ) : !summaries[sumKey] ? (
                             <button 
                               className="btn btn-primary" 
-                              onClick={() => handleEvolutionSummarize(chainId, q.id, stepTexts)}
+                              onClick={() => handleEvolutionSummarize(chainId, q.id, stepTexts, group[0].ai_provider, group[0].openrouter_model)}
                               disabled={summarizing[sumKey]}
                             >
                               {summarizing[sumKey] ? '🤖 Analyzing Evolution...' : '🤖 Generate Evolution Analysis'}

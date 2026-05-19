@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
+import { getSettings } from '@/lib/db';
 
 export async function POST(request) {
   try {
-    const { stepsData } = await request.json();
+    const { stepsData, ai_provider, model } = await request.json();
 
     if (!stepsData || stepsData.length === 0) {
       return NextResponse.json({ error: 'No data provided' }, { status: 400 });
     }
+
+    // Load global settings as fallback
+    let settings = {};
+    try { settings = await getSettings(); } catch (e) { /* ignore */ }
 
     const openrouterKey = process.env.OPENROUTER_API_KEY;
     const groqKey = process.env.GROQ_API_KEY;
@@ -22,8 +27,10 @@ export async function POST(request) {
       : 'https://api.groq.com/openai/v1/chat/completions';
       
     const apiKey = provider === 'openrouter' ? openrouterKey : groqKey;
-    const model = provider === 'openrouter' 
-      ? (process.env.DEFAULT_MODEL || 'meta-llama/llama-3.1-8b-instruct')
+    
+    // Model priority: request body → settings → env var → hardcoded
+    const usedModel = provider === 'openrouter' 
+      ? (model || settings.default_ai_model || process.env.DEFAULT_MODEL || 'meta-llama/llama-3.1-8b-instruct')
       : 'llama-3.3-70b-versatile';
 
     const systemPrompt = "You are an expert qualitative data analyst. You are analyzing the evolution of participants' opinions across a chained workshop sequence. Read the provided survey responses broken down by steps, and provide a comparative summary. Focus on: 1) What changed between the steps? 2) Were there paradigm shifts? 3) Common longitudinal themes. Use bullet points and respond in the same language as the responses (mostly Spanish).";
@@ -47,10 +54,10 @@ export async function POST(request) {
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        ...(provider === 'openrouter' ? { 'HTTP-Referer': 'http://localhost:3000', 'X-Title': 'Workshop Platform' } : {})
+        ...(provider === 'openrouter' ? { 'HTTP-Referer': process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000', 'X-Title': 'ISSDE Workshop Analytics' } : {})
       },
       body: JSON.stringify({
-        model: model,
+        model: usedModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

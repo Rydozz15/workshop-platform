@@ -7,27 +7,34 @@ export default function CampaignsPage() {
   const [versions, setVersions] = useState([]);
   const [metrics, setMetrics] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [globalSettings, setGlobalSettings] = useState({ default_ai_provider: 'openrouter', default_ai_model: '' });
   
-  const defaultStep = { 
+  const getDefaultStep = () => ({
     name: '', 
     selected_version_ids: [], 
-    openrouter_model: '', 
-    ai_provider: 'openrouter',
+    openrouter_model: globalSettings.default_ai_model || '', 
+    ai_provider: globalSettings.default_ai_provider || 'openrouter',
     system_prompt: '',
     survey_config: [],
     maintain_version: false
-  };
+  });
   
-  const [steps, setSteps] = useState([{ ...defaultStep }]);
+  const [steps, setSteps] = useState([getDefaultStep()]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   const fetchAll = async () => {
-    const [wRes, vRes] = await Promise.all([fetch('/api/admin/workshops'), fetch('/api/admin/versions')]);
+    const [wRes, vRes, sRes] = await Promise.all([
+      fetch('/api/admin/workshops'), 
+      fetch('/api/admin/versions'),
+      fetch('/api/admin/settings')
+    ]);
     const campaignList = await wRes.json();
     setCampaigns(campaignList);
     setVersions(await vRes.json());
+    const settingsData = await sRes.json();
+    setGlobalSettings(prev => ({ ...prev, ...settingsData }));
 
     // Fetch metrics for each campaign
     const metricsMap = {};
@@ -53,9 +60,9 @@ export default function CampaignsPage() {
   };
 
   const addStep = () => {
-    const lastStep = steps[steps.length - 1] || defaultStep;
+    const lastStep = steps[steps.length - 1] || getDefaultStep();
     setSteps([...steps, { 
-      ...defaultStep, 
+      ...getDefaultStep(), 
       name: steps[0].name + ` (Part ${steps.length + 1})`,
       ai_provider: lastStep.ai_provider,
       openrouter_model: lastStep.openrouter_model,
@@ -117,7 +124,7 @@ export default function CampaignsPage() {
       body: JSON.stringify(steps) 
     });
     setShowModal(false);
-    setSteps([{ ...defaultStep }]);
+    setSteps([getDefaultStep()]);
     fetchAll();
   };
 

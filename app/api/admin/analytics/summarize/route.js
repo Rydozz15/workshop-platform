@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getSettings } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -7,6 +8,10 @@ export async function POST(request) {
     if (!texts || !Array.isArray(texts) || texts.length === 0) {
       return NextResponse.json({ error: 'No texts provided' }, { status: 400 });
     }
+
+    // Load global settings as fallback
+    let settings = {};
+    try { settings = await getSettings(); } catch (e) { /* ignore */ }
 
     const systemPrompt = "You are an expert qualitative data analyst. Read the following survey responses and provide a concise summary of the main topics and themes mentioned by the participants. Use bullet points. Respond in the same language as the responses (mostly Spanish).";
     
@@ -28,8 +33,10 @@ export async function POST(request) {
       : 'https://api.groq.com/openai/v1/chat/completions';
       
     const apiKey = provider === 'openrouter' ? openrouterKey : groqKey;
+
+    // Model priority: request body → settings → env var → hardcoded
     const usedModel = provider === 'openrouter' 
-      ? (model || process.env.DEFAULT_MODEL || 'meta-llama/llama-3.1-8b-instruct')
+      ? (model || settings.default_ai_model || process.env.DEFAULT_MODEL || 'meta-llama/llama-3.1-8b-instruct')
       : 'llama-3.3-70b-versatile';
 
     const res = await fetch(apiUrl, {
