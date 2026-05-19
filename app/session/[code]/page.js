@@ -35,6 +35,8 @@ export default function SessionPage({ params }) {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [activeStepTab, setActiveStepTab] = useState(null);
   const [activeInnerTab, setActiveInnerTab] = useState({});
+  const [previousFirstMessage, setPreviousFirstMessage] = useState(null);
+  const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -79,6 +81,9 @@ export default function SessionPage({ params }) {
       setVersion(data.version);
       setWorkshopName(data.workshop_name);
       setSurveyConfig(data.survey_config || []);
+      if (data.previous_first_message) {
+        setPreviousFirstMessage(data.previous_first_message);
+      }
       setPhase('chat');
     } catch { setError('Connection error'); setJoining(false); }
   };
@@ -563,6 +568,61 @@ export default function SessionPage({ params }) {
         </div>
 
         <div className="chat-input-area">
+          {/* Suggestion chip for chained sessions */}
+          {previousFirstMessage && !suggestionDismissed && messages.length === 0 && (
+            <div style={{
+              padding: '12px 16px',
+              margin: '0 8px 8px',
+              background: 'rgba(59, 130, 246, 0.08)',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              borderRadius: 12,
+              fontSize: '0.85rem',
+              animation: 'fadeIn 0.3s ease',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                <span>💡</span>
+                <span>Tu mensaje anterior:</span>
+              </div>
+              <div style={{
+                color: 'var(--text-primary)',
+                fontStyle: 'italic',
+                marginBottom: 10,
+                padding: '8px 12px',
+                background: 'rgba(255,255,255,0.04)',
+                borderRadius: 8,
+                borderLeft: '3px solid rgba(59, 130, 246, 0.4)',
+                lineHeight: 1.4,
+                maxHeight: 80,
+                overflowY: 'auto',
+                wordBreak: 'break-word',
+              }}>
+                "{previousFirstMessage}"
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  className="btn btn-primary btn-sm"
+                  style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+                  onClick={() => {
+                    setInput(previousFirstMessage);
+                    setSuggestionDismissed(true);
+                    setTimeout(() => inputRef.current?.focus(), 50);
+                  }}
+                >
+                  Usar mismo mensaje
+                </button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+                  onClick={() => {
+                    setSuggestionDismissed(true);
+                    setTimeout(() => inputRef.current?.focus(), 50);
+                  }}
+                >
+                  Escribir nuevo
+                </button>
+              </div>
+            </div>
+          )}
           <div className="chat-input-wrapper">
             <textarea ref={inputRef} className="chat-input" rows={1} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} placeholder="Type your message..." disabled={streaming} autoFocus />
             <button className="send-btn" onClick={sendMessage} disabled={!input.trim() || streaming} title="Send message">

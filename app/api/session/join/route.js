@@ -3,7 +3,7 @@
  * POST - Join a workshop by share code, get assigned a random version.
  */
 import { NextResponse } from 'next/server';
-import { getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion } from '@/lib/db';
+import { getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion, getSessionsByChainUserId, getMessages } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -77,6 +77,29 @@ export async function POST(request) {
       chain_user_id: chain_user_id || null,
     });
 
+    // For chained sessions (step > 1), find the first user message from the previous session
+    let previousFirstMessage = null;
+    if (workshop.chain_id && workshop.chain_order > 1 && chain_user_id) {
+      try {
+        const previousSessions = await getSessionsByChainUserId(chain_user_id);
+        // Find completed sessions that are NOT the one we just created, sorted by most recent
+        const prevCompleted = previousSessions
+          .filter(s => s.id !== session.id && s.status === 'completed')
+          .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+        
+        if (prevCompleted.length > 0) {
+          const prevMessages = prevCompleted[0].messages || await getMessages(prevCompleted[0].id);
+          const firstUserMsg = prevMessages.find(m => m.role === 'user');
+          if (firstUserMsg) {
+            previousFirstMessage = firstUserMsg.content;
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching previous first message:', e);
+        // Non-critical, continue without suggestion
+      }
+    }
+
     return NextResponse.json({
       session_id: session.id,
       version: {
@@ -86,6 +109,7 @@ export async function POST(request) {
       },
       workshop_name: workshop.name,
       survey_config: workshop.survey_config || [],
+      previous_first_message: previousFirstMessage,
     });
   } catch (error) {
     console.error('Join error:', error);
