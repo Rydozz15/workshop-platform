@@ -20,6 +20,12 @@ export async function GET(request, { params }) {
 
     // For chained sessions (step > 1) with no messages yet, find the previous first message
     let previous_first_message = null;
+    console.log('[Suggestion Debug]', {
+      messagesCount: messages.length,
+      chain_id: workshop?.chain_id,
+      chain_order: workshop?.chain_order,
+      chain_user_id: session.chain_user_id,
+    });
     if (messages.length === 0 && workshop?.chain_id && workshop.chain_order > 1 && session.chain_user_id) {
       try {
         const previousSessions = await getSessionsByChainUserId(session.chain_user_id);
@@ -27,9 +33,12 @@ export async function GET(request, { params }) {
           .filter(s => s.id !== session.id && s.status === 'completed')
           .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
         
+        console.log('[Suggestion Debug] Previous sessions:', prevCompleted.length, 'completed');
+        
         if (prevCompleted.length > 0) {
           const prevMessages = await getMessages(prevCompleted[0].id);
           const firstUserMsg = prevMessages.find(m => m.role === 'user');
+          console.log('[Suggestion Debug] First user msg found:', !!firstUserMsg);
           if (firstUserMsg) {
             previous_first_message = firstUserMsg.content;
           }
