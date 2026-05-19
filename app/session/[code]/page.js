@@ -584,7 +584,7 @@ export default function SessionPage({ params }) {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                 <span>💡</span>
-                <span>Tu mensaje anterior:</span>
+                <span>Your previous message:</span>
               </div>
               <div style={{
                 color: 'var(--text-primary)',
@@ -611,7 +611,7 @@ export default function SessionPage({ params }) {
                     setTimeout(() => inputRef.current?.focus(), 50);
                   }}
                 >
-                  Usar mismo mensaje
+                  Use same message
                 </button>
                 <button
                   className="btn btn-secondary btn-sm"
@@ -621,7 +621,7 @@ export default function SessionPage({ params }) {
                     setTimeout(() => inputRef.current?.focus(), 50);
                   }}
                 >
-                  Escribir nuevo
+                  Write new
                 </button>
               </div>
             </div>
