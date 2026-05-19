@@ -9,9 +9,11 @@ A complete web platform designed for running interactive, AI-driven case-based w
 *   **Post-Session Surveys**: Configure custom surveys (Likert scale, multiple choice, checkboxes, open text) that participants must fill out after completing a session.
 *   **Dynamic Scenarios (Versions)**: Create and edit cases using Markdown. Participants can toggle a side-panel to read their specific case while chatting.
 *   **Custom AI Personas**: Set a custom system prompt per Campaign step to control how the AI behaves (e.g., naive mode, strict tutor, casual peer).
-*   **Advanced Analytics & Transcripts**: The dashboard tracks active sessions, computes survey distributions, visualizes Likert scale averages with charts, and uses an AI LLM to automatically summarize qualitative open-text survey responses.
+*   **Global Settings Panel**: Configure a default AI provider and model from the admin UI. These defaults pre-fill new campaigns and are used as fallback for analytics.
+*   **Advanced Analytics & Longitudinal Analysis**: The dashboard tracks active sessions, computes survey distributions, visualizes Likert scale averages with charts, generates AI summaries of open-text responses, and provides longitudinal evolution analysis across chained campaign steps.
 *   **Data Export**: Export sessions and full chat transcripts to CSV or JSON for data analysis.
-*   **AI Integration**: Connects directly to OpenRouter or Groq APIs (supporting models like Llama 3, Gemini, Mixtral).
+*   **AI Integration**: Connects directly to OpenRouter or Groq APIs (supporting models like Llama 3/4, Qwen, Gemini, Mixtral).
+*   **Participant Journey Hub**: Participants can review their full session history, transcripts, and survey responses after completing a campaign.
 *   **No-Setup Dev Mode**: Runs out of the box using an in-memory JSON database. Can be easily switched to Supabase (PostgreSQL) for production.
 
 ---
@@ -50,7 +52,7 @@ DB_PROVIDER=memory
 # Base URL for generating shareable links (update this when deploying)
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
-# Default OpenRouter model
+# Default OpenRouter model (optional — can be configured from /admin/settings instead)
 DEFAULT_MODEL=meta-llama/llama-3.1-8b-instruct
 ```
 
@@ -70,10 +72,11 @@ Navigate to `http://localhost:3000/admin` and log in using the password defined 
 
 From here you can:
 1.  **Versions**: Create the base text/scenarios. You can use Markdown to format the cases. (The app comes with 3 seed versions).
-2.  **Campaigns**: Create a new campaign, add multiple steps if you want a chained sequence, select *Versions*, AI provider, specify an AI model, set Custom System Prompts, and add Post-Session Surveys.
+2.  **Campaigns**: Create a new campaign, add multiple steps if you want a chained sequence, select *Versions*, AI provider, specify an AI model, set Custom System Prompts, and add Post-Session Surveys. Provider and model are pre-filled from your global settings.
 3.  Once a Campaign is created, you will be given a **Shareable Link and a QR Code** (only for the first step).
 4.  **Dashboard & Sessions**: Monitor incoming sessions in real-time, read full chat transcripts, and export data.
-5.  **Analytics**: View charts with survey results (Likert averages, multiple choice distributions) and generate AI summaries of open-text responses.
+5.  **Analytics**: View charts with survey results (Likert averages, multiple choice distributions), generate AI summaries of open-text responses, and run longitudinal evolution analysis across chained campaign steps.
+6.  **Settings**: Configure your default AI provider (OpenRouter or Groq) and model. These defaults are used as pre-fill for new campaigns and as fallback for analytics summaries.
 
 ### 2. The Participant Interface (`/session/[code]`)
 Participants will scan the QR code or click the link provided by the Campaign.
@@ -110,7 +113,7 @@ Your code is now safely backed up in the cloud.
 2. Click **"New Project"**, choose a name and a secure password, and wait a few minutes for it to provision.
 3. **Create the Tables:** On the left menu in Supabase, go to **"SQL Editor"** and click "New Query". 
    Open the `lib/db-supabase.js` file in your code, copy all the commented SQL text at the very bottom of the file, paste it into the Supabase SQL editor, and click the green **"Run"** button. You should see a "Success" message.
-   *(Note: If prompted about "RLS", choose "Run without RLS" for now. If you already had an older version installed, look at the bottom of the SQL block in `db-supabase.js` to see the ALTER statements).*
+   *(Note: If prompted about "RLS", choose "Run without RLS" for now. If you already had an older version installed, look at the bottom of the SQL block in `db-supabase.js` to see the ALTER/CREATE statements for upgrading, including the `settings` table).*
 4. **Copy your keys:** In Supabase, go to the bottom left gear icon (**Project Settings**), then to **API**. Leave this tab open; you will need to copy the `Project URL` and the `anon / public key` (Publishable key) in the next step.
 
 ### Step 3: Deploy the Website on Vercel
