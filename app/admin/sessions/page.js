@@ -252,17 +252,37 @@ export default function SessionsPage() {
                   <th>Status</th>
                   <th>Messages</th>
                   <th>Started</th>
+                  <th>Finished</th>
+                  <th>Duration</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {sessions.map((s) => (
+                {sessions.map((s) => {
+                  const duration = s.completed_at && s.started_at
+                    ? Math.round((new Date(s.completed_at) - new Date(s.started_at)) / 1000)
+                    : null;
+                  const durationStr = duration !== null
+                    ? (duration >= 3600 
+                        ? `${Math.floor(duration / 3600)}h ${Math.floor((duration % 3600) / 60)}m`
+                        : duration >= 60 
+                          ? `${Math.floor(duration / 60)}m ${duration % 60}s`
+                          : `${duration}s`)
+                    : null;
+
+                  return (
                   <tr key={s.id} style={{ cursor: 'pointer' }} onClick={() => viewTranscript(s.id)}>
                     <td>{s.participant_name}</td>
                     <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.version_title}</td>
                     <td><span className={`badge ${s.status === 'completed' ? 'badge-completed' : 'badge-active'}`}>{s.status}</span></td>
                     <td>{s.interaction_count}</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{new Date(s.started_at).toLocaleString()}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                      {s.completed_at ? new Date(s.completed_at).toLocaleString() : <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>—</span>}
+                    </td>
+                    <td style={{ fontSize: '0.85rem', fontWeight: durationStr ? 500 : 400, color: durationStr ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
+                      {durationStr || <span style={{ fontStyle: 'italic' }}>—</span>}
+                    </td>
                     <td>
                       <div style={{ display: 'flex', gap: 8 }}>
                         <button
@@ -281,7 +301,8 @@ export default function SessionsPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
