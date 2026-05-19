@@ -101,6 +101,9 @@ export default function SessionPage({ params }) {
             setWorkshopName(data.workshop_name || '');
             setSurveyConfig(data.survey_config || []);
             setMessages(data.messages || []);
+            if (data.previous_first_message) {
+              setPreviousFirstMessage(data.previous_first_message);
+            }
             setPhase('chat');
           } else {
             localStorage.removeItem(`workshop_${code}_session`);

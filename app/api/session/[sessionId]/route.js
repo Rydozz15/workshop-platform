@@ -4,7 +4,7 @@
  * PUT - Update session (e.g., mark as completed)
  */
 import { NextResponse } from 'next/server';
-import { getSession, updateSession, getMessages, getVersion, getWorkshop } from '@/lib/db';
+import { getSession, updateSession, getMessages, getVersion, getWorkshop, getSessionsByChainUserId } from '@/lib/db';
 
 export async function GET(request, { params }) {
   try {
@@ -16,8 +16,28 @@ export async function GET(request, { params }) {
 
     const messages = await getMessages(sessionId);
     const version = await getVersion(session.version_id);
-
     const workshop = await getWorkshop(session.workshop_id);
+
+    // For chained sessions (step > 1) with no messages yet, find the previous first message
+    let previous_first_message = null;
+    if (messages.length === 0 && workshop?.chain_id && workshop.chain_order > 1 && session.chain_user_id) {
+      try {
+        const previousSessions = await getSessionsByChainUserId(session.chain_user_id);
+        const prevCompleted = previousSessions
+          .filter(s => s.id !== session.id && s.status === 'completed')
+          .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+        
+        if (prevCompleted.length > 0) {
+          const prevMessages = await getMessages(prevCompleted[0].id);
+          const firstUserMsg = prevMessages.find(m => m.role === 'user');
+          if (firstUserMsg) {
+            previous_first_message = firstUserMsg.content;
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching previous first message:', e);
+      }
+    }
 
     return NextResponse.json({
       ...session,
@@ -28,6 +48,7 @@ export async function GET(request, { params }) {
       version: version
         ? { id: version.id, title: version.title, case_content: version.case_content }
         : null,
+      previous_first_message,
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
