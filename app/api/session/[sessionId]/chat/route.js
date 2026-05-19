@@ -61,11 +61,12 @@ export async function POST(request, { params }) {
         content: workshop.system_prompt.trim()
       });
     } else {
-      // Minimal fallback: ensures the model responds in the user's language
-      // instead of defaulting to Chinese (common with DeepSeek/Qwen models)
+      // Minimal fallback: only ensures the model responds in the user's language
+      // instead of defaulting to Chinese (common with DeepSeek/Qwen models).
+      // Kept deliberately neutral to avoid biasing research interactions.
       conversationHistory.push({
         role: 'system',
-        content: 'You are a helpful assistant. Always respond in the same language the user writes in.'
+        content: 'Always respond in the same language the user writes in.'
       });
     }
 
