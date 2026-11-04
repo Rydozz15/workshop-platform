@@ -175,7 +175,7 @@ export function OnboardingStepper({
                 type="text"
                 value={participantName}
                 onChange={(e) => setParticipantName(e.target.value)}
-                placeholder="Ej. Catalina, Participante 04..."
+                placeholder="Ej. Participante 01, Caso B..."
                 autoComplete="nickname"
                 className="ps-field__control w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2"
               />

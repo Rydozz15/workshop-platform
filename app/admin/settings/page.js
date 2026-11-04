@@ -585,15 +585,15 @@ export default function SettingsPage() {
           </div>
         </BlueprintPanel>
 
-        {/* ISDDE Benchmark Loader & Workshop Mode */}
+        {/* Synthetic Benchmark Loader & Workshop Mode */}
         <BlueprintPanel
           codeTag="CFG_04"
-          title="Dataset de Referencia ISDDE y Modo Demo LAK"
+          title="Dataset Sintético de Referencia LAK y Modo Demo"
           subtitle="Protección automática de base de datos remota y carga idempotente en memoria local"
         >
           <div className="space-y-4">
             <p className="font-body text-xs text-ink leading-relaxed m-0">
-              Para demostraciones en conferencias (LAK27) o docencia de métodos cuantitativos, puede poblar la memoria local con las <strong>18 sesiones pareadas reales (N = 9 académicas STEM)</strong>, 108 turnos y pares de calibración Humano vs. LLM del estudio ISDDE.
+              Para demostraciones en conferencias (LAK) o docencia de métodos cuantitativos, puede poblar la memoria local con el <strong>Benchmark Sintético Educativo (Cohorte Simulada de 20+ sesiones pareadas)</strong>, turnos sintéticos y pares de calibración Humano vs. LLM.
             </p>
             <div className="p-3 bg-paper-subtle border border-line-control font-ui-mono text-xs text-ink-2 space-y-1">
               <div>
@@ -613,7 +613,7 @@ export default function SettingsPage() {
             >
               {settings.db_provider === 'supabase'
                 ? 'Semilla deshabilitada en Supabase activo'
-                : 'Sincronizar Estudio ISDDE (N=9 Pareado)'}
+                : 'Cargar Benchmark Sintético de Prueba'}
             </SplitButton>
           </div>
         </BlueprintPanel>

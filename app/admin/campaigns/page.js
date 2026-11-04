@@ -1277,7 +1277,7 @@ export default function CampaignsPage() {
             </div>
             <p className="font-body text-sm text-ink m-0">
               Está a punto de activar una secuencia de <strong>{steps.length}</strong> {steps.length === 1 ? 'paso' : 'pasos encadenados'} bajo régimen{' '}
-              <strong className="font-ui-mono uppercase">{steps[0]?.analysis_type || 'preregistrado'}</strong>. Se generará un enlace público y código QR para captura de datos reales.
+              <strong className="font-ui-mono uppercase">{steps[0]?.analysis_type || 'preregistrado'}</strong>. Se generará un enlace público y código QR para captura de sesiones en vivo o de prueba.
             </p>
             <ul className="font-ui-mono text-xs text-ink-2 space-y-1 pl-4 m-0">
               {steps.map((s, idx) => (

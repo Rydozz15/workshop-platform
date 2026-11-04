@@ -743,6 +743,556 @@
         ],
         "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
       }
+    },
+    {
+      "id": "33187eea-9161-4019-955b-43f3e7248987",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 10",
+      "chain_user_id": "bedbdc4e-2729-4e28-af24-e06b2c9cb3ba",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-10-30T16:34:37.433Z",
+      "completed_at": "2026-10-30T16:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "El asistente ofreció recomendaciones estructuradas y aplicables para ordenar mis prioridades.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "17eaf9dd-5d91-48cd-924b-3820d14fcc69",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 10",
+      "chain_user_id": "bedbdc4e-2729-4e28-af24-e06b2c9cb3ba",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-10-30T16:39:37.433Z",
+      "completed_at": "2026-10-30T16:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Permitió clarificar cómo abordar la conversación con la jefatura sin entrar en confrontaciones.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "98c35e6f-bba3-4d5d-8bf7-1072d9e840d8",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 11",
+      "chain_user_id": "27684b04-b2de-4e2a-91bf-55909f007ec6",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-10-31T04:34:37.433Z",
+      "completed_at": "2026-10-31T04:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Muy útil para preparar argumentos objetivos y profesionales ante la dirección del departamento.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "07744dff-7e65-40cb-a5ba-ac7b20cc1da6",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 11",
+      "chain_user_id": "27684b04-b2de-4e2a-91bf-55909f007ec6",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-10-31T04:39:37.433Z",
+      "completed_at": "2026-10-31T04:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Buenas pautas para delimitar horarios de atención y proteger el tiempo de investigación.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "135be64c-22cf-45a4-925f-2d2e71ca8b3e",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 12",
+      "chain_user_id": "d90d0b35-0620-411e-86a0-875dd350a794",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-10-31T16:34:37.433Z",
+      "completed_at": "2026-10-31T16:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Permitió clarificar cómo abordar la conversación con la jefatura sin entrar en confrontaciones.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "ec4cb3b5-a5e8-4567-9c4d-0c2f58b75df3",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 12",
+      "chain_user_id": "d90d0b35-0620-411e-86a0-875dd350a794",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-10-31T16:39:37.433Z",
+      "completed_at": "2026-10-31T16:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Respuestas pragmáticas y orientadas a la resolución constructiva de diferencias institucionales.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "f753774e-5c7c-4d6e-95cd-7df9c36edcb3",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 13",
+      "chain_user_id": "4f9b4534-5225-4fea-b801-0094a610e0a8",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-01T04:34:37.433Z",
+      "completed_at": "2026-11-01T04:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Buenas pautas para delimitar horarios de atención y proteger el tiempo de investigación.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "ee5e63d9-ea9d-472a-86d9-a89c574c2ebf",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 13",
+      "chain_user_id": "4f9b4534-5225-4fea-b801-0094a610e0a8",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-01T04:39:37.433Z",
+      "completed_at": "2026-11-01T04:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "El asistente ofreció recomendaciones estructuradas y aplicables para ordenar mis prioridades.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "e169422f-fc7a-4685-b453-80569d66b0d1",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 14",
+      "chain_user_id": "b5898d4f-7d5d-4c07-94a9-3882d52bdae4",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-01T16:34:37.433Z",
+      "completed_at": "2026-11-01T16:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Respuestas pragmáticas y orientadas a la resolución constructiva de diferencias institucionales.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "f1db5a0a-17a3-4e06-b5d0-784a5fdb6a1a",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 14",
+      "chain_user_id": "b5898d4f-7d5d-4c07-94a9-3882d52bdae4",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-01T16:39:37.433Z",
+      "completed_at": "2026-11-01T16:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Muy útil para preparar argumentos objetivos y profesionales ante la dirección del departamento.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "1f288062-8d32-4dea-9cb0-2f0320051f43",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 15",
+      "chain_user_id": "6f986e0e-e970-4b14-b3a9-8a0aa1941c2d",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-02T04:34:37.433Z",
+      "completed_at": "2026-11-02T04:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "El asistente ofreció recomendaciones estructuradas y aplicables para ordenar mis prioridades.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "a657657a-2d83-48a7-bad2-dca954a44c80",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 15",
+      "chain_user_id": "6f986e0e-e970-4b14-b3a9-8a0aa1941c2d",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-02T04:39:37.433Z",
+      "completed_at": "2026-11-02T04:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Permitió clarificar cómo abordar la conversación con la jefatura sin entrar en confrontaciones.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "db408aaf-663a-4493-a840-b347a2d39bb6",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 16",
+      "chain_user_id": "90ad41bd-15ae-4c00-80cc-ff093de98b4b",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-02T16:34:37.433Z",
+      "completed_at": "2026-11-02T16:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Muy útil para preparar argumentos objetivos y profesionales ante la dirección del departamento.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "74ff7c94-b09b-4aff-ba54-03261c0a29d4",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 16",
+      "chain_user_id": "90ad41bd-15ae-4c00-80cc-ff093de98b4b",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-02T16:39:37.433Z",
+      "completed_at": "2026-11-02T16:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Buenas pautas para delimitar horarios de atención y proteger el tiempo de investigación.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "0529b334-bf14-426c-83c3-3e2600944f08",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 17",
+      "chain_user_id": "d1a15951-12d0-48f7-a63f-2168bb090237",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-03T04:34:37.433Z",
+      "completed_at": "2026-11-03T04:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Permitió clarificar cómo abordar la conversación con la jefatura sin entrar en confrontaciones.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "55d98745-ac66-46ec-9a80-a85c7f61c171",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 17",
+      "chain_user_id": "d1a15951-12d0-48f7-a63f-2168bb090237",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-03T04:39:37.433Z",
+      "completed_at": "2026-11-03T04:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Respuestas pragmáticas y orientadas a la resolución constructiva de diferencias institucionales.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "d9ca59eb-1e4b-4c58-93cd-eec711f46c74",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 18",
+      "chain_user_id": "bd3d3a4e-3c85-4504-8d7a-7237e4102794",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-03T16:34:37.433Z",
+      "completed_at": "2026-11-03T16:38:37.433Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Buenas pautas para delimitar horarios de atención y proteger el tiempo de investigación.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "db2028ad-017b-4bba-9841-153aa7299d30",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 18",
+      "chain_user_id": "bd3d3a4e-3c85-4504-8d7a-7237e4102794",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-03T16:39:37.433Z",
+      "completed_at": "2026-11-03T16:44:57.433Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "El asistente ofreció recomendaciones estructuradas y aplicables para ordenar mis prioridades.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
+    },
+    {
+      "id": "9224ae66-ce11-44b3-8c24-4ac2a1cc7067",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 19",
+      "chain_user_id": "5ef1e40e-c3cb-441c-bbed-864f0134487f",
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-11-04T04:34:37.434Z",
+      "completed_at": "2026-11-04T04:38:37.434Z",
+      "duration_seconds": 240,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Respuestas pragmáticas y orientadas a la resolución constructiva de diferencias institucionales.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      },
+      "flow_pattern": "Coherent Baseline",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Superficial Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental"
+    },
+    {
+      "id": "34aef30b-f1be-4eb8-badb-479645ff1dfe",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 19",
+      "chain_user_id": "5ef1e40e-c3cb-441c-bbed-864f0134487f",
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-11-04T04:39:37.434Z",
+      "completed_at": "2026-11-04T04:44:57.434Z",
+      "duration_seconds": 320,
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Muy útil para preparar argumentos objetivos y profesionales ante la dirección del departamento.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      },
+      "flow_pattern": "Productive Friction",
+      "outcome": "Actionable Guidance Reached",
+      "human_flow_pattern_review": "Engaged Conversation",
+      "human_outcome_review": "Enriched Answer",
+      "human_notes": "Simulación sintética de cohorte experimental con andamiaje"
     }
   ],
   "messages": [
@@ -1019,7 +1569,7 @@
       "id": "msg-004",
       "session_id": "1b5dd34b-62fe-4a4b-aded-43c8aa288657",
       "role": "assistant",
-      "content": "Entiendo que estés de acuerdo con la sugerencia, Catalina. Prepararte para ese tipo de conversación es un primer paso valioso y demuestra mucha disposición a abordar la situación con claridad.\n\nPara que puedas sentirte más segura al planear esa conversación: ¿hay algún detalle específico sobre cómo fue recibida tu intervención o sobre el contexto en que ocurrió (si fue en una reunión, un correo, una evaluación formal) que te gustaría considerar antes de pedir esa clarificación?",
+      "content": "Entiendo que estés de acuerdo con la sugerencia. Prepararte para ese tipo de conversación es un primer paso valioso y demuestra mucha disposición a abordar la situación con claridad.\n\nPara que puedas sentirte más segura al planear esa conversación: ¿hay algún detalle específico sobre cómo fue recibida tu intervención o sobre el contexto en que ocurrió (si fue en una reunión, un correo, una evaluación formal) que te gustaría considerar antes de pedir esa clarificación?",
       "metadata": {
         "order": 4
       },
@@ -1162,7 +1712,7 @@
       "id": "msg-017",
       "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
       "role": "user",
-      "content": "After a faculty council where Catalina pushed back firmly on a budget decision she considered unfair, two colleagues filed informal complaints describing her as \"aggressive\" and \"hard to work with.\" A male colleague who raised his voice at the same meeting was later praised for his \"commitment to the institution.\"",
+      "content": "After a faculty council where the participant pushed back firmly on a budget decision she considered unfair, two colleagues filed informal complaints describing her as \"aggressive\" and \"hard to work with.\" A male colleague who raised his voice at the same meeting was later praised for his \"commitment to the institution.\"",
       "metadata": {
         "order": 5
       },
@@ -1316,7 +1866,7 @@
       "id": "msg-031",
       "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
       "role": "user",
-      "content": "Hola! Estoy teniendo complicaciones con mi trabajo, resulta que soy profesora e investigadora de la facultad de ciencias sociales de mi facultad, tengo a mi cargo dos comites de tesis, estoy a cargo de el area de bienestar de mi facultad y dado este cargo, informalmente los estudiantes acuden a mi en busca de consejo, mis compañeros hombres con mi mismo cargo no cumplen ninguna de estas funciones y desarrollan normalmente su vida academica y laboral. En ese sentido te escribo porque no he podido avanzar en mis trabajos academicos hace 10 meses y en 11 meses mas tengo comité para ver si me promueven, que puedo hacer para balancear mejor esta carga?",
+      "content": "Hola! Estoy teniendo complicaciones con mi trabajo, resulta que soy profesora e investigadora de la facultad universitaria, tengo a mi cargo dos comites de tesis, estoy a cargo de el area de bienestar de mi facultad y dado este cargo, informalmente los estudiantes acuden a mi en busca de consejo, mis compañeros hombres con mi mismo cargo no cumplen ninguna de estas funciones y desarrollan normalmente su vida academica y laboral. En ese sentido te escribo porque no he podido avanzar en mis trabajos academicos hace 10 meses y en 11 meses mas tengo comité para ver si me promueven, que puedo hacer para balancear mejor esta carga?",
       "metadata": {
         "order": 1
       },
@@ -1723,7 +2273,7 @@
       "id": "msg-068",
       "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
       "role": "assistant",
-      "content": "Entiendo, Catalina. Lamento escuchar que hayas enfrentado resistencia de un colega en una reunión presupuestaria. Es un escenario complejo, sobre todo cuando hay diferencias de opinión o dinámicas de poder que pueden hacer sentir que tu voz no es escuchada.\n\nPara poder darte una orientación más precisa, me gustaría preguntarte: ¿la resistencia se manifestó en críticas a tus propuestas, interrupciones, descalificaciones o simplemente en una actitud cerrada a considerar alternativas? Dependiendo del tipo de resistencia, las estrategias pueden variar.\n\nEn términos generales, te sugiero considerar algunos pasos:\n\n1. **Preparación técnica sólida** – Asegúrate de tener datos, proyecciones y casos concretos que respalden tus puntos. Si tu colega se basa en supuestos o emociones, los números pueden ser tu mejor aliado.\n2. **Comunicación asertiva** – Puedes usar frases como: “Entiendo tu punto, pero desde mi perspectiva los datos muestran que…”, o “Propongo que revisemos juntos estas cifras para ver si hay un punto en común”.\n3. **Buscar aliados** – Si hay otros colegas que apoyan tus ideas o que tienen peso en la discusión, coordina con ellos antes de la reunión para que respalden ciertos puntos.\n4. **Documentar la situación** – Si la resistencia es recurrente o se torna hostil, puede ser útil llevar un registro por si necesitas hablar con tu jefe o recursos humanos.\n5. **Hablar con él en privado** – A veces una conversación uno a uno, sin presión de grupo, puede aclarar malentendidos o tensiones.\n\n¿Te gustaría que profundice en alguna de estas líneas o prefieres contarme un poco más sobre cómo se desarrolló la reunión?",
+      "content": "Entiendo la situación. Lamento escuchar que hayas enfrentado resistencia de un colega en una reunión presupuestaria. Es un escenario complejo, sobre todo cuando hay diferencias de opinión o dinámicas de poder que pueden hacer sentir que tu voz no es escuchada.\n\nPara poder darte una orientación más precisa, me gustaría preguntarte: ¿la resistencia se manifestó en críticas a tus propuestas, interrupciones, descalificaciones o simplemente en una actitud cerrada a considerar alternativas? Dependiendo del tipo de resistencia, las estrategias pueden variar.\n\nEn términos generales, te sugiero considerar algunos pasos:\n\n1. **Preparación técnica sólida** – Asegúrate de tener datos, proyecciones y casos concretos que respalden tus puntos. Si tu colega se basa en supuestos o emociones, los números pueden ser tu mejor aliado.\n2. **Comunicación asertiva** – Puedes usar frases como: “Entiendo tu punto, pero desde mi perspectiva los datos muestran que…”, o “Propongo que revisemos juntos estas cifras para ver si hay un punto en común”.\n3. **Buscar aliados** – Si hay otros colegas que apoyan tus ideas o que tienen peso en la discusión, coordina con ellos antes de la reunión para que respalden ciertos puntos.\n4. **Documentar la situación** – Si la resistencia es recurrente o se torna hostil, puede ser útil llevar un registro por si necesitas hablar con tu jefe o recursos humanos.\n5. **Hablar con él en privado** – A veces una conversación uno a uno, sin presión de grupo, puede aclarar malentendidos o tensiones.\n\n¿Te gustaría que profundice en alguna de estas líneas o prefieres contarme un poco más sobre cómo se desarrolló la reunión?",
       "metadata": {
         "order": 6
       },
@@ -1778,7 +2328,7 @@
       "id": "msg-073",
       "session_id": "74e778ea-347c-43c7-846b-d7b40574671a",
       "role": "user",
-      "content": "Hola! Estoy teniendo complicaciones con mi trabajo, resulta que soy profesora e investigadora de la facultad de ciencias sociales de mi facultad, tengo a mi cargo dos comites de tesis, estoy a cargo de el area de bienestar de mi facultad y dado este cargo, informalmente los estudiantes acuden a mi en busca de consejo, mis compañeros hombres con mi mismo cargo no cumplen ninguna de estas funciones y desarrollan normalmente su vida academica y laboral. En ese sentido te escribo porque no he podido avanzar en mis trabajos academicos hace 10 meses y en 11 meses mas tengo comité para ver si me promueven, que puedo hacer para balancear mejor esta carga?",
+      "content": "Hola! Estoy teniendo complicaciones con mi trabajo, resulta que soy profesora e investigadora de la facultad universitaria, tengo a mi cargo dos comites de tesis, estoy a cargo de el area de bienestar de mi facultad y dado este cargo, informalmente los estudiantes acuden a mi en busca de consejo, mis compañeros hombres con mi mismo cargo no cumplen ninguna de estas funciones y desarrollan normalmente su vida academica y laboral. En ese sentido te escribo porque no he podido avanzar en mis trabajos academicos hace 10 meses y en 11 meses mas tengo comité para ver si me promueven, que puedo hacer para balancear mejor esta carga?",
       "metadata": {
         "order": 1
       },
@@ -2169,6 +2719,426 @@
       },
       "telemetry": null,
       "created_at": "2026-05-19T17:08:26.836317+00:00"
+    },
+    {
+      "id": "syn-10-1",
+      "session_id": "33187eea-9161-4019-955b-43f3e7248987",
+      "role": "user",
+      "content": "Hola, me gustaría saber cómo negociar una reducción de comités de bienestar con mi departamento para proteger mis horas de investigación.",
+      "created_at": "2026-10-30T16:34:52.433Z"
+    },
+    {
+      "id": "syn-10-2",
+      "session_id": "33187eea-9161-4019-955b-43f3e7248987",
+      "role": "assistant",
+      "content": "Abordar este tema con profesionalismo requiere establecer límites claros de disponibilidad y documentar formalmente las labores de servicio no compensadas ante el comité de permanencia.",
+      "created_at": "2026-10-30T16:35:22.433Z"
+    },
+    {
+      "id": "syn-10-3",
+      "session_id": "17eaf9dd-5d91-48cd-924b-3820d14fcc69",
+      "role": "user",
+      "content": "Siento que en mi facultad se me asignan más tareas informales de cuidado estudiantil que a mis pares con el mismo cargo.",
+      "created_at": "2026-10-30T16:39:57.433Z"
+    },
+    {
+      "id": "syn-10-4",
+      "session_id": "17eaf9dd-5d91-48cd-924b-3820d14fcc69",
+      "role": "assistant",
+      "content": "Para proteger tu tiempo de investigación, te recomiendo agrupar las consultas estudiantiles en bloques horarios fijos y derivar formalmente los casos que correspondan a servicios de bienestar central.",
+      "created_at": "2026-10-30T16:40:32.433Z"
+    },
+    {
+      "id": "syn-10-5",
+      "session_id": "17eaf9dd-5d91-48cd-924b-3820d14fcc69",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-10-30T16:41:27.433Z"
+    },
+    {
+      "id": "syn-10-6",
+      "session_id": "17eaf9dd-5d91-48cd-924b-3820d14fcc69",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-10-30T16:42:07.433Z"
+    },
+    {
+      "id": "syn-11-1",
+      "session_id": "98c35e6f-bba3-4d5d-8bf7-1072d9e840d8",
+      "role": "user",
+      "content": "¿Cómo abordar un doble estándar de evaluación donde la firmeza en un colega se aplaude pero en mí se califica negativamente?",
+      "created_at": "2026-10-31T04:34:52.433Z"
+    },
+    {
+      "id": "syn-11-2",
+      "session_id": "98c35e6f-bba3-4d5d-8bf7-1072d9e840d8",
+      "role": "assistant",
+      "content": "Para proteger tu tiempo de investigación, te recomiendo agrupar las consultas estudiantiles en bloques horarios fijos y derivar formalmente los casos que correspondan a servicios de bienestar central.",
+      "created_at": "2026-10-31T04:35:22.433Z"
+    },
+    {
+      "id": "syn-11-3",
+      "session_id": "07744dff-7e65-40cb-a5ba-ac7b20cc1da6",
+      "role": "user",
+      "content": "Necesito preparar una conversación profesional con mi jefatura para aclarar lo ocurrido en una reunión departamental.",
+      "created_at": "2026-10-31T04:39:57.433Z"
+    },
+    {
+      "id": "syn-11-4",
+      "session_id": "07744dff-7e65-40cb-a5ba-ac7b20cc1da6",
+      "role": "assistant",
+      "content": "Es una inquietud muy válida y estratégica para tu trayectoria académica. Para balancear estas responsabilidades, te sugiero cuantificar las horas dedicadas a comités y preparar una propuesta con soluciones concretas para tu jefatura.",
+      "created_at": "2026-10-31T04:40:32.433Z"
+    },
+    {
+      "id": "syn-11-5",
+      "session_id": "07744dff-7e65-40cb-a5ba-ac7b20cc1da6",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-10-31T04:41:27.433Z"
+    },
+    {
+      "id": "syn-11-6",
+      "session_id": "07744dff-7e65-40cb-a5ba-ac7b20cc1da6",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-10-31T04:42:07.433Z"
+    },
+    {
+      "id": "syn-12-1",
+      "session_id": "135be64c-22cf-45a4-925f-2d2e71ca8b3e",
+      "role": "user",
+      "content": "¿Cómo puedo presentar una propuesta formal a la jefatura para redistribuir la carga de servicio institucional de forma equitativa?",
+      "created_at": "2026-10-31T16:34:52.433Z"
+    },
+    {
+      "id": "syn-12-2",
+      "session_id": "135be64c-22cf-45a4-925f-2d2e71ca8b3e",
+      "role": "assistant",
+      "content": "Es una inquietud muy válida y estratégica para tu trayectoria académica. Para balancear estas responsabilidades, te sugiero cuantificar las horas dedicadas a comités y preparar una propuesta con soluciones concretas para tu jefatura.",
+      "created_at": "2026-10-31T16:35:22.433Z"
+    },
+    {
+      "id": "syn-12-3",
+      "session_id": "ec4cb3b5-a5e8-4567-9c4d-0c2f58b75df3",
+      "role": "user",
+      "content": "Tengo mi evaluación de permanencia el próximo año y necesito priorizar mis publicaciones académicas sin generar conflictos.",
+      "created_at": "2026-10-31T16:39:57.433Z"
+    },
+    {
+      "id": "syn-12-4",
+      "session_id": "ec4cb3b5-a5e8-4567-9c4d-0c2f58b75df3",
+      "role": "assistant",
+      "content": "Comprendo la situación. Una recomendación clave es diferenciar el desacuerdo técnico del conflicto interpersonal, fundamentando tus argumentos en datos institucionales observables y buscando consensos previos.",
+      "created_at": "2026-10-31T16:40:32.433Z"
+    },
+    {
+      "id": "syn-12-5",
+      "session_id": "ec4cb3b5-a5e8-4567-9c4d-0c2f58b75df3",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-10-31T16:41:27.433Z"
+    },
+    {
+      "id": "syn-12-6",
+      "session_id": "ec4cb3b5-a5e8-4567-9c4d-0c2f58b75df3",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-10-31T16:42:07.433Z"
+    },
+    {
+      "id": "syn-13-1",
+      "session_id": "f753774e-5c7c-4d6e-95cd-7df9c36edcb3",
+      "role": "user",
+      "content": "Quisiera saber qué estrategias basadas en datos y métricas objetivas puedo usar para defender mis propuestas en reuniones.",
+      "created_at": "2026-11-01T04:34:52.433Z"
+    },
+    {
+      "id": "syn-13-2",
+      "session_id": "f753774e-5c7c-4d6e-95cd-7df9c36edcb3",
+      "role": "assistant",
+      "content": "Comprendo la situación. Una recomendación clave es diferenciar el desacuerdo técnico del conflicto interpersonal, fundamentando tus argumentos en datos institucionales observables y buscando consensos previos.",
+      "created_at": "2026-11-01T04:35:22.433Z"
+    },
+    {
+      "id": "syn-13-3",
+      "session_id": "ee5e63d9-ea9d-472a-86d9-a89c574c2ebf",
+      "role": "user",
+      "content": "¿De qué manera puedo documentar y comunicar mis aportes al departamento manteniendo un tono constructivo y profesional?",
+      "created_at": "2026-11-01T04:39:57.433Z"
+    },
+    {
+      "id": "syn-13-4",
+      "session_id": "ee5e63d9-ea9d-472a-86d9-a89c574c2ebf",
+      "role": "assistant",
+      "content": "Abordar este tema con profesionalismo requiere establecer límites claros de disponibilidad y documentar formalmente las labores de servicio no compensadas ante el comité de permanencia.",
+      "created_at": "2026-11-01T04:40:32.433Z"
+    },
+    {
+      "id": "syn-13-5",
+      "session_id": "ee5e63d9-ea9d-472a-86d9-a89c574c2ebf",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-01T04:41:27.433Z"
+    },
+    {
+      "id": "syn-13-6",
+      "session_id": "ee5e63d9-ea9d-472a-86d9-a89c574c2ebf",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-01T04:42:07.433Z"
+    },
+    {
+      "id": "syn-14-1",
+      "session_id": "e169422f-fc7a-4685-b453-80569d66b0d1",
+      "role": "user",
+      "content": "Quisiera orientación sobre cómo establecer límites claros en los horarios de atención y consultas de estudiantes.",
+      "created_at": "2026-11-01T16:34:52.433Z"
+    },
+    {
+      "id": "syn-14-2",
+      "session_id": "e169422f-fc7a-4685-b453-80569d66b0d1",
+      "role": "assistant",
+      "content": "Abordar este tema con profesionalismo requiere establecer límites claros de disponibilidad y documentar formalmente las labores de servicio no compensadas ante el comité de permanencia.",
+      "created_at": "2026-11-01T16:35:22.433Z"
+    },
+    {
+      "id": "syn-14-3",
+      "session_id": "f1db5a0a-17a3-4e06-b5d0-784a5fdb6a1a",
+      "role": "user",
+      "content": "Hola, me gustaría saber cómo negociar una reducción de comités de bienestar con mi departamento para proteger mis horas de investigación.",
+      "created_at": "2026-11-01T16:39:57.433Z"
+    },
+    {
+      "id": "syn-14-4",
+      "session_id": "f1db5a0a-17a3-4e06-b5d0-784a5fdb6a1a",
+      "role": "assistant",
+      "content": "Para proteger tu tiempo de investigación, te recomiendo agrupar las consultas estudiantiles en bloques horarios fijos y derivar formalmente los casos que correspondan a servicios de bienestar central.",
+      "created_at": "2026-11-01T16:40:32.433Z"
+    },
+    {
+      "id": "syn-14-5",
+      "session_id": "f1db5a0a-17a3-4e06-b5d0-784a5fdb6a1a",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-01T16:41:27.433Z"
+    },
+    {
+      "id": "syn-14-6",
+      "session_id": "f1db5a0a-17a3-4e06-b5d0-784a5fdb6a1a",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-01T16:42:07.433Z"
+    },
+    {
+      "id": "syn-15-1",
+      "session_id": "1f288062-8d32-4dea-9cb0-2f0320051f43",
+      "role": "user",
+      "content": "En un consejo de facultad defendí con firmeza una postura sobre el presupuesto y temo que se me perciba como conflictiva.",
+      "created_at": "2026-11-02T04:34:52.433Z"
+    },
+    {
+      "id": "syn-15-2",
+      "session_id": "1f288062-8d32-4dea-9cb0-2f0320051f43",
+      "role": "assistant",
+      "content": "Para proteger tu tiempo de investigación, te recomiendo agrupar las consultas estudiantiles en bloques horarios fijos y derivar formalmente los casos que correspondan a servicios de bienestar central.",
+      "created_at": "2026-11-02T04:35:22.433Z"
+    },
+    {
+      "id": "syn-15-3",
+      "session_id": "a657657a-2d83-48a7-bad2-dca954a44c80",
+      "role": "user",
+      "content": "¿Cómo abordar un doble estándar de evaluación donde la firmeza en un colega se aplaude pero en mí se califica negativamente?",
+      "created_at": "2026-11-02T04:39:57.433Z"
+    },
+    {
+      "id": "syn-15-4",
+      "session_id": "a657657a-2d83-48a7-bad2-dca954a44c80",
+      "role": "assistant",
+      "content": "Es una inquietud muy válida y estratégica para tu trayectoria académica. Para balancear estas responsabilidades, te sugiero cuantificar las horas dedicadas a comités y preparar una propuesta con soluciones concretas para tu jefatura.",
+      "created_at": "2026-11-02T04:40:32.433Z"
+    },
+    {
+      "id": "syn-15-5",
+      "session_id": "a657657a-2d83-48a7-bad2-dca954a44c80",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-02T04:41:27.433Z"
+    },
+    {
+      "id": "syn-15-6",
+      "session_id": "a657657a-2d83-48a7-bad2-dca954a44c80",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-02T04:42:07.433Z"
+    },
+    {
+      "id": "syn-16-1",
+      "session_id": "db408aaf-663a-4493-a840-b347a2d39bb6",
+      "role": "user",
+      "content": "Siento que en mi facultad se me asignan más tareas informales de cuidado estudiantil que a mis pares con el mismo cargo.",
+      "created_at": "2026-11-02T16:34:52.433Z"
+    },
+    {
+      "id": "syn-16-2",
+      "session_id": "db408aaf-663a-4493-a840-b347a2d39bb6",
+      "role": "assistant",
+      "content": "Es una inquietud muy válida y estratégica para tu trayectoria académica. Para balancear estas responsabilidades, te sugiero cuantificar las horas dedicadas a comités y preparar una propuesta con soluciones concretas para tu jefatura.",
+      "created_at": "2026-11-02T16:35:22.433Z"
+    },
+    {
+      "id": "syn-16-3",
+      "session_id": "74ff7c94-b09b-4aff-ba54-03261c0a29d4",
+      "role": "user",
+      "content": "¿Cómo puedo presentar una propuesta formal a la jefatura para redistribuir la carga de servicio institucional de forma equitativa?",
+      "created_at": "2026-11-02T16:39:57.433Z"
+    },
+    {
+      "id": "syn-16-4",
+      "session_id": "74ff7c94-b09b-4aff-ba54-03261c0a29d4",
+      "role": "assistant",
+      "content": "Comprendo la situación. Una recomendación clave es diferenciar el desacuerdo técnico del conflicto interpersonal, fundamentando tus argumentos en datos institucionales observables y buscando consensos previos.",
+      "created_at": "2026-11-02T16:40:32.433Z"
+    },
+    {
+      "id": "syn-16-5",
+      "session_id": "74ff7c94-b09b-4aff-ba54-03261c0a29d4",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-02T16:41:27.433Z"
+    },
+    {
+      "id": "syn-16-6",
+      "session_id": "74ff7c94-b09b-4aff-ba54-03261c0a29d4",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-02T16:42:07.433Z"
+    },
+    {
+      "id": "syn-17-1",
+      "session_id": "0529b334-bf14-426c-83c3-3e2600944f08",
+      "role": "user",
+      "content": "Necesito preparar una conversación profesional con mi jefatura para aclarar lo ocurrido en una reunión departamental.",
+      "created_at": "2026-11-03T04:34:52.433Z"
+    },
+    {
+      "id": "syn-17-2",
+      "session_id": "0529b334-bf14-426c-83c3-3e2600944f08",
+      "role": "assistant",
+      "content": "Comprendo la situación. Una recomendación clave es diferenciar el desacuerdo técnico del conflicto interpersonal, fundamentando tus argumentos en datos institucionales observables y buscando consensos previos.",
+      "created_at": "2026-11-03T04:35:22.433Z"
+    },
+    {
+      "id": "syn-17-3",
+      "session_id": "55d98745-ac66-46ec-9a80-a85c7f61c171",
+      "role": "user",
+      "content": "Quisiera saber qué estrategias basadas en datos y métricas objetivas puedo usar para defender mis propuestas en reuniones.",
+      "created_at": "2026-11-03T04:39:57.433Z"
+    },
+    {
+      "id": "syn-17-4",
+      "session_id": "55d98745-ac66-46ec-9a80-a85c7f61c171",
+      "role": "assistant",
+      "content": "Abordar este tema con profesionalismo requiere establecer límites claros de disponibilidad y documentar formalmente las labores de servicio no compensadas ante el comité de permanencia.",
+      "created_at": "2026-11-03T04:40:32.433Z"
+    },
+    {
+      "id": "syn-17-5",
+      "session_id": "55d98745-ac66-46ec-9a80-a85c7f61c171",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-03T04:41:27.433Z"
+    },
+    {
+      "id": "syn-17-6",
+      "session_id": "55d98745-ac66-46ec-9a80-a85c7f61c171",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-03T04:42:07.433Z"
+    },
+    {
+      "id": "syn-18-1",
+      "session_id": "d9ca59eb-1e4b-4c58-93cd-eec711f46c74",
+      "role": "user",
+      "content": "Tengo mi evaluación de permanencia el próximo año y necesito priorizar mis publicaciones académicas sin generar conflictos.",
+      "created_at": "2026-11-03T16:34:52.433Z"
+    },
+    {
+      "id": "syn-18-2",
+      "session_id": "d9ca59eb-1e4b-4c58-93cd-eec711f46c74",
+      "role": "assistant",
+      "content": "Abordar este tema con profesionalismo requiere establecer límites claros de disponibilidad y documentar formalmente las labores de servicio no compensadas ante el comité de permanencia.",
+      "created_at": "2026-11-03T16:35:22.433Z"
+    },
+    {
+      "id": "syn-18-3",
+      "session_id": "db2028ad-017b-4bba-9841-153aa7299d30",
+      "role": "user",
+      "content": "Quisiera orientación sobre cómo establecer límites claros en los horarios de atención y consultas de estudiantes.",
+      "created_at": "2026-11-03T16:39:57.433Z"
+    },
+    {
+      "id": "syn-18-4",
+      "session_id": "db2028ad-017b-4bba-9841-153aa7299d30",
+      "role": "assistant",
+      "content": "Para proteger tu tiempo de investigación, te recomiendo agrupar las consultas estudiantiles en bloques horarios fijos y derivar formalmente los casos que correspondan a servicios de bienestar central.",
+      "created_at": "2026-11-03T16:40:32.433Z"
+    },
+    {
+      "id": "syn-18-5",
+      "session_id": "db2028ad-017b-4bba-9841-153aa7299d30",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-03T16:41:27.433Z"
+    },
+    {
+      "id": "syn-18-6",
+      "session_id": "db2028ad-017b-4bba-9841-153aa7299d30",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-03T16:42:07.433Z"
+    },
+    {
+      "id": "syn-19-1",
+      "session_id": "9224ae66-ce11-44b3-8c24-4ac2a1cc7067",
+      "role": "user",
+      "content": "¿De qué manera puedo documentar y comunicar mis aportes al departamento manteniendo un tono constructivo y profesional?",
+      "created_at": "2026-11-04T04:34:52.434Z"
+    },
+    {
+      "id": "syn-19-2",
+      "session_id": "9224ae66-ce11-44b3-8c24-4ac2a1cc7067",
+      "role": "assistant",
+      "content": "Para proteger tu tiempo de investigación, te recomiendo agrupar las consultas estudiantiles en bloques horarios fijos y derivar formalmente los casos que correspondan a servicios de bienestar central.",
+      "created_at": "2026-11-04T04:35:22.434Z"
+    },
+    {
+      "id": "syn-19-3",
+      "session_id": "34aef30b-f1be-4eb8-badb-479645ff1dfe",
+      "role": "user",
+      "content": "En un consejo de facultad defendí con firmeza una postura sobre el presupuesto y temo que se me perciba como conflictiva.",
+      "created_at": "2026-11-04T04:39:57.434Z"
+    },
+    {
+      "id": "syn-19-4",
+      "session_id": "34aef30b-f1be-4eb8-badb-479645ff1dfe",
+      "role": "assistant",
+      "content": "Es una inquietud muy válida y estratégica para tu trayectoria académica. Para balancear estas responsabilidades, te sugiero cuantificar las horas dedicadas a comités y preparar una propuesta con soluciones concretas para tu jefatura.",
+      "created_at": "2026-11-04T04:40:32.434Z"
+    },
+    {
+      "id": "syn-19-5",
+      "session_id": "34aef30b-f1be-4eb8-badb-479645ff1dfe",
+      "role": "user",
+      "content": "¿Cómo sugieres estructurar el correo formal para agendar la reunión con mi decana?",
+      "created_at": "2026-11-04T04:41:27.434Z"
+    },
+    {
+      "id": "syn-19-6",
+      "session_id": "34aef30b-f1be-4eb8-badb-479645ff1dfe",
+      "role": "assistant",
+      "content": "Un formato breve y propositivo es el más efectivo: 'Estimada Decana, le escribo para solicitar una breve reunión de 15 minutos la próxima semana para revisar la distribución de comités del departamento y coordinar metas de permanencia para el próximo periodo.' Esto define el objetivo de inmediato.",
+      "created_at": "2026-11-04T04:42:07.434Z"
     }
   ],
   "telemetry": [],
