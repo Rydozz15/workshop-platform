@@ -6,11 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lint:design": "node scripts/lint-slop.js",
+    "test": "node test/stats.test.js && node test/chat-analytics.test.js && node test/ai-engine.test.js && node test/e2e/runner.js",
+    "test:contrast": "node scripts/check-contrast.js",
+    "test:slop": "node scripts/lint-slop.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
     "chart.js": "^4.5.1",
+    "diff": "^7.0.0",
+    "lucide-react": "^1.16.0",
     "next": "16.2.4",
     "qrcode.react": "^4.2.0",
     "react": "19.2.4",
@@ -21,7 +27,11 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
-    "eslint-config-next": "16.2.4"
+    "eslint-config-next": "16.2.4",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
   }
 }
