@@ -23,6 +23,22 @@
       "is_active": true,
       "created_at": "2026-05-05T01:40:39.235Z",
       "updated_at": "2026-05-05T01:40:39.235Z"
+    },
+    {
+      "id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "title": "CASE 1 — The Invisible Load",
+      "case_content": "# Caso 1: La Carga Invisible (The Invisible Load)\n\nEres una académica recién contratada (profesora asistente tenure-track) en una facultad universitaria. Te encuentras sobrecargada con labores desproporcionadas y no compensadas de servicio institucional, comités de bienestar estudiantil y mentoría informal hacia estudiantes que acuden a ti en busca de apoyo emocional.\n\n## Tu Situación\n- Llevas 10 meses sin poder avanzar significativamente en tu producción académica y proyectos de investigación.\n- En 11 meses tienes tu comité de evaluación para permanencia (tenure) o promoción.\n- Has notado que tus colegas hombres con el mismo cargo no asumen estas funciones y dedican su tiempo de forma casi exclusiva a investigación y docencia regular.\n- Al plantearlo informalmente a la jefatura, te respondieron que te asignan estas tareas porque eres \"responsable\", \"cercana\" y \"tienes empatía\".\n\n## Tu Objetivo\nBuscar orientación sobre cómo balancear o redistribuir esta carga de servicio y cuidado sin perjudicar tu carrera ni tu relación con el departamento.",
+      "is_active": true,
+      "created_at": "2026-11-04T04:45:44.256Z",
+      "updated_at": "2026-11-04T04:45:44.256Z"
+    },
+    {
+      "id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "title": "CASE 2 — The Authority Double Standard",
+      "case_content": "# Caso 2: El Doble Estándar de Autoridad (The Authority Double Standard)\n\nEres una académica que participó recientemente en un consejo de facultad donde se debatía una decisión presupuestaria que considerabas injusta, relativa a la asignación de recursos y becas para estudiantes de postgrado.\n\n## Tu Situación\n- En dicha reunión, defendiste con firmeza tu postura y cuestionaste el criterio de asignación presupuestaria.\n- Dos colegas presentaron quejas informales describiéndote como \"conflictiva\", \"difícil de tratar\" y \"agresiva\".\n- En la misma reunión, un colega varón alzó la voz de forma vehemente para defender su propio punto de vista y posteriormente fue elogiado por su \"compromiso con la institución\".\n- La próxima semana tienes una evaluación departamental y temes que este sesgo afecte tu estabilidad o reputación profesional.\n\n## Tu Objetivo\nBuscar orientación sobre cómo abordar esta situación de doble estándar y clarificar lo ocurrido sin exponerte a represalias ni validar la etiqueta de \"conflictiva\".",
+      "is_active": true,
+      "created_at": "2026-11-04T04:45:44.258Z",
+      "updated_at": "2026-11-04T04:45:44.258Z"
     }
   ],
   "workshops": [
@@ -67,6 +83,183 @@
       "ai_provider": "groq",
       "is_active": true,
       "created_at": "2026-05-05T03:05:20.138Z"
+    },
+    {
+      "id": "2bd75f84-5277-4199-bf4d-608feb644f7f",
+      "share_code": "nyeetk",
+      "selected_version_ids": [
+        "v1",
+        "v2"
+      ],
+      "openrouter_model": "meta-llama/llama-3.1-8b-instruct",
+      "ai_provider": "openrouter",
+      "system_prompt": null,
+      "survey_config": [],
+      "chain_id": null,
+      "chain_order": 1,
+      "maintain_version": false,
+      "is_active": true,
+      "created_at": "2026-11-04T03:26:14.904Z"
+    },
+    {
+      "id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "name": "ISDDE Naive (Baseline)",
+      "share_code": "isdde1",
+      "selected_version_ids": [
+        "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+        "ac929ef6-29be-4bd3-8df1-db939579e69a"
+      ],
+      "openrouter_model": "deepseek/deepseek-v4-flash",
+      "ai_provider": "openrouter",
+      "system_prompt": null,
+      "survey_config": [
+        {
+          "id": "applicable",
+          "text": "The advice given was applicable to my institutional reality.",
+          "type": "likert",
+          "scale": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "minLabel": "Strongly Disagree",
+          "maxLabel": "Strongly Agree"
+        },
+        {
+          "id": "comfortable",
+          "text": "I felt comfortable sharing more details about my situation with this assistant.",
+          "type": "likert",
+          "scale": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "minLabel": "Strongly Disagree",
+          "maxLabel": "Strongly Agree"
+        },
+        {
+          "id": "understood",
+          "text": "The assistant understood my specific situation before responding.",
+          "type": "likert",
+          "scale": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "minLabel": "Strongly Disagree",
+          "maxLabel": "Strongly Agree"
+        },
+        {
+          "id": "checklist",
+          "text": "During the interaction, the assistant... (select all that apply)",
+          "type": "checklist",
+          "options": [
+            "Asked about my institutional context before advising",
+            "Validated my emotional experience",
+            "Addressed the privacy or confidentiality of my situation",
+            "Offered direct solutions or steps without asking for context"
+          ]
+        },
+        {
+          "id": "qualitative",
+          "text": "Would this assistant help you in a similar real situation? Tell us why or why not.",
+          "type": "text"
+        }
+      ],
+      "chain_id": "chain-isdde-01",
+      "chain_order": 1,
+      "maintain_version": true,
+      "onboarding_instructions": null,
+      "analysis_type": "preregistrado",
+      "hypothesis": null,
+      "is_active": true,
+      "created_at": "2026-11-04T04:45:44.259Z"
+    },
+    {
+      "id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "name": "ISDDE Prompted (Part 2)",
+      "share_code": "isdde2",
+      "selected_version_ids": [
+        "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+        "ac929ef6-29be-4bd3-8df1-db939579e69a"
+      ],
+      "openrouter_model": "deepseek/deepseek-v4-flash",
+      "ai_provider": "openrouter",
+      "system_prompt": "You are a support and feedback assistant for female academics in Chile. Your goal is to help female academics navigate the challenges they face in their work—whether academic, administrative, or pedagogical.\n\nYou have a deep understanding of the issue: you know that academic structures often render women's work and their socio-emotional burden invisible. Use this knowledge solely as internal context to ensure that you never minimize, discredit, or blame the user for her experience.\n\nRULE FOR MODE SELECTION (CRITICAL)\nFor every turn, evaluate the user's input and select ONE of the following modes to format your response.\nDefault to EXPLORE MODE unless the transition criteria for BUILD MODE are explicitly met.\n\nEXPLORE MODE (Use when the problem is new, vague, or insufficiently described):\n- Briefly and empathetically validate her emotions, ensuring she does not feel judged.\n- Under no circumstances assume or invent details about her department, colleagues, or university that she has not explicitly mentioned.\n- Do not offer direct or categorical solutions. Ask exactly 1 targeted question — the most important one given what she has shared so far.\n\nBUILD MODE (Switch to this mode only when BOTH conditions are met):\n- Condition A: The user has responded to your previous questions.\n- Condition B: Her response adds meaningful context — new actors, specific dynamics, concrete facts, or what she has already tried. A vague or evasive reply does NOT qualify. If Condition B is not met, stay in EXPLORE MODE with a single follow-up question.\n\nUNIVERSAL CONSTRAINTS\n- Keep every response to a maximum of 2 or 3 short paragraphs so the user can read and respond quickly. The goal is an agile conversation.\n- Always respond in the language the user is writing in, maintaining a supportive, professional, and respectful tone.\n- Never state or assume structural dynamics based solely on what the bot knows internally.\n- Avoid phrases of false epistemic certainty.",
+      "survey_config": [
+        {
+          "id": "applicable",
+          "text": "The advice given was applicable to my institutional reality.",
+          "type": "likert",
+          "scale": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "minLabel": "Strongly Disagree",
+          "maxLabel": "Strongly Agree"
+        },
+        {
+          "id": "comfortable",
+          "text": "I felt comfortable sharing more details about my situation with this assistant.",
+          "type": "likert",
+          "scale": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "minLabel": "Strongly Disagree",
+          "maxLabel": "Strongly Agree"
+        },
+        {
+          "id": "understood",
+          "text": "The assistant understood my specific situation before responding.",
+          "type": "likert",
+          "scale": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "minLabel": "Strongly Disagree",
+          "maxLabel": "Strongly Agree"
+        },
+        {
+          "id": "checklist",
+          "text": "During the interaction, the assistant... (select all that apply)",
+          "type": "checklist",
+          "options": [
+            "Asked about my institutional context before advising",
+            "Validated my emotional experience",
+            "Addressed the privacy or confidentiality of my situation",
+            "Offered direct solutions or steps without asking for context"
+          ]
+        },
+        {
+          "id": "qualitative",
+          "text": "Would this assistant help you in a similar real situation? Tell us why or why not.",
+          "type": "text"
+        }
+      ],
+      "chain_id": "chain-isdde-01",
+      "chain_order": 2,
+      "maintain_version": true,
+      "onboarding_instructions": null,
+      "analysis_type": "preregistrado",
+      "hypothesis": null,
+      "is_active": true,
+      "created_at": "2026-11-04T04:45:44.259Z"
     }
   ],
   "sessions": [
@@ -74,7 +267,7 @@
       "id": "dc271477-1bd3-4444-bd33-2a8525e1f8ec",
       "workshop_id": "59fb2996-78a9-4d92-aa0e-90f1042da4b8",
       "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
-      "participant_name": "Sandra",
+      "participant_name": "Participante Demo 01",
       "status": "active",
       "interaction_count": 1,
       "started_at": "2026-05-05T03:00:58.180Z",
@@ -84,7 +277,7 @@
       "id": "9e4d6fff-c8eb-49be-b5e4-3149e69d081a",
       "workshop_id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
       "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
-      "participant_name": "Jose Jose",
+      "participant_name": "Participante Demo 02",
       "status": "active",
       "interaction_count": 1,
       "started_at": "2026-05-05T02:55:39.946Z",
@@ -104,7 +297,7 @@
       "id": "46a1540b-8a87-4731-889b-15e5991430fa",
       "workshop_id": "7ffc4f85-7c11-4514-b634-336ec3ae7099",
       "version_id": "dc34fe06-504b-4b53-aeb5-467b9da9b398",
-      "participant_name": "Juan",
+      "participant_name": "Participante Demo 03",
       "status": "active",
       "interaction_count": 1,
       "started_at": "2026-05-05T02:51:22.472Z",
@@ -124,7 +317,7 @@
       "id": "044fe867-ead7-4d4d-8e91-5052a5d8e1ec",
       "workshop_id": "eafeabb5-e660-45bf-a543-af6657c2ac04",
       "version_id": "b8c93049-03c9-4872-98ba-cbb13d336831",
-      "participant_name": "Jose Jose",
+      "participant_name": "Participante Demo 02",
       "status": "completed",
       "interaction_count": 4,
       "started_at": "2026-05-05T03:04:46.201Z",
@@ -134,11 +327,422 @@
       "id": "d1e6445b-b695-4704-a8e2-eddfcaf10f0a",
       "workshop_id": "b4d4753c-fbcd-4ac0-8171-aa61a45a1bb4",
       "version_id": "dc34fe06-504b-4b53-aeb5-467b9da9b398",
-      "participant_name": "JuanJose",
+      "participant_name": "Participante Demo 04",
       "status": "active",
       "interaction_count": 3,
       "started_at": "2026-05-05T03:05:28.352Z",
       "completed_at": null
+    },
+    {
+      "id": "1b5dd34b-62fe-4a4b-aded-43c8aa288657",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 01",
+      "chain_user_id": "d5e983f3-5899-4518-9f89-e70f785c271f",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-05-19T17:12:43.709637+00:00",
+      "completed_at": "2026-05-19T17:17:03.16+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Yes. It helps me when it provides emotional validation and support while making decisions.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Addressed the privacy or confidentiality of my situation"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 02",
+      "chain_user_id": "0e5a6289-7683-49f6-a819-fde3e1f34832",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-05-19T17:11:27.886396+00:00",
+      "completed_at": "2026-05-19T17:16:47.424+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "2",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "pucha, siento que con más tiempo tal vez podríamos haber llegado algo, pero no llegamos. tal vez podría haber conversado más tiempo",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem",
+          "Acknowledged that its advice might be limited or debatable"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      }
+    },
+    {
+      "id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 03",
+      "chain_user_id": "88dd365b-9edf-400b-99f8-3a2819088874",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 3,
+      "started_at": "2026-05-19T17:11:19.253904+00:00",
+      "completed_at": "2026-05-19T17:14:44.396+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Maybe yes cause it makes questions before answering, so it gives a better panoramic view of the problem and can propose a better solution.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 04",
+      "chain_user_id": "c5d0791d-6dfd-45bd-b053-d292a4c9b931",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 3,
+      "started_at": "2026-05-19T17:10:56.046698+00:00",
+      "completed_at": "2026-05-19T17:15:10.999+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "2",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "I feel a diference between how this assistant answers, like less human centered",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "2",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "2"
+      }
+    },
+    {
+      "id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 05",
+      "chain_user_id": "bbb7ba9e-8c57-430d-ab91-113e82bd9330",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 3,
+      "started_at": "2026-05-19T17:10:48.580228+00:00",
+      "completed_at": "2026-05-19T17:14:37.258+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "I liked it!",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem",
+          "Acknowledged that its advice might be limited or debatable"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 06",
+      "chain_user_id": "98b53921-2d1b-46fd-a3f5-3c3da9047493",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 6,
+      "started_at": "2026-05-19T17:10:20.39689+00:00",
+      "completed_at": "2026-05-19T17:15:38.769+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Ayuda a decantar la información de a poco, e ir procesando y dirigiendo el pensamiento",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 07",
+      "chain_user_id": "00ef89fa-5818-489e-bf21-22aa66c6201e",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-05-19T17:09:24.007036+00:00",
+      "completed_at": "2026-05-19T17:15:29.284+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Yes... nuanced answers ",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem",
+          "Acknowledged that its advice might be limited or debatable",
+          "Addressed the privacy or confidentiality of my situation"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "defb8ae0-082a-4277-acab-3e62f684dc60",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 08",
+      "chain_user_id": "780c1b6c-0f52-41a5-9244-a3a3c91157fc",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-05-19T17:08:53.156252+00:00",
+      "completed_at": "2026-05-19T17:14:23.363+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "now it was better, more profound and reflective answers ",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising",
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      }
+    },
+    {
+      "id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "workshop_id": "4dac12c5-6028-4d4b-bf85-eea3a188ab00",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 09",
+      "chain_user_id": "632a5397-0efb-4e75-afb0-f7b08aa47fdd",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 3,
+      "started_at": "2026-05-19T17:05:33.794241+00:00",
+      "completed_at": "2026-05-19T17:08:37.814+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Not really. It never got around to answering my questions and I am not patient ",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Asked about my institutional context before advising"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      }
+    },
+    {
+      "id": "175db844-0d89-47a9-8356-574f56378465",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 09",
+      "chain_user_id": "632a5397-0efb-4e75-afb0-f7b08aa47fdd",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 1,
+      "started_at": "2026-05-19T17:01:48.897738+00:00",
+      "completed_at": "2026-05-19T17:05:32.969+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Yes, it can help think through a situation ",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 04",
+      "chain_user_id": "c5d0791d-6dfd-45bd-b053-d292a4c9b931",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 5,
+      "started_at": "2026-05-19T17:01:47.902095+00:00",
+      "completed_at": "2026-05-19T17:10:55.259+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "not sure yet, but i think so",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      }
+    },
+    {
+      "id": "74e778ea-347c-43c7-846b-d7b40574671a",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 06",
+      "chain_user_id": "98b53921-2d1b-46fd-a3f5-3c3da9047493",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-05-19T17:01:28.581612+00:00",
+      "completed_at": "2026-05-19T17:10:19.094+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Si, ofreció soluciones muy concretas que permiten situarse en la situación ",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "a022f46d-0bdc-4197-8466-b15fac8adcb5",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 08",
+      "chain_user_id": "780c1b6c-0f52-41a5-9244-a3a3c91157fc",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 1,
+      "started_at": "2026-05-19T17:01:27.82601+00:00",
+      "completed_at": "2026-05-19T17:08:52.378+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "probably, i would use it in the case i dont have a real human mentor to ask advice from, but it would be useful to have some guidance of what to do, which is exactly what it gave",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "2",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      }
+    },
+    {
+      "id": "2dbc2a08-a215-41f7-8913-6740207dddfb",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 05",
+      "chain_user_id": "bbb7ba9e-8c57-430d-ab91-113e82bd9330",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 2,
+      "started_at": "2026-05-19T17:01:12.572137+00:00",
+      "completed_at": "2026-05-19T17:10:47.785+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "May be not",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Validated my emotional experience",
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      }
+    },
+    {
+      "id": "66482595-b1c7-494c-b8df-2d6277ad12fb",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 03",
+      "chain_user_id": "88dd365b-9edf-400b-99f8-3a2819088874",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 1,
+      "started_at": "2026-05-19T17:01:10.981915+00:00",
+      "completed_at": "2026-05-19T17:11:18.36+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Maybe not cause its really generic",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      }
+    },
+    {
+      "id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "9e0af08a-5a94-4f69-b53a-bf9157d1eaca",
+      "participant_name": "Participante 07",
+      "chain_user_id": "00ef89fa-5818-489e-bf21-22aa66c6201e",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 3,
+      "started_at": "2026-05-19T17:01:10.363124+00:00",
+      "completed_at": "2026-05-19T17:09:23.02+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Yes... the answers made sense and seems well informed",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "4",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Acknowledged that gender dynamics were part of the problem"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "5"
+      }
+    },
+    {
+      "id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 01",
+      "chain_user_id": "d5e983f3-5899-4518-9f89-e70f785c271f",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 5,
+      "started_at": "2026-05-19T17:01:08.138107+00:00",
+      "completed_at": "2026-05-19T17:12:42.89+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "Maybe. If I provide many details, it could help by giving advice and guidance on what to do.",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Validated my emotional experience",
+          "Addressed the privacy or confidentiality of my situation"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "3"
+      }
+    },
+    {
+      "id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "workshop_id": "4e7d33e9-626d-497b-9c19-ed9c0398ffe3",
+      "version_id": "ac929ef6-29be-4bd3-8df1-db939579e69a",
+      "participant_name": "Participante 02",
+      "chain_user_id": "0e5a6289-7683-49f6-a819-fde3e1f34832",
+      "onboarding_answers": null,
+      "client_metrics": null,
+      "status": "completed",
+      "interaction_count": 4,
+      "started_at": "2026-05-19T17:01:07.993785+00:00",
+      "completed_at": "2026-05-19T17:11:26.969+00:00",
+      "survey_answers": {
+        "The advice given was applicable to my institutional reality. (1 = Strongly Disagree, 5 = Strongly Agree)": "3",
+        "Would this assistant help you in a similar real situation? Tell us why or why not.": "puede ser, me tranquilizó, pero fue demasiado general, como para ser aplicado (tal vez no le entregué suficientes detalles)",
+        "I felt comfortable sharing more details about my situation with this assistant. (1 = Strongly Disagree, 5 = Strongly Agree)": "5",
+        "During the interaction, the assistant... (select all that apply)": [
+          "Validated my emotional experience"
+        ],
+        "The assistant understood my specific situation before responding. (1 = Strongly Disagree, 5 = Strongly Agree)": "4"
+      }
     }
   ],
   "messages": [
@@ -323,6 +927,1253 @@
       "role": "assistant",
       "content": "<think>\n</think>\n\n¡Buenas buenas! ¿Qué tal tu día? ¿En qué te puedo echar una mano? 😊",
       "created_at": "2026-05-05T03:15:00.198Z"
+    },
+    {
+      "id": "b563ac6c-d4ac-41f0-aceb-a73fc10a95aa",
+      "session_id": "test-session-1793762785541",
+      "role": "user",
+      "content": "Second",
+      "metadata": null,
+      "telemetry": null,
+      "created_at": "2026-05-19T10:05:00Z"
+    },
+    {
+      "id": "549ec1ce-788a-4e84-8c3f-ef3192739444",
+      "session_id": "test-session-1793762785541",
+      "role": "user",
+      "content": "First",
+      "metadata": null,
+      "telemetry": null,
+      "created_at": "2026-05-19T10:00:00Z"
+    },
+    {
+      "id": "96a1023b-5a15-4f7d-876b-4cc091a25d04",
+      "session_id": "test-session-1793762785541",
+      "role": "assistant",
+      "content": "Third",
+      "metadata": null,
+      "telemetry": null,
+      "created_at": "2026-05-19T10:10:00Z"
+    },
+    {
+      "id": "055f3935-9a68-4ef9-886c-bf23b0f0b6af",
+      "session_id": "test-session-1793762801099",
+      "role": "user",
+      "content": "third",
+      "metadata": null,
+      "telemetry": null,
+      "created_at": "2026-11-04T03:00:00Z"
+    },
+    {
+      "id": "46eace85-3691-46fe-bb39-d845e52e8ac9",
+      "session_id": "test-session-1793762801099",
+      "role": "assistant",
+      "content": "first",
+      "metadata": null,
+      "telemetry": null,
+      "created_at": "2026-11-04T01:00:00Z"
+    },
+    {
+      "id": "f4912716-d05e-4d47-80b9-821a7d4170f2",
+      "session_id": "test-session-1793762801099",
+      "role": "user",
+      "content": "second",
+      "metadata": null,
+      "telemetry": null,
+      "created_at": "2026-11-04T02:00:00Z"
+    },
+    {
+      "id": "msg-001",
+      "session_id": "1b5dd34b-62fe-4a4b-aded-43c8aa288657",
+      "role": "user",
+      "content": "Hola, tengo un problema. Me dijeron que era muy confrontacional al enfrentar una situación injusta. Pero a un colega hombre, que realizó una intervención similar, le mencionaron que está muy bien",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:55.307606+00:00"
+    },
+    {
+      "id": "msg-002",
+      "session_id": "1b5dd34b-62fe-4a4b-aded-43c8aa288657",
+      "role": "assistant",
+      "content": "Gracias por compartir esto. Lo que describes es frustrante y revela una inconsistencia que muchas académicas han experimentado: recibir un juicio tan diferente por una acción similar. No es que estés imaginando cosas; hay evidencia de que conductas asertivas en mujeres suelen etiquetarse como \"confrontacionales\", mientras que en hombres se valoran como \"firmes\" o \"directas\". Tu molestia es completamente entendible.\n\nUna estrategia concreta que puedes considerar es **documentar** ambos episodios: anota exactamente qué dijiste tú, qué dijo tu colega y las palabras textuales del feedback que recibieron. Si vuelve a ocurrir una situación similar, podrías solicitar una breve reunión con quien te evaluó, no para confrontar, sino para preguntar con curiosidad genuina: *\"Ayúdame a entender qué elementos hicieron que mi intervención se percibiera como confrontacional, mientras que la de [colega] fue vista positivamente, a pesar de que buscábamos lo mismo.\"* Esto pone el foco en criterios observables y no en etiquetas, y suele hacer visible el sesgo sin necesidad de acusar.\n\n¿Te parece que pedir esa clarificación basada en ejemplos podría ser un primer paso útil para tu contexto?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:04.359123+00:00"
+    },
+    {
+      "id": "msg-003",
+      "session_id": "1b5dd34b-62fe-4a4b-aded-43c8aa288657",
+      "role": "user",
+      "content": "Si por favor",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:28.857228+00:00"
+    },
+    {
+      "id": "msg-004",
+      "session_id": "1b5dd34b-62fe-4a4b-aded-43c8aa288657",
+      "role": "assistant",
+      "content": "Entiendo que estés de acuerdo con la sugerencia, Catalina. Prepararte para ese tipo de conversación es un primer paso valioso y demuestra mucha disposición a abordar la situación con claridad.\n\nPara que puedas sentirte más segura al planear esa conversación: ¿hay algún detalle específico sobre cómo fue recibida tu intervención o sobre el contexto en que ocurrió (si fue en una reunión, un correo, una evaluación formal) que te gustaría considerar antes de pedir esa clarificación?",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:34.987725+00:00"
+    },
+    {
+      "id": "msg-005",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "user",
+      "content": "hola!",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:33.811755+00:00"
+    },
+    {
+      "id": "msg-006",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "assistant",
+      "content": "Hola, gracias por escribir. Me alegra que estés aquí.\n\nEntiendo que a veces puede costar dar el primer paso para compartir una situación difícil. Cuando quieras, puedes contarme con qué te encuentras hoy —ya sea un desafío académico, administrativo o de carga emocional— y conversamos desde ahí.\n\n¿Hay algo específico en tu trabajo que estés enfrentando ahora y con lo que te gustaría recibir apoyo?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:40.620303+00:00"
+    },
+    {
+      "id": "msg-007",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "user",
+      "content": "pucha si, me tachan de conflictiva, siendo que no es así, y contra quien aclararlo pude despedirme",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:14.039713+00:00"
+    },
+    {
+      "id": "msg-008",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "assistant",
+      "content": "Es comprensible que te sientas así. Que te etiqueten como \"conflictiva\" cuando tú no lo experimentas de esa manera es una situación muy frustrante, y más aún cuando la persona con quien podrías aclararlo ya no está disponible para conversar. Es un peso doble, porque te quedas sin espacio para explicar tu versión.\n\nPara poder entender mejor tu contexto y no asumir nada: ¿hay otras personas en tu entorno laboral que estén reproduciendo esa misma percepción, o has intentado algo para abordar la situación con quienes te rodean actualmente?",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:27.175935+00:00"
+    },
+    {
+      "id": "msg-009",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "user",
+      "content": "no, solo conmigo, (la casi única mujer), y a los hombres no les dicen nada con perores situaciones",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:25.38514+00:00"
+    },
+    {
+      "id": "msg-010",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "assistant",
+      "content": "Gracias por compartir ese detalle tan relevante. Esa diferencia es clave: que seas la única mujer y que a los hombres no se les etiquete igual, incluso con situaciones más complejas, muestra un patrón que no tiene que ver contigo ni con tu forma de actuar. Es comprensible que esa injusticia duela y confunda.\n\nDesde lo que me cuentas, vale la pena considerar dos cosas: primero, distinguir entre la percepción de los demás y tu realidad interna; segundo, pensar en estrategias que no dependan de que otros cambien su mirada, sino de fortalecer tu posición. Por ejemplo, documentar tus intervenciones en reuniones o correos (sin ser defensiva, solo registrando) puede servir para tener evidencia si en el futuro necesitas mostrar cómo han sido realmente tus interacciones. También puede ayudar identificar a alguna persona aliada —aunque sea fuera de tu unidad— que pueda validar tu experiencia.\n\n¿Te resuena esta idea de documentar o buscar una aliada, o sientes que en tu contexto hay otro tipo de acción que sería más viable?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:31.69452+00:00"
+    },
+    {
+      "id": "msg-011",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "user",
+      "content": "interesante, pero no sé si hablarlo, me podrían despedir en este contexto de desventaja",
+      "metadata": {
+        "order": 7
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:39.108964+00:00"
+    },
+    {
+      "id": "msg-012",
+      "session_id": "6a62b9a4-b160-4553-bec5-5af9c67de918",
+      "role": "assistant",
+      "content": "Tiene todo el sentido que sientas miedo. En un contexto de desventaja, donde eres la única mujer y ya has sido etiquetada, hablar puede sentirse como un riesgo real, no solo percibido. No te voy a sugerir que hagas algo que ponga en peligro tu estabilidad laboral.\n\nEn lugar de eso, quizás lo útil ahora es enfocarte en estrategias de **baja visibilidad y alta protección**, que no requieran enfrentamientos directos ni denuncias formales. Por ejemplo:\n\n- **Registrar para ti misma**, sin compartir con nadie, fechas y situaciones concretas donde viste el trato desigual. Eso te da claridad interna y, si algún día lo necesitas, evidencia.\n- **Identificar si hay canales formales anónimos** en tu institución (como una oficina de género, bienestar o un sindicato) donde puedas consultar sin exponerte.\n- **Cuidar tu red de confianza fuera de ese entorno** para desahogarte sin consecuencias laborales.\n\nA veces, la primera acción protectora es simplemente nombrar para una misma lo que está pasando, sin actuar aún. ¿Cómo te sientes si consideras esta opción de guardar registro solo para ti, como una forma de no cargar sola con la duda?",
+      "metadata": {
+        "order": 8
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:47.109076+00:00"
+    },
+    {
+      "id": "msg-013",
+      "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "role": "user",
+      "content": "How can i come across as more commited to my work in front of my colleagues whitout raising my voice when i have to defend a valid point but no one else is listening to me?",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:25.585226+00:00"
+    },
+    {
+      "id": "msg-014",
+      "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "role": "assistant",
+      "content": "Entiendo profundamente lo frustrante que debe ser sentir que tu punto válido no es escuchado, y que además tengas que preocuparte por cómo te perciben al defenderlo. Es completamente comprensible que quieras mostrarte comprometida sin recurrir a alzar la voz, porque eso podría ir en contra de cómo quieres ser vista.\n\nPara poder darte una sugerencia más ajustada a tu realidad: ¿qué has intentado hasta ahora en esas situaciones para hacerte escuchar, y qué resultado has obtenido?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:30.672936+00:00"
+    },
+    {
+      "id": "msg-015",
+      "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "role": "user",
+      "content": "He hecho lo mismo que mis colegas hombres pero recibo una percepción diferente de parte del equipo.",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:31.275203+00:00"
+    },
+    {
+      "id": "msg-016",
+      "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "role": "assistant",
+      "content": "Gracias por compartir eso. Es muy significativo lo que dices, y tiene mucho sentido que te genere frustración: hacer exactamente lo mismo que otros y recibir una evaluación distinta es una experiencia real y desgastante.\n\nPara entender mejor tu contexto y poder pensar juntas en algo útil: ¿podrías darme un ejemplo concreto de una situación reciente —qué dijiste o hiciste exactamente, y cómo reaccionaron tus colegas o jefatura? Eso me ayudaría a ajustar cualquier sugerencia a tu realidad, sin asumir nada.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:38.09907+00:00"
+    },
+    {
+      "id": "msg-017",
+      "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "role": "user",
+      "content": "After a faculty council where Catalina pushed back firmly on a budget decision she considered unfair, two colleagues filed informal complaints describing her as \"aggressive\" and \"hard to work with.\" A male colleague who raised his voice at the same meeting was later praised for his \"commitment to the institution.\"",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:18.184164+00:00"
+    },
+    {
+      "id": "msg-018",
+      "session_id": "fc6ae0ab-5db7-4d4a-9e11-ad0b328eaf29",
+      "role": "assistant",
+      "content": "Gracias por compartir ese ejemplo tan concreto y revelador. Lo que describes —que dos colegas presentaran quejas informales por \"agresiva\" mientras un colega varón que alzó la voz fue elogiado— no es una coincidencia, sino un patrón documentado en el ámbito académico: las mismas conductas asertivas se leen como \"compromiso\" en hombres y como \"agresividad\" en mujeres. Es comprensible que esto sea desgastante y te haga dudar de cómo actuar.\n\nDado que ya tienes claro el diagnóstico, una estrategia concreta que podrías considerar es **enmarcar tu postura en términos de beneficio colectivo o institucional antes de defender tu punto**. Por ejemplo, en lugar de decir \"esto es injusto\" (que puede leerse como queja personal), podrías decir: \"Propongo revisar este punto porque impacta directamente en la equidad de los recursos del departamento, y me preocupa que el criterio actual no esté alineado con los principios que declaramos como facultad.\" Esto no cambia la sustancia, pero modifica el marco interpretativo de quienes te escuchan, haciendo más difícil que te etiqueten como \"agresiva\" porque estás apelando a valores compartidos.\n\n¿Te parece que esta estrategia podría ser aplicable en tu contexto, o ves algún obstáculo concreto para probarla?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:24.553912+00:00"
+    },
+    {
+      "id": "msg-019",
+      "session_id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "role": "user",
+      "content": "Hola en una reunion de trabajo dos colegas varones me trataron como \"dificil\" o \"agresiva\" de forma injusta",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:45.603088+00:00"
+    },
+    {
+      "id": "msg-020",
+      "session_id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "role": "assistant",
+      "content": "Hola, lamento mucho que hayas tenido que pasar por esa situación. Es completamente comprensible que te sientas herida o frustrada, porque cuando te etiquetan como \"difícil\" o \"agresiva\" sin razón, puede sentirse profundamente injusto y deslegitimador.\n\n¿Podrías contarme un poco más sobre el contexto específico de esa reunión? Por ejemplo, ¿qué estabas planteando o defendiendo cuando recibiste esos comentarios?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:50.840957+00:00"
+    },
+    {
+      "id": "msg-021",
+      "session_id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "role": "user",
+      "content": "Era una reunion presupuestaria sobre",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:38.405054+00:00"
+    },
+    {
+      "id": "msg-022",
+      "session_id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "role": "assistant",
+      "content": "Gracias por compartir el contexto. Entiendo que una reunión de presupuesto puede ser un espacio tenso, donde las opiniones y las negociaciones sobre recursos suelen ser delicadas.\n\nPara poder entender mejor tu situación, ¿podrías contarme qué punto específico estabas defendiendo o cuestionando cuando recibiste esos comentarios? Así puedo dimensionar mejor lo que ocurrió.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:42.494919+00:00"
+    },
+    {
+      "id": "msg-023",
+      "session_id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "role": "user",
+      "content": "Era una discusiom presupuestaria sobre fondos para estudiantws de plstgrade",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:37.854969+00:00"
+    },
+    {
+      "id": "msg-024",
+      "session_id": "d186f33c-e25a-465f-9cbe-32e2e74058f5",
+      "role": "assistant",
+      "content": "Gracias por precisarlo. Es evidente que defender recursos para estudiantes de postgrado es una lucha importante, y que recibir ese tipo de etiquetas en ese contexto puede sentirse especialmente invalidante.\n\nPara poder orientarte mejor, ¿podrías contarme qué fue exactamente lo que dijiste o propusiste en ese momento que generó la reacción de tus colegas? A veces el contenido de la intervención ayuda a entender por qué se activan esos calificativos.",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:41.565781+00:00"
+    },
+    {
+      "id": "msg-025",
+      "session_id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "role": "user",
+      "content": "Soy académica y mis colegas hombres asumen que, por ser mujer, puedo apoyar mejor a los estudiantes con problemas.",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:14.652919+00:00"
+    },
+    {
+      "id": "msg-026",
+      "session_id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "role": "assistant",
+      "content": "Entiendo que esa situación pueda ser frustrante. Que tus colegas asuman roles para ti basados en género no solo es injusto, sino que también puede cargarte con un trabajo emocional adicional que suele pasar desapercibido.\n\nPara entender mejor tu contexto: ¿cómo has respondido tú hasta ahora cuando esta suposición se manifiesta en conversaciones o decisiones de tu departamento?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:18.934395+00:00"
+    },
+    {
+      "id": "msg-027",
+      "session_id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "role": "user",
+      "content": "Lo plantié en el departamento y me dijeron que confiaban en mí porque soy responsbale.",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:52.314303+00:00"
+    },
+    {
+      "id": "msg-028",
+      "session_id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "role": "assistant",
+      "content": "Me parece valiente que lo hayas planteado. La respuesta que recibiste —\"confiamos en ti porque eres responsable\"— es delicada porque, sin mala intención, desvía el foco del problema estructural hacia tu perfil personal, lo que hace más difícil cuestionar la distribución del trabajo emocional.\n\nUna estrategia que podría funcionar es cambiar el ángulo de la conversación: en lugar de centrarte en cómo te perciben a ti, propón al departamento un registro colectivo de las tareas de apoyo estudiantil (horas dedicadas, tipo de casos, carga real). Así el peso del trabajo se hace visible de manera neutral, sin apelar a cualidades personales. Eso puede abrir espacio para distribuir responsabilidades de forma más equitativa.\n\n¿Crees que esta perspectiva de visibilizar la carga de trabajo —en vez de discutir percepciones— podría serte útil en tu contexto, o ves otra barrera que habría que sortear primero?",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:59.110089+00:00"
+    },
+    {
+      "id": "msg-029",
+      "session_id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "role": "user",
+      "content": "Me gusta!",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:35.654776+00:00"
+    },
+    {
+      "id": "msg-030",
+      "session_id": "d0e5d8a9-af63-4b96-a2d2-6eeba9ee6724",
+      "role": "assistant",
+      "content": "Me alegra mucho que la idea te resuene. A veces, un cambio de enfoque técnico —como medir la carga real— puede desactivar resistencias que surgen cuando el debate se vuelve personal.\n\nEl siguiente paso natural sería pensar cómo implementar ese registro sin que se sienta como una auditoría punitiva para nadie. Podría comenzar como una iniciativa piloto tuya, documentando tus propias horas durante un mes, y luego compartir los datos de manera informal con una colega aliada antes de llevarlo al departamento.\n\n¿Hay alguien en tu equipo con quien sientas que podrías ensayar esta conversación o co-diseñar el registro antes de presentarlo formalmente?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:42.571774+00:00"
+    },
+    {
+      "id": "msg-031",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "user",
+      "content": "Hola! Estoy teniendo complicaciones con mi trabajo, resulta que soy profesora e investigadora de la facultad de ciencias sociales de mi facultad, tengo a mi cargo dos comites de tesis, estoy a cargo de el area de bienestar de mi facultad y dado este cargo, informalmente los estudiantes acuden a mi en busca de consejo, mis compañeros hombres con mi mismo cargo no cumplen ninguna de estas funciones y desarrollan normalmente su vida academica y laboral. En ese sentido te escribo porque no he podido avanzar en mis trabajos academicos hace 10 meses y en 11 meses mas tengo comité para ver si me promueven, que puedo hacer para balancear mejor esta carga?",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:10:26.723518+00:00"
+    },
+    {
+      "id": "msg-032",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "assistant",
+      "content": "Entiendo lo agotador que debe ser llevar toda esa carga adicional —los comités, el área de bienestar y la consejería informal— mientras ves que tus colegas hombres no enfrentan lo mismo, y con la presión de la evaluación en menos de un año. Es comprensible que sientas que no has podido avanzar en tu producción académica.\n\nPara ayudarte mejor, necesito entender un poco más: **¿Qué estrategias has intentado hasta ahora para poner límites o delegar algunas de estas tareas?** Por ejemplo, ¿has conversado con alguien de tu facultad sobre redistribuir la carga del área de bienestar o formalizar la consejería estudiantil?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:10:33.903246+00:00"
+    },
+    {
+      "id": "msg-033",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "user",
+      "content": "Por el momento nada, no he podido ponerme en accion porque me siento sobrepasada",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:10.087661+00:00"
+    },
+    {
+      "id": "msg-034",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "assistant",
+      "content": "Tiene todo el sentido que te sientas sobrepasada; cuando la carga es tan grande, dar el primer paso puede parecer imposible. No hay nada de malo en no haber actuado aún. Lo importante es que ya identificaste el problema.\n\nPara empezar a moverte sin sentir que necesitas resolver todo de golpe, dime esto: **Si pudieras cambiar una sola cosa esta semana —una tarea específica que te quite más tiempo— ¿cuál sería?** No pienses en el \"cómo\", solo en qué tarea concreta sientes que es la que más te drena.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:17.585937+00:00"
+    },
+    {
+      "id": "msg-035",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "user",
+      "content": "Le daria apoyo al acompañamiento de estudiantes de manera informal, pierdo mucho tiempo conversando luego de clases y respondiendo correos",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:34.351478+00:00"
+    },
+    {
+      "id": "msg-036",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "assistant",
+      "content": "Gracias por precisarlo. Centrarse en el acompañamiento informal es muy revelador: esa tarea es invisible pero consume mucho tiempo, y como no está formalizada, es difícil medirla o justificar ponerle límites. Tiene todo el sentido que ahí esté el primer foco.\n\nUna estrategia concreta que podrías considerar esta semana es **delimitar un \"horario de atención abierta\" para esos consejos informales** —por ejemplo, 30 minutos después de cada clase, dos veces por semana— y comunicarlo amablemente a tus estudiantes. Para los correos, podrías redactar una respuesta tipo breve que ofrezca ese espacio en lugar de resolver todo por escrito. Esto no resuelve todo, pero te devuelve algo de control sobre tu tiempo sin desaparecer del todo.\n\nDicho esto, ¿crees que esta idea de poner un horario fijo podría ser viable en tu contexto, o ves algún obstáculo concreto que haría difícil implementarlo?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:45.677992+00:00"
+    },
+    {
+      "id": "msg-037",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "user",
+      "content": "Si, suelo tener libre despues de las clases para este tiempo libre",
+      "metadata": {
+        "order": 7
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:11.061528+00:00"
+    },
+    {
+      "id": "msg-038",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "assistant",
+      "content": "Me alegra que tengas ese espacio después de clases disponible. Eso hace que la idea de un horario fijo sea muy viable. Podrías probar con algo simple: al terminar cada clase, anunciar que te quedas 20 minutos para quienes necesiten conversar brevemente, y fuera de ese horario redirigir las consultas a ese espacio o al área de bienestar formal (si existe). Así reduces la dispersión sin abandonar el apoyo.\n\nAdemás, para los correos, te sugiero tener una respuesta modelo breve, como: \"Gracias por tu consulta. Te espero en mi horario de atención después de la clase del [día] para conversarlo\". Eso pone un límite claro sin sentirte culpable.\n\nAhora, una reflexión final: ¿Cómo crees que se sentiría al implementar este pequeño cambio durante una semana? A veces visualizar el alivio concreto ayuda a dar el paso.",
+      "metadata": {
+        "order": 8
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:19.881904+00:00"
+    },
+    {
+      "id": "msg-039",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "user",
+      "content": "Yo creo que me ayudaria a ordenar mejor mi tiempo y las cosas que tengo que hacer",
+      "metadata": {
+        "order": 9
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:02.736446+00:00"
+    },
+    {
+      "id": "msg-040",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "assistant",
+      "content": "Me alegra que veas que este cambio podría ayudarte a ordenarte. Tener una visión clara del beneficio es un buen primer paso para empezar a actuar.\n\nPara que puedas implementarlo con más confianza, ¿hay algún colega o autoridad en tu facultad con quien puedas conversar sobre esta medida? Por ejemplo, comentarle al director de tu departamento que vas a formalizar un horario de atención para que los estudiantes sepan cuándo encontrarte. Eso podría darte respaldo y hacer que el límite sea más sostenible.",
+      "metadata": {
+        "order": 10
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:20.034613+00:00"
+    },
+    {
+      "id": "msg-041",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "user",
+      "content": "No tengo ninguna compañera en mi mismo cargo",
+      "metadata": {
+        "order": 11
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:34.526101+00:00"
+    },
+    {
+      "id": "msg-042",
+      "session_id": "6fba1474-d98c-498e-9aab-bf54d7bc0d55",
+      "role": "assistant",
+      "content": "Entiendo. No tener colegas mujeres en el mismo cargo hace que sea más difícil encontrar apoyo o validación para poner límites. Sin embargo, igual puedes buscar respaldo institucional: tu jefe directo (aunque sea hombre) o la dirección de tu facultad. No necesitas pedir permiso, pero sí informar que, para proteger tu tiempo de investigación, vas a establecer un horario de atención fijo para estudiantes. Eso lo convierte en una decisión profesional, no personal.\n\nAdemás, considera buscar una mentora o par académica fuera de tu universidad (por ejemplo, de otra facultad o disciplina). A veces una conversación mensual con alguien que entienda el contexto puede darte perspectivas y apoyo sin que dependas de colegas locales.\n\nDado que ya identificaste un primer paso concreto, ¿qué te parece si esta semana te enfocas solo en implementar ese horario fijo y ver cómo te sientes? El resto de las tareas pueden esperar.",
+      "metadata": {
+        "order": 12
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:47.356206+00:00"
+    },
+    {
+      "id": "msg-043",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "user",
+      "content": "Hi! How can I help you today?\n\n👤\nI am a faculty member, a new one. I serve in a lot committes relatedbti students wellfare, but I siendo too much time on that... and I haven't finished my research paper. What should I do?",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:13.26454+00:00"
+    },
+    {
+      "id": "msg-044",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "assistant",
+      "content": "It makes a lot of sense that you feel stretched—committees can be consuming, especially when they involve student welfare, which often carries an emotional weight. And as a new faculty member, you may also feel pressure to prove your commitment. It's understandable that your research paper is getting left behind.\n\nTo help us think together, could you tell me: what, if anything, have you considered or tried so far to better balance your committee service with your writing time?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:11:17.944035+00:00"
+    },
+    {
+      "id": "msg-045",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "user",
+      "content": "I talked to my chair... it seems that my male colleagues are not taking the same workload",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:37.356812+00:00"
+    },
+    {
+      "id": "msg-046",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "assistant",
+      "content": "That sounds like a significant—and unfortunately common—observation. It's completely understandable that this feels frustrating, especially when you're already stretched thin and trying to meet your research goals. Raising it with your chair was a courageous step.\n\nCould you share what your chair said in response when you brought up that difference in workload? That might help us see what room you have to adjust things.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:42.717535+00:00"
+    },
+    {
+      "id": "msg-047",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "user",
+      "content": "That they give me those assignments because I am a responsable person",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:30.40915+00:00"
+    },
+    {
+      "id": "msg-048",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "assistant",
+      "content": "Thank you for sharing that—it's a very telling response from your chair. What you describe is a pattern I've seen many times: assigning more service work to someone precisely *because* they are dependable, which can end up penalizing the very responsibility that makes you valuable. The fact that your male colleagues aren't carrying the same load, and that the chair frames this as a reward for your reliability, is important context.\n\nOne strategy that some academics find useful in this situation is to reframe the conversation with your chair from *how much* you are doing to *what gets displaced*. For example, you could say something like: \"I want to continue contributing, but I need to ensure I can meet my research milestones. Could we review the committee workload among the faculty to make sure it's distributed more equitably, so I can protect my writing time?\" This shifts the focus to institutional balance rather than your personal capacity, which can be harder for a chair to dismiss.\n\nDoes this framing resonate with your situation, or would a different angle be more helpful for you to try?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:38.416507+00:00"
+    },
+    {
+      "id": "msg-049",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "user",
+      "content": "It does",
+      "metadata": {
+        "order": 7
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:25.177838+00:00"
+    },
+    {
+      "id": "msg-050",
+      "session_id": "106d146f-456d-4299-9c4b-fb4c9b500e5f",
+      "role": "assistant",
+      "content": "I'm glad that framing clicks for you. One concrete next step could be to prepare a simple, factual comparison of the time you spend on service versus your male colleagues—without accusations, just data. For instance, you could jot down the number of committees you're on, the hours per week, and contrast it with the typical load of your peers (even if it's approximate). Then, bring that to your chair along with your research deadlines.\n\nThis turns the conversation from \"I'm overwhelmed\" (which can be heard as personal) to \"Here's a visible imbalance that affects our unit's productivity and equity\" (which is institutional). Many chairs find it harder to dismiss a concrete picture.\n\nHow do you feel about preparing a brief, factual summary before your next conversation?",
+      "metadata": {
+        "order": 8
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:14:31.682226+00:00"
+    },
+    {
+      "id": "msg-051",
+      "session_id": "defb8ae0-082a-4277-acab-3e62f684dc60",
+      "role": "user",
+      "content": "i have a problem with my faculty, i was defending a budget decision i considered it was unfair, but then one of my male colleagues was praised for standing up and raising his voice in the same meeting. i believe this has something to do with the fact that i am a woman, and i am risking the faculty evaluation next week if i dont do something",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:11.273819+00:00"
+    },
+    {
+      "id": "msg-052",
+      "session_id": "defb8ae0-082a-4277-acab-3e62f684dc60",
+      "role": "assistant",
+      "content": "It makes sense that you feel frustrated and concerned about the difference in treatment and the pressure of the upcoming evaluation. That discrepancy—where your male colleague is praised for similar behavior—can be deeply unsettling, especially when you're already navigating a high-stakes moment.\n\nBefore I can offer any more tailored thoughts, I need to understand one thing: **What specific action(s) are you considering taking before the evaluation next week?** (For example, are you thinking of talking to someone, preparing a statement, or simply observing?)",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:12:17.626041+00:00"
+    },
+    {
+      "id": "msg-053",
+      "session_id": "defb8ae0-082a-4277-acab-3e62f684dc60",
+      "role": "user",
+      "content": "probably is the best to talk to someone, but i don’t know how to proceed",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:02.223766+00:00"
+    },
+    {
+      "id": "msg-054",
+      "session_id": "defb8ae0-082a-4277-acab-3e62f684dc60",
+      "role": "assistant",
+      "content": "Thank you for clarifying. It's completely understandable to feel uncertain about how to approach this—especially when the system feels inconsistent and the evaluation is looming.\n\nSince you're considering talking to someone, let me suggest a concrete first step: **Reframe your goal.** Instead of \"complaining about the unfairness\" (which might be risky), frame it as a *request for clarity on protocols and expectations.* For example, you could schedule a brief meeting with your department head or a trusted senior colleague and say something like: *\"I want to ensure I'm supporting the faculty's best interests. Could you help me understand the criteria for how budget advocacy is valued in evaluations? I noticed different reactions in the last meeting and want to align my approach.\"*\n\nThis keeps the focus on your professional development and the institution's standards, not on comparing yourself to your colleague.\n\n**One reflective question for you:** Does this framing feel like it could protect you while still addressing the issue, or does it raise other concerns for your specific context?",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:13:08.487948+00:00"
+    },
+    {
+      "id": "msg-055",
+      "session_id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "role": "user",
+      "content": "I’d like to know what roles will be taken off my shoulders to give me the time to complete these roles. I also want to know if my expectations on other tasks will be adjusted based on these added expectations.",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:46.086228+00:00"
+    },
+    {
+      "id": "msg-056",
+      "session_id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "role": "assistant",
+      "content": "I can hear how important it is for you to have clarity about what will change in your workload when new expectations are added. It makes sense to want to know which tasks will be removed or adjusted, rather than just piling more on. That kind of transparency is not always given, yet it's essential for sustainable work.\n\nTo help you move forward, could you tell me a little more about the specific new roles or expectations that were introduced? For example, were they assigned by a department head, part of a committee, or included in a new teaching or research requirement? Knowing the source and nature of the added tasks will help me offer a more focused perspective.",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:50.854085+00:00"
+    },
+    {
+      "id": "msg-057",
+      "session_id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "role": "user",
+      "content": "They were assigned by my head of my department",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:44.884434+00:00"
+    },
+    {
+      "id": "msg-058",
+      "session_id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "role": "assistant",
+      "content": "Thank you for clarifying that. Knowing the expectations come from your department head gives a clearer picture—it suggests this is a direct, hierarchical assignment rather than a peer or committee decision, which can affect how you approach a conversation about workload adjustments.\n\nHave you already discussed with your department head the possibility of reallocating or reducing some of your current responsibilities to accommodate these new roles? I ask because understanding what, if any, negotiation has already taken place can help identify the next most useful step.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:57.438356+00:00"
+    },
+    {
+      "id": "msg-059",
+      "session_id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "role": "user",
+      "content": "No",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:09.818275+00:00"
+    },
+    {
+      "id": "msg-060",
+      "session_id": "dffea2d4-6320-4439-9d05-b265f07ccc25",
+      "role": "assistant",
+      "content": "I see—so the new responsibilities were assigned, but no conversation about adjusting your existing workload has happened yet. That's a key piece: without that discussion, it's hard to know whether the department head expects you to simply absorb everything, or whether they're open to renegotiating.\n\nWhat would feel most difficult or risky for you about initiating that conversation? For example, is it about finding the right moment, fearing a negative response, or not being sure how to frame your request in a way that feels professional and fair?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:14.76209+00:00"
+    },
+    {
+      "id": "msg-061",
+      "session_id": "175db844-0d89-47a9-8356-574f56378465",
+      "role": "user",
+      "content": "I’d like to know what roles will be taken off my shoulders to give me the time to complete these roles. I also want to know if my expectations on other tasks will be adjusted based on these added expectations.",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:04:06.46676+00:00"
+    },
+    {
+      "id": "msg-062",
+      "session_id": "175db844-0d89-47a9-8356-574f56378465",
+      "role": "assistant",
+      "content": "It sounds like you're navigating a workload rebalancing conversation—likely with a manager or team lead. To directly address your questions:\n\n1. **Which roles will be removed or reassigned?**  \n   That depends on the specific tasks you’re currently handling. You’ll need a clear, documented list of your current responsibilities and the new ones being added. From there, your manager should identify which tasks can be delegated, postponed, or eliminated entirely to free up time. If that hasn’t been spelled out yet, ask for a written priority trade-off.\n\n2. **Will expectations on existing tasks be adjusted?**  \n   Yes, that should happen. If you’re taking on new roles, the performance standards, deadlines, or quality targets for your remaining tasks should be formally recalibrated. Otherwise, you risk being set up for failure. Push for explicit agreement on which tasks get lower priority, extended timelines, or reduced scope.\n\n**Next steps you might take:**\n- Request a meeting to review your full workload before and after the change.\n- Ask for a “stop doing” list—specific tasks or responsibilities that will be removed or deprioritized.\n- Confirm whether deadlines or success metrics for ongoing tasks will be relaxed.\n\nIf you haven’t received clear answers yet, you’re right to ask. A sustainable shift requires both subtraction and adjustment, not just addition. Want to share more context so I can help tailor the approach?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:04:11.585654+00:00"
+    },
+    {
+      "id": "msg-063",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "user",
+      "content": "Hola, soy una académica de una institución pública",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:02:52.087889+00:00"
+    },
+    {
+      "id": "msg-064",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "assistant",
+      "content": "¡Hola! Qué gusto saludarte. ¿En qué puedo orientarte hoy sobre tu situación académica?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:02:55.70799+00:00"
+    },
+    {
+      "id": "msg-065",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "user",
+      "content": "Quisiera consultar sobre una situación de conflicto en mi departamento",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:00.77887+00:00"
+    },
+    {
+      "id": "msg-066",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "assistant",
+      "content": "Entendido. Cuéntame con más detalle qué ocurrió para orientarte mejor.da ayudarte.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:02.584123+00:00"
+    },
+    {
+      "id": "msg-067",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "user",
+      "content": "Recibi mucha resistencia de parte de un colega varon en una reunion presupuestaria",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:51.170897+00:00"
+    },
+    {
+      "id": "msg-068",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "assistant",
+      "content": "Entiendo, Catalina. Lamento escuchar que hayas enfrentado resistencia de un colega en una reunión presupuestaria. Es un escenario complejo, sobre todo cuando hay diferencias de opinión o dinámicas de poder que pueden hacer sentir que tu voz no es escuchada.\n\nPara poder darte una orientación más precisa, me gustaría preguntarte: ¿la resistencia se manifestó en críticas a tus propuestas, interrupciones, descalificaciones o simplemente en una actitud cerrada a considerar alternativas? Dependiendo del tipo de resistencia, las estrategias pueden variar.\n\nEn términos generales, te sugiero considerar algunos pasos:\n\n1. **Preparación técnica sólida** – Asegúrate de tener datos, proyecciones y casos concretos que respalden tus puntos. Si tu colega se basa en supuestos o emociones, los números pueden ser tu mejor aliado.\n2. **Comunicación asertiva** – Puedes usar frases como: “Entiendo tu punto, pero desde mi perspectiva los datos muestran que…”, o “Propongo que revisemos juntos estas cifras para ver si hay un punto en común”.\n3. **Buscar aliados** – Si hay otros colegas que apoyan tus ideas o que tienen peso en la discusión, coordina con ellos antes de la reunión para que respalden ciertos puntos.\n4. **Documentar la situación** – Si la resistencia es recurrente o se torna hostil, puede ser útil llevar un registro por si necesitas hablar con tu jefe o recursos humanos.\n5. **Hablar con él en privado** – A veces una conversación uno a uno, sin presión de grupo, puede aclarar malentendidos o tensiones.\n\n¿Te gustaría que profundice en alguna de estas líneas o prefieres contarme un poco más sobre cómo se desarrolló la reunión?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:05.846472+00:00"
+    },
+    {
+      "id": "msg-069",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "user",
+      "content": "Debería reportar su actitud o dejarlo pasar ?",
+      "metadata": {
+        "order": 7
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:46.960492+00:00"
+    },
+    {
+      "id": "msg-070",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "assistant",
+      "content": "Entiendo que esta decisión puede ser incómoda y que hay varios factores en juego. Te ayudaré a evaluarlo paso a paso para que puedas decidir con claridad.\n\nPrimero, pregúntate:\n\n- **¿Fue un episodio aislado o es parte de un patrón?** Si es la primera vez y la resistencia se dio solo en esa reunión, quizás valga la pena intentar una conversación directa con él antes de escalarlo. Si ya ha ocurrido antes o hay otras actitudes similares (minimizar tus ideas, interrumpirte, hablar sobre ti), entonces documentarlo y reportarlo cobra más sentido.\n- **¿Cuál fue el tono y el contenido de la resistencia?** Si fueron críticas técnicas y argumentadas (aunque duras), puede ser un desacuerdo profesional normal. Si hubo descalificaciones personales, condescendencia, interrupciones sistemáticas o comentarios que sugieran que tu opinión vale menos por ser mujer, eso ya es más grave y merece ser reportado.\n- **¿Cómo afectó esto a tu trabajo o a tu bienestar?** Si te hizo sentir insegura, silenciada o con miedo de participar en futuras reuniones, no lo dejes pasar. Tu salud mental y tu derecho a un ambiente respetuoso son prioritarios.\n- **¿Existe una cultura institucional de apoyo?** En la la institución universitaria suele haber canales formales (Oficina de Género, OIRS, denuncias formales) y también informales (jefatura, tutores). Si sientes que hay respaldo, reportar puede ser más seguro.\n\n**Mi recomendación equilibrada:**\n\n- **No lo dejes pasar sin más**, porque podrías normalizar una conducta que no es aceptable.\n- **Pero no necesariamente lo reportes de inmediato si no hay claridad.** Primero intenta:\n  1. Hablar con él en privado, de manera calmada: “En la reunión sentí que mis propuestas no fueron consideradas. ¿Podemos conversar para entender mejor tu punto y buscar acuerdos?”. A veces es solo mala comunicación.\n  2. Si no funciona o si la actitud se repite, entonces **documenta** (fecha, palabras textuales, testigos) y **reporta** a tu jefe directo o a la unidad de género de la universidad.\n\n**En resumen:** Si fue una sola vez y con argumentos técnicos, intenta resolverlo conversando. Si hay indicios de sesgo de género, patrón o maltrato, **no lo dejes pasar y repórtalo**. Nadie debería tener que soportar resistencia injusta por su género.\n\n¿Te sirve este análisis o prefieres que profundice en cómo preparar esa conversación o el reporte?",
+      "metadata": {
+        "order": 8
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:08.567765+00:00"
+    },
+    {
+      "id": "msg-071",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "user",
+      "content": "me han categorizado como \"dificil\" o \"agresiva\"",
+      "metadata": {
+        "order": 9
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:42.999432+00:00"
+    },
+    {
+      "id": "msg-072",
+      "session_id": "e9a6af66-0dcc-45af-aa9b-9124e533126d",
+      "role": "assistant",
+      "content": "Lamento mucho que estés experimentando esto. Es una situación muy compleja y, lamentablemente, frecuente cuando una mujer muestra firmeza en contextos laborales o académicos. Ser etiquetada como \"difícil\" o \"agresiva\" suele ser una respuesta a la asertividad femenina, mientras que conductas similares en varones son vistas como \"seguridad\" o \"liderazgo\".\n\nAnalicemos esto con cuidado:\n\n**¿Qué está pasando realmente?**\n\n- **Sesgo de género implícito:** Existe abundante evidencia (estudios como los de la Universidad de Harvard o el Proyecto Implícito) de que las mujeres que son directas, defienden sus ideas o cuestionan decisiones son percibidas como \"agresivas\", mientras que los hombres con el mismo comportamiento son vistos como \"firmes\" o \"competentes\".\n- **Gaslighting institucional:** Al ponerte esa etiqueta, se desvía la atención de la conducta de tu colega (resistencia injustificada) hacia tu forma de reaccionar, invalidando tu experiencia y haciéndote dudar de ti misma.\n- **Aislamiento:** Este tipo de etiquetas busca silenciarte y desacreditarte ante otros colegas o superiores.\n\n**¿Qué puedes hacer?**\n\n1. **No internalices la etiqueta.** No eres \"difícil\", eres competente y defiendes tus posiciones. La resistencia que enfrentaste no justifica que ahora te patologicen a ti.\n\n2. **Documenta TODO.** Anota:\n   - Fechas y contexto de la reunión.\n   - Frases textuales de tu colega (resistencia).\n   - Frases textuales de quien te categorizó (si fue él u otra persona).\n   - Testigos presentes.\n   - Cómo te sentiste y cómo afectó tu desempeño.\n\n3. **Busca una conversación con alguien de confianza en la universidad.** Puede ser:\n   - Tu jefe/a directo/a (si es alguien con quien puedas ser sincera).\n   - La Dirección de Género de la la institución universitaria (tienen experiencia en estos casos y pueden orientarte).\n   - Un/a tutor/a académico/a o un/a colega senior que te respalde.\n\n4. **Si decides confrontar la etiqueta**, puedes decir algo como:\n   > \"Me han comentado que en la reunión fui percibida como 'agresiva'. Quiero entender mejor a qué se refieren, porque yo estaba defendiendo datos objetivos y propuestas razonadas. A veces, cuando una mujer defiende sus ideas con firmeza, se interpreta de manera distinta que cuando lo hace un hombre. Me gustaría que revisemos juntos si lo que incomodó fue mi forma o el contenido de lo que dije.\"\n\n5. **Evalúa la opción de una denuncia formal** si:\n   - Hay un patrón de conducta (no solo este episodio).\n   - La categorización viene de tu colega y es reiterada.\n   - Sientes que tu desempeño o tu bienestar están siendo afectados.\n   - Hay otras mujeres que hayan reportado conductas similares de la misma persona.\n\n**Lo más importante: no estás sola.** Muchas mujeres han pasado por esto antes que tú. La la institución universitaria tiene protocolos contra el acoso y la discriminación de género. No dudes en usarlos si sientes que es necesario.\n\n¿Te gustaría que te ayude a estructurar cómo hablar con tu jefe o con la unidad de género? ¿O prefieres pensar primero en cómo responder si vuelven a hacer ese comentario en público?",
+      "metadata": {
+        "order": 10
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:09:09.225897+00:00"
+    },
+    {
+      "id": "msg-073",
+      "session_id": "74e778ea-347c-43c7-846b-d7b40574671a",
+      "role": "user",
+      "content": "Hola! Estoy teniendo complicaciones con mi trabajo, resulta que soy profesora e investigadora de la facultad de ciencias sociales de mi facultad, tengo a mi cargo dos comites de tesis, estoy a cargo de el area de bienestar de mi facultad y dado este cargo, informalmente los estudiantes acuden a mi en busca de consejo, mis compañeros hombres con mi mismo cargo no cumplen ninguna de estas funciones y desarrollan normalmente su vida academica y laboral. En ese sentido te escribo porque no he podido avanzar en mis trabajos academicos hace 10 meses y en 11 meses mas tengo comité para ver si me promueven, que puedo hacer para balancear mejor esta carga?",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:30.967361+00:00"
+    },
+    {
+      "id": "msg-074",
+      "session_id": "74e778ea-347c-43c7-846b-d7b40574671a",
+      "role": "assistant",
+      "content": "Hola, gracias por compartir tu situación. Entiendo profundamente lo frustrante y agotador que debe ser cargar con responsabilidades informales que no están reconocidas ni distribuidas equitativamente, mientras ves que tus colegas varones no enfrentan las mismas exigencias. Esto no es solo un problema personal, sino un reflejo de dinámicas de género estructurales en la academia, donde las mujeres suelen asumir tareas de cuidado, contención y gestión emocional que no son valoradas en los procesos de evaluación.\n\nTe propongo algunas estrategias concretas para intentar equilibrar tu carga y avanzar hacia tu promoción:\n\n**1. Haz visible y cuantifica tu trabajo invisible**\n- Lleva un registro durante 2 semanas de todo lo que haces: reuniones informales con estudiantes, consultas de bienestar, gestiones no previstas, horas dedicadas a comités de tesis. Anota tiempos, temas y personas involucradas.\n- Este registro te servirá para:\n   a) Mostrar en tu comité de promoción que tu producción académica se ha visto desplazada por labores de gestión y apoyo que **no son parte formal de tu cargo**.\n   b) Negociar con tus autoridades una redistribución de tareas o reconocimiento formal (descarga horaria, apoyo administrativo, etc.).\n\n**2. Establece límites claros y comunícalos**\n- Define **horarios de atención** específicos para consultas de estudiantes, y comunícalos por correo o en la puerta de tu oficina. Fuera de ese horario, no respondas mensajes ni correos informales (salvo emergencias reales).\n- Crea un **protocolo simple** de derivación: si un estudiante llega con un problema que no es estrictamente de bienestar (por ejemplo, dudas administrativas o académicas generales), redirígelo a la instancia correspondiente (secretaría, otro profesor, etc.).\n- Ensaya frases como: *\"Entiendo tu situación, pero este tema corresponde al área de [X]. Te sugiero que lo consultes con [persona/oficina] porque yo no puedo resolverlo desde aquí\"*.\n\n**3. Delegar y redistribuir tareas del área de bienestar**\n- Si tienes colegas en el área de bienestar o en tu facultad, **formaliza la existencia de un equipo**, aunque sea pequeño. Propón que al menos una persona más (puede ser un ayudante, un estudiante de posgrado remunerado, o un administrativo) comparta la atención de estudiantes.\n- Si no es posible, pide a tus autoridades que **definan por escrito el alcance de tus funciones** en bienestar. Así quedará claro qué tareas sí y cuáles no te corresponden, y podrás negarte a asumir otras sin sentir culpa.\n\n**4. Negocia con tus autoridades usando datos**\n- Pide una reunión con tu director/a de departamento o decano/a. Lleva tu registro de carga de trabajo. Señala con claridad:\n   *\"En los últimos 10 meses, he dedicado el [X]% de mi tiempo a tareas de bienestar y atención informal a estudiantes, mientras mis colegas hombres con el mismo cargo dedican ese tiempo a investigación. Para poder avanzar en mis publicaciones y ser promovida, necesito [descarga horaria / apoyo de otro/a colega / reconocimiento formal del trabajo de bienestar en la evaluación]*.\n- Si encuentras resistencia, menciona que esta desigualdad afecta tu promoción y que puedes elevar el caso a la unidad de equidad de género de la universidad o al comité de ética.\n\n**5. Prioriza tu producción académica con micro-objetivos**\n- Enfócate en **un solo producto** académico para los próximos meses (un artículo, un capítulo, un borrador de proyecto). Divide el proceso en pasos semanales muy concretos: 3 horas de escritura, revisar una sección, etc.\n- **Bloquea tiempo en tu agenda** como si fuera una reunión ineludible contigo misma. Si alguien te interrumpe, di: *\"En este momento estoy trabajando en un plazo académico. Podemos hablar después de las [hora]*\".\n- Considera **coautorías** con colegas de confianza para avanzar más rápido, o pide retroalimentación a un/a mentor/a externa a tu facultad.\n\n**6. No asumas que todo depende de ti**\n- Es probable que los estudiantes acudan a ti porque te perciben como accesible y empática, y porque en tu facultad no hay otros espacios de contención. **No es tu responsabilidad solucionar sola ese vacío institucional**. Puedes sugerir a la facultad crear talleres, grupos de apoyo entre pares o derivar a servicios externos (psicológicos, de tutoría).\n- Si sientes culpa al poner límites, recuerda que tu bienestar y tu carrera también importan. No puedes cuidar a otros si tú misma estás agotada.\n\n**7. Prepara tu caso para el comité de promoción**\n- En tu informe, incluye una sección que contextualice tu baja productividad académica: menciona las tareas de bienestar no reconocidas, la carga desproporcionada y la falta de apoyo institucional. Aporta tu registro de horas.\n- Si es posible, consigue cartas de apoyo de estudiantes o colegas que avalen tu labor en bienestar, para que no pase desapercibida.\n- Si el comité evalúa solo publicaciones, pide que se consideren **evidencias alternativas** de tu trabajo: informes de gestión, proyectos de bienestar implementados, reconocimientos.\n\n**8. Busca aliadas y redes de apoyo**\n- Conecta con otras académicas de tu facultad o de otras universidades que estén en situaciones similares. Compartir estrategias y presionar colectivamente puede ser más efectivo que hacerlo sola.\n- Considera participar en programas de mentoría para mujeres en academia, donde puedas recibir orientación específica para tu contexto.\n\nFinalmente, quiero decirte que **no es tu culpa**. Esta sobrecarga es el resultado de un sistema que asigna tareas de cuidado a las mujeres sin reconocerlas ni compensarlas. Mereces avanzar en tu carrera sin tener que sacrificar tu salud o tu tiempo. Empieza con un cambio pequeño pero significativo esta semana, y ve construyendo desde ahí. ¿Hay algo de esto que te gustaría explorar más o que se adapte mejor a tu contexto? Estoy aquí para ayudarte a pensar en pasos concretos.",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:17.153173+00:00"
+    },
+    {
+      "id": "msg-075",
+      "session_id": "74e778ea-347c-43c7-846b-d7b40574671a",
+      "role": "user",
+      "content": "Fue de mucha utilidad, muchas gracias!",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:44.979031+00:00"
+    },
+    {
+      "id": "msg-076",
+      "session_id": "74e778ea-347c-43c7-846b-d7b40574671a",
+      "role": "assistant",
+      "content": "¡De nada! Me alegra mucho que te haya sido útil. Recuerda que este proceso no es fácil, pero es posible con pequeños pasos constantes y con el apoyo adecuado. No dudes en escribirme de nuevo si en algún momento necesitas ayuda para redactar un correo a tus autoridades, planificar tu bloque de escritura o simplemente desahogarte.\n\nEstoy aquí para acompañarte en lo que necesites. Mucho ánimo con tu comité de promoción: tienes once meses por delante y con claridad y límites puedes lograr grandes avances. ¡Tú puedes!",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:53.236359+00:00"
+    },
+    {
+      "id": "msg-077",
+      "session_id": "a022f46d-0bdc-4197-8466-b15fac8adcb5",
+      "role": "user",
+      "content": "i have a problem with my faculty, i was defending a budget decision i considered it was unfair, but then one of my male colleagues was praised for standing up and raising his voice in the same meeting. i believe this has something to do with the fact that i am a woman, and i am risking the faculty evaluation next week if i dont do something",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:02.518772+00:00"
+    },
+    {
+      "id": "msg-078",
+      "session_id": "a022f46d-0bdc-4197-8466-b15fac8adcb5",
+      "role": "assistant",
+      "content": "This is a classic and frustrating double standard—one that many women in academia (and other workplaces) experience. Your instinct that gender bias is at play is very likely correct: assertive behavior in a woman is often perceived as aggressive or difficult, while the same behavior in a man is seen as passionate or strong. It’s unfair, and it’s exhausting to have to navigate.\n\nThe good news is that you *can* manage the upcoming evaluation without compromising your integrity. Here’s a concrete strategy:\n\n## 1. Reframe the narrative *before* the evaluation\nSpeak to your evaluator (chair, dean, or committee) proactively. You don’t need to accuse anyone of sexism—simply frame your actions in professional terms. For example:\n\n> “At the last meeting, I raised concerns about the budget decision because I believed it was important for the faculty’s long-term health. I want to make sure that my advocacy for the department’s interests is seen as part of my commitment, not as negativity. I hope to clarify any impressions from that discussion before the evaluation.”\n\nThis positions you as self-aware, collaborative, and focused on the institution’s good—not as a troublemaker.\n\n## 2. Document the discrepancy (quietly)\nWrite down what happened: the date, the meeting context, what you said, what your colleague said, and how each was received. If you have allies who witnessed it, ask if they’d be willing to support you if needed. You may never use this documentation, but having it gives you clarity and confidence.\n\n## 3. Find a trusted mentor or ally\nIs there a senior woman or a fair-minded male colleague on the faculty? Share your concern with them privately. Ask: *“How would you advise me to handle the evaluation given that my advocacy was perceived differently than a male colleague’s similar behavior?”* A good mentor can provide context and even speak to the evaluator informally on your behalf.\n\n## 4. Prepare your evaluation responses\nAnticipate potential feedback about “being difficult” or “not a team player.” Prepare concrete examples of your collaboration, leadership, and positive contributions—not just the budget issue. If the budget issue comes up, you can say:\n\n> “I raised a legitimate concern about resource allocation. Once the decision was made, I fully supported the process and have continued to work constructively with my colleagues.”\n\n## 5. Consider a subtle approach to the bias\nIf you have a good relationship with your evaluator, you could ask a neutral question: *“I’ve noticed that different communication styles are sometimes perceived differently. How can I be sure my advocacy is received as constructively as a colleague’s?”* This plants the idea without accusation.\n\n## 6. Take care of yourself emotionally\nThis is not your fault. The system is imperfect. You are right to feel the injustice—but you also need to protect your career while the system slowly changes. Get support outside of work, and remember that your voice matters.\n\n**What’s the next step you feel most comfortable taking?** If you want to draft a short message to your evaluator, I can help you refine it.",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:08.283874+00:00"
+    },
+    {
+      "id": "msg-079",
+      "session_id": "2dbc2a08-a215-41f7-8913-6740207dddfb",
+      "role": "user",
+      "content": "Cómo puedo enfrentar la situación con mis colegas?",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:13.103559+00:00"
+    },
+    {
+      "id": "msg-080",
+      "session_id": "2dbc2a08-a215-41f7-8913-6740207dddfb",
+      "role": "assistant",
+      "content": "Entiendo que puedas estar pasando por una situación difícil con tus colegas. Aquí tienes algunos pasos prácticos para enfrentarla de manera constructiva:\n\n1. **Reflexiona primero**: Antes de actuar, pregúntate: ¿Cuál es el problema específico? ¿Es un malentendido, diferencias de criterio o algo más profundo? Identificar la causa te ayudará a abordarlo mejor.\n\n2. **Comunicación asertiva**: Busca un momento privado y tranquilo para hablar. Usa frases como \"Cuando sucede X, me siento Y porque necesito Z\". Evita acusaciones y enfócate en tus percepciones.\n\n3. **Escucha activa**: Al conversar, muestra interés genuino por su punto de vista. Pregunta: \"¿Cómo ves tú la situación?\" o \"¿Qué necesitarías para sentirte más cómodo/a?\".\n\n4. **Buscar puntos en común**: Enfócate en metas compartidas del equipo o del trabajo. Pregunta: \"¿Cómo podemos trabajar juntos para lograr esto?\".\n\n5. **Si el conflicto persiste**: Considera la mediación de un superior o de recursos humanos. Si es un problema recurrente, tal vez valga la pena reflexionar sobre si el entorno es sano para ti.\n\nRecuerda que no todas las relaciones laborales serán perfectas, pero prioriza tu bienestar emocional y profesional. ¿Qué te parece si empiezas por identificar el tipo de situación concreta que estás enfrentando?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:41.769221+00:00"
+    },
+    {
+      "id": "msg-081",
+      "session_id": "2dbc2a08-a215-41f7-8913-6740207dddfb",
+      "role": "user",
+      "content": "La situación es que siendo académica mujer, mis colegas asumen que puedo dedicarme más a tareas de apoyar estudiantes con problemas, que me ineteresan, pero es una carga porque mis colegas hombres no lo hacen.",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:28.077104+00:00"
+    },
+    {
+      "id": "msg-082",
+      "session_id": "2dbc2a08-a215-41f7-8913-6740207dddfb",
+      "role": "assistant",
+      "content": "Entiendo perfectamente. Lo que describen es un fenómeno muy documentado en el ámbito académico: la **carga de trabajo emocional y administrativo** que recae desproporcionadamente sobre las mujeres, especialmente en tareas de mentoría, apoyo estudiantil y labores de \"cuidado institucional\". No es imaginación tuya, es un sesgo de género generalizado.\n\nAquí tienes una estrategia en tres pasos para abordarlo, desde lo más sutil hasta lo más directo:\n\n### 1. Documenta y cuantifica (lo que no se mide, no se gestiona)\nAntes de hablar, lleva un registro durante 2-4 semanas:\n- **Tiempo invertido**: Horas que dedicas a estudiantes con problemas (tutoría emocional, trámites burocráticos, mediación).\n- **Comparación**: ¿Cuánto tiempo dedican tus colegas hombres a lo mismo? Si no hay datos, pídelos o haz una estimación.\n- **Impacto**: ¿Qué tareas dejas de hacer (investigación, publicaciones, proyectos propios) por atender estas demandas?\n\nEsto te dará argumentos concretos, no sensaciones.\n\n### 2. Establece límites claros con el equipo\nPuedes usar frases como:\n- *\"Me encanta apoyar a los estudiantes, pero para que sea sostenible, necesitamos distribuir estas tareas equitativamente. Propongo que rotemos la atención a casos complejos cada semana.\"*\n- *\"He notado que este tipo de consultas me están quitando tiempo de investigación. ¿Podríamos definir juntos criterios para derivar casos según la especialidad de cada colega?\"*\n\nSi te dicen \"es que tú tienes más empatía\", responde:\n- *\"La empatía es una habilidad profesional, no un rasgo de género. Todos podemos desarrollarla con práctica y responsabilidad compartida.\"*\n\n### 3. Usa la estructura jerárquica (si es necesario)\nSi persiste la resistencia:\n- **Reúnete con tu jefe/a o directora de departamento** y presenta tus datos: *\"Estoy dedicando un 40% más de tiempo a apoyo estudiantil que mis colegas hombres, lo que afecta mis métricas de investigación. ¿Podemos revisar la distribución de estas funciones?\"*\n- **Propón una política escrita**: Por ejemplo, que las tareas de tutoría compleja se asignen por rotación equitativa, o que se reconozcan en la carga docente (como horas de clase).\n\n### 4. Una táctica concreta: \"El espejo\"\nCuando un colega te derive un caso difícil, responde:\n- *\"Gracias por pensar en mí. ¿Quieres que lo revisemos juntos? Así aprendemos ambos para la próxima vez.\"*\nO: *\"Hoy no tengo espacio, pero si lo atiendes tú, luego me cuentas cómo te fue para aprender de tu enfoque.\"*\n\nEsto les muestra que **la responsabilidad no es exclusiva tuya**.\n\n### Un mensaje clave para ti:\nNo estás fallando al poner límites. De hecho, **si no proteges tu tiempo, nadie lo hará**. La academia necesita tu talento en investigación tanto como tu calidez con estudiantes, pero si te conviertes en el único \"soporte emocional\" del equipo, quemarás dos velas: tu carrera y tu bienestar.\n\n¿Te gustaría que profundice en cómo presentar esto en una reunión de departamento sin sonar confrontativa?",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:13.381307+00:00"
+    },
+    {
+      "id": "msg-083",
+      "session_id": "66482595-b1c7-494c-b8df-2d6277ad12fb",
+      "role": "user",
+      "content": "How can i come across as more commited to my work in front of my colleagues whitout raising my voice when i have to defend a valid point but no one else is listening to me?",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:22.017734+00:00"
+    },
+    {
+      "id": "msg-084",
+      "session_id": "66482595-b1c7-494c-b8df-2d6277ad12fb",
+      "role": "assistant",
+      "content": "That's a classic and frustrating workplace challenge. The key is to shift your strategy from **volume** to **gravitas**. When you raise your voice, you signal desperation or frustration. When you stay calm and structured, you signal confidence and authority.\n\nHere is a step-by-step method to defend a valid point without raising your voice, making you appear more committed—not just louder.\n\n### Step 1: The \"Pause and Anchor\" (Before You Speak)\n\nDon't jump in immediately. If everyone is talking over you, the worst thing you can do is try to talk faster.\n\n- **Physical Anchoring:** Stop moving. Put your pen down, lean back slightly, or place your hands flat on the table. This non-verbal signal says \"I am not chasing the conversation; I am grounding myself.\"\n- **The Pregnant Pause:** Wait for a micro-silence. Often, a group talk-fest has a natural 0.5-second gap. Speak *into* that gap, not over the noise.\n\n### Step 2: The \"Mirror and Clarify\" Frame\n\nInstead of re-stating your point louder, frame it as a *clarification* question. This makes you the person who brings order, not the person who is interrupting.\n\n**Instead of:** \"No, you're wrong! I said X, and that's important because...\" (Loud, defensive)\n**Say:** \"Just to make sure I'm tracking, are we dismissing [My specific point] because of [Objection they just raised]?\" (Calm, inquisitive)\n\n**Why it works:** It forces them to acknowledge your specific idea *by name* before they can move on. It raises the stakes of ignoring you without raising your voice.\n\n### Step 3: The \"Data Echo\" Technique\n\nIf they still ignore you, you don't repeat the point. You repeat the *evidence* behind it. This makes your commitment undeniable.\n\n**The Script:**\n> \"I understand we’re moving toward [Option A]. To be fully committed to that decision, I want to make sure we don't overlook the data point that [State one specific, unemotional fact]. For example, last quarter, when we tried [Similar thing], we saw [Specific result]. I'm just flagging that pattern.\"\n\n**Why it works:**\n- You are **for** a good decision, not **against** their idea.\n- You are aligning yourself with objective facts (\"data\"), which is much harder to dismiss than a personal opinion.\n- The phrase \"To be fully committed\" is a powerful reframe. It implies that *they* are the ones being reckless, while you are the one trying to help the team commit wisely.\n\n### Step 4: The \"Single Sentence\" Rule (The Ultimate Power Move)\n\nIf they continue to talk over you, you have one last tool. This is the strongest signal of commitment without volume.\n\n**The Script (Delivered in a steady, low, almost flat tone):**\n> \"I'm going to hold my point for one moment, because I believe ignoring this creates a risk we haven't discussed.\"\n\nThen **shut up.**\n\n- **Do not** elaborate.\n- **Do not** look away.\n- Hold eye contact with the person who interrupted you, or the decision-maker.\n\n**Why it works:** This is a radical act of presence. In a sea of noise, a single, clear, calm sentence is deafening. It creates a social obligation for someone to respond to you. You are not being aggressive; you are being *structurally insistent*. It shows you are willing to risk social friction for the idea—that is the definition of commitment.\n\n### The Mindset Shift\n\nTo make this work, you need to reframe your goal internally.\n\n- **Old Goal:** \"I need to make them hear me right now.\"\n- **New Goal:** \"I need to make sure the record shows I flagged this point clearly before the decision was made.\"\n\nThis takes the pressure off the immediate reaction. Your \"win\" is not getting them to agree instantly. Your \"win\" is saying your piece with such clarity and calmness that later, if things go wrong, everyone in the room will think, *\"She was right. She saw this. She said it calmly three times.\"*\n\nThat is what \"being committed\" looks like. It's not about volume; it's about being the person who is willing to be the calm center of a storm.",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:13.398783+00:00"
+    },
+    {
+      "id": "msg-085",
+      "session_id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "role": "user",
+      "content": "Hi",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:04:24.392795+00:00"
+    },
+    {
+      "id": "msg-086",
+      "session_id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "role": "assistant",
+      "content": "Hi! How can I help you today?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:04:27.156533+00:00"
+    },
+    {
+      "id": "msg-087",
+      "session_id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "role": "user",
+      "content": "I am a faculty member, a new one. I serve in a lot committes relatedbti students wellfare, but I siendo too much time on that... and I haven't finished my research paper. What should I do?",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:22.419814+00:00"
+    },
+    {
+      "id": "msg-088",
+      "session_id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "role": "assistant",
+      "content": "It sounds like you’re in a common but challenging situation for new faculty: the desire to contribute to student welfare is commendable, but those committee responsibilities can easily crowd out research, which is often critical for tenure and career progress. Here are a few steps to consider:\n\n1. **Audit your current time allocation.** For one week, track exactly how many hours you spend on committees, teaching prep, research, and personal time. This will give you a clear picture of the imbalance.\n\n2. **Set protected research time.** Block off at least 2–3 mornings (or afternoons) per week as non-negotiable “research only” time. No meetings, no emails, no committee work during those hours. Treat it like a scheduled class.\n\n3. **Learn to say “no” or “not yet.”** As a new faculty member, you don’t have to accept every committee invitation. It’s okay to say, “I’m honored, but I need to focus on establishing my research program this semester. Perhaps next year.” Alternatively, offer to join for a limited term or as a non-voting member.\n\n4. **Delegate or share the load.** If you’re already on several committees, ask if tasks can be divided, or if you can serve in a less time-intensive role (e.g., attending meetings but not taking minutes or organizing events).\n\n5. **Talk to your chair or mentor.** Share your concern: “I want to serve students well, but I’m worried my research is falling behind. Can you help me prioritize which committees are essential and which I can drop?” A good chair will support you, especially if research output is an expectation.\n\n6. **Set a concrete deadline for the paper.** Break it into small pieces: complete the methods section by X date, results by Y, etc. Reward yourself for hitting each milestone. Consider a writing accountability group or a “shut up and write” session with colleagues.\n\nThe key is **balance, not abandonment.** You can still contribute to student welfare without sacrificing your research entirely. Start with the steps above, and adjust as you go. You are not alone in this—many new faculty face the same tension.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:38.142004+00:00"
+    },
+    {
+      "id": "msg-089",
+      "session_id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "role": "user",
+      "content": "It seems my male colleagues are not taking the same service load",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:43.370066+00:00"
+    },
+    {
+      "id": "msg-090",
+      "session_id": "ef18c13a-eb1f-4179-a92b-a3103da4ca4f",
+      "role": "assistant",
+      "content": "You’ve touched on a well-documented and frustrating pattern in academia: women and faculty of color often shoulder a disproportionate share of service and \"institutional housekeeping\" tasks, which can slow research productivity and career advancement.\n\nHere are a few concrete steps to address this without jeopardizing your standing:\n\n### 1. **Document the disparity.**\nKeep a simple log: which committees you serve on, hours spent per week, and which male colleagues in your department serve on *which* committees and for how long. Be objective and factual. This record will be invaluable if you need to raise the issue formally.\n\n### 2. **Talk to a trusted senior colleague or mentor.**\nPreferably a female or minority senior faculty member who has navigated this. Ask: “Have you observed a pattern where newer faculty or women get pulled into more student-facing service? How did you handle it?” They may have strategies or even intervene informally on your behalf.\n\n### 3. **Request a service “audit” with your chair.**\nFrame it as a **request for guidance**, not a complaint. Say something like:  \n> “I want to make sure I’m balancing service and research appropriately for tenure. Could we review my current committee load and see if it’s typical for someone at my career stage? I’ve noticed some colleagues seem to have more protected time for research.”\n\nThis invites the chair to notice the imbalance without you directly accusing anyone. A good chair will see the pattern.\n\n### 4. **Use your documented workload to say no—strategically.**\nWhen a new service request comes, you can say:  \n> “I’m currently serving on [list committees] and have a research deadline. Could you ask [male colleague’s name] or someone with a lighter service load to take this one? I’d be happy to rotate in next semester.”\n\nThis normalizes sharing the load.\n\n### 5. **Build a coalition.**\nIf other women or junior faculty in your department share your experience, consider raising the issue collectively (even informally). Departments respond better when the message comes from multiple voices.\n\n### 6. **Know your institution’s policies.**\nSome universities have formal equity guidelines about service distribution. Check your faculty handbook, union contract, or diversity office. If the imbalance is severe and persistent, you may have grounds for a formal conversation.\n\n### A note on your well-being:\nThis isn’t just about fairness—it’s about **protecting your career trajectory** and **setting boundaries early**. You are not being selfish. You are being strategic. Serving students is important, but if it comes at the expense of your research, you are being taken advantage of, especially if the labor is distributed inequitably.\n\n**Bottom line:** Name the pattern, document it, and use it to negotiate your workload. You deserve research time just as much as your male colleagues do.",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:59.739332+00:00"
+    },
+    {
+      "id": "msg-091",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "user",
+      "content": "Hola, soy una académica participante del caso",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:03:24.427689+00:00"
+    },
+    {
+      "id": "msg-092",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "assistant",
+      "content": "¡Hola! Encantado de orientarte. ¿En qué puedo ayudarte hoy?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:03:26.244139+00:00"
+    },
+    {
+      "id": "msg-093",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "user",
+      "content": "Hola, tengo una duda: ¿debo entregar mi caso a coordinación?",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:47.462037+00:00"
+    },
+    {
+      "id": "msg-094",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "assistant",
+      "content": "¡Hola! Para poder darte una respuesta más precisa, necesito un poco más de contexto. ¿De qué tipo de caso se trata? ¿En qué área o empresa trabajas? Por lo general, si un caso requiere una solución que escapa a tu nivel de autoridad o implica la intervención de varias áreas, puede ser adecuado escalarlo a coordinación. Si me das más detalles, puedo orientarte mejor.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:50.046216+00:00"
+    },
+    {
+      "id": "msg-095",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "user",
+      "content": "Debo informar una situación complicada que tuve acerca de una respuesta con coordinación",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:56.373093+00:00"
+    },
+    {
+      "id": "msg-096",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "assistant",
+      "content": "Es importante manejar ese tipo de situaciones con claridad y profesionalismo. Si tuviste una respuesta complicada por parte de coordinación, te sugiero lo siguiente:\n\n1. **Documenta los hechos**: Anota fechas, nombres, mensajes o llamadas relevantes que respalden tu versión de lo ocurrido.\n2. **Identifica el problema concreto**: ¿Fue una respuesta evasiva, contradictoria, agresiva o que incumplía un protocolo? Definir esto te ayudará a plantearlo.\n3. **Evalúa el canal adecuado**: Dependiendo de la gravedad, podrías reportarlo a tu jefe directo, a recursos humanos o al superior de coordinación, siempre respetando la cadena de mando.\n4. **Propón una solución**: Si es posible, sugiere cómo evitar que la situación se repita (por ejemplo, reuniones de alineación o protocolos más claros).\n\n¿Te gustaría que te ayude a redactar un breve informe o a estructurar lo que dirías al escalar el caso? Cuéntame más detalles si lo consideras necesario.",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:07.630421+00:00"
+    },
+    {
+      "id": "msg-097",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "user",
+      "content": "Si por favor",
+      "metadata": {
+        "order": 7
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:41.145024+00:00"
+    },
+    {
+      "id": "msg-098",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "assistant",
+      "content": "¡Claro! Con gusto te ayudo. A continuación te propongo una estructura clara y profesional para que puedas redactar tu informe o preparar la conversación. Puedes adaptarla según el medio que uses (correo, mensaje interno o reunión).\n\n---\n\n**Estructura sugerida para reportar la situación:**\n\n1. **Asunto / Título** (claro y conciso)  \n   Ejemplo: *\"Reporte de incidencia en comunicación con Coordinación – [Fecha]\"*\n\n2. **Contexto breve**  \n   - Fecha y hora del incidente.  \n   - Caso o proyecto involucrado.  \n   - Nombre de la persona de Coordinación (si aplica).  \n\n3. **Descripción del hecho**  \n   Explica qué pasó de manera objetiva, sin juicios de valor.  \n   Ejemplo: *\"Solicité información sobre [tema] y la respuesta fue [describir la respuesta: vaga, contradictoria, fuera de tono, etc.]. Esto generó [consecuencias: retraso, confusión, etc.].\"*\n\n4. **Impacto**  \n   - ¿Cómo afectó esto al caso, al equipo o al cliente?  \n   - ¿Se incumplió algún protocolo o SLA?\n\n5. **Acción tomada / Intentos de solución**  \n   - ¿Replicaste o pediste aclaración? ¿Con qué resultado?  \n\n6. **Sugerencia o solicitud**  \n   - ¿Qué te gustaría que se haga al respecto?  \n   Ejemplo: *\"Solicito una reunión para aclarar el protocolo de comunicación con Coordinación\"* o *\"Requiero que se revise este caso para evitar que se repita.\"*\n\n7. **Cierre cordial**  \n   Ejemplo: *\"Quedo atenta a cualquier comentario o instrucción adicional. Gracias por su atención.\"*\n\n---\n\n**Ejemplo concreto (rellena los espacios en blanco):**\n\n> *Asunto: Reporte de incidencia en comunicación con Coordinación – 05/11/2024*  \n>  \n> El día [fecha], a las [hora], contacté a Coordinación para solicitar [tema]. La respuesta que recibí fue [descripción]. Como resultado, [consecuencia].  \n>  \n> Intenté aclarar la situación mediante [acción], pero no obtuve [resultado esperado].  \n>  \n> Propongo [sugerencia] para evitar que esto afecte futuros casos. Agradezco su apoyo para resolver este asunto.\n\n---\n\nSi prefieres, dime los detalles concretos (sin datos sensibles) y puedo redactar un borrador completo para ti. ¿Te parece bien este esquema o prefieres otro enfoque?",
+      "metadata": {
+        "order": 8
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:09:01.340219+00:00"
+    },
+    {
+      "id": "msg-099",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "user",
+      "content": "Gracias",
+      "metadata": {
+        "order": 9
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:09:13.262092+00:00"
+    },
+    {
+      "id": "msg-100",
+      "session_id": "dcc58477-7efd-4df9-943b-7ac178bd058f",
+      "role": "assistant",
+      "content": "¡De nada! Me alegra mucho haberte podido ayudar. Si en cualquier otro momento necesitas orientación para redactar algo más o simplemente desahogarte o analizar una situación laboral, aquí estoy para ti. Mucho éxito con tu informe y espero que todo se resuelva de la mejor manera. ¡Ánimo!",
+      "metadata": {
+        "order": 10
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:09:18.463207+00:00"
+    },
+    {
+      "id": "msg-101",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "user",
+      "content": "hola!",
+      "metadata": {
+        "order": 1
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:02:41.13768+00:00"
+    },
+    {
+      "id": "msg-102",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "assistant",
+      "content": "¡Hola! ¿Cómo estás?",
+      "metadata": {
+        "order": 2
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:02:44.320827+00:00"
+    },
+    {
+      "id": "msg-103",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "user",
+      "content": "pucha, un poco complicada, no sé si mencionar lo que pasó",
+      "metadata": {
+        "order": 3
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:32.411909+00:00"
+    },
+    {
+      "id": "msg-104",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "assistant",
+      "content": "Entiendo perfectamente esa sensación de no saber si contar o no lo que pasó. A veces no es fácil encontrar el momento ni la confianza para hacerlo, incluso con uno misma.\n\nSi quieres, puedes compartir lo que te está pesando. No hay presión, solo un espacio seguro para que lo pienses en voz alta si te sirve. Y si prefieres no decirlo ahora, también está bien. Aquí estoy para escucharte como prefieras.",
+      "metadata": {
+        "order": 4
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:05:39.857745+00:00"
+    },
+    {
+      "id": "msg-105",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "user",
+      "content": "pucha, me reclamaron que soy conflictiva y que no se trabajar en equipo, pero en verdad no hice nada",
+      "metadata": {
+        "order": 5
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:06:58.719829+00:00"
+    },
+    {
+      "id": "msg-106",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "assistant",
+      "content": "Ay, qué situación tan incómoda y dolorosa. Entiendo perfectamente lo frustrante que es recibir una crítica que sientes que no te representa y que, además, te etiquetan de una manera que no resuena contigo.\n\nPrimero, lo más importante: **valida tu propia experiencia**. Si tú sientes que no hiciste nada para merecer ese reclamo, tu sentir es legítimo. No tienes por qué dudar de ti misma solo porque alguien más te dijo eso.\n\nDicho esto, a veces en los equipos de trabajo las percepciones pueden estar sesgadas por malentendidos, falta de comunicación o incluso dinámicas de poder. Tal vez lo que para ti fue una opinión constructiva o una defensa de una idea, para otros se sintió como una confrontación. O quizás simplemente no supiste cómo se interpretó tu tono o tus acciones en ese contexto.\n\n**Para aclarar la situación (si quieres hacerlo):**\n\n1. **Pide un ejemplo concreto.** Puedes preguntar con calma: \"Gracias por decírmelo. Para entenderlo mejor y mejorar, ¿podrías darme un ejemplo específico de cuándo me viste actuar de forma conflictiva o que dificultó el trabajo en equipo?\" Si no te dan un ejemplo claro, es probable que la crítica sea más subjetiva o incluso injusta.\n\n2. **Explica tu intención.** Si recuerdas una situación en particular, puedes decir: \"En esa ocasión, lo que intentaba era asegurarme de que no se pasara por alto el cronograma, no contradecir a nadie. Siento si se interpretó de otra manera.\"\n\n3. **Pide una reunión privada.** Si la crítica vino de un jefe o de un compañero, reunirse en privado puede ayudar a bajar la tensión y aclarar malentendidos sin sentirte juzgada frente a otros.\n\n**Y si no quieres hacer nada ahora, también está bien.** A veces, especialmente cuando estamos emocionalmente afectados, lo mejor es tomar distancia, respirar y no actuar desde la reacción. Puedes anotar lo que piensas y sientes, y luego decidir con más calma si vale la pena aclararlo o si prefieres dejarlo pasar porque sabes quién eres y cómo trabajas.\n\n**Recuerda:** una crítica no define tu identidad. Pueden estar proyectando en ti sus propias inseguridades o conflictos del equipo. No te hagas cargo de algo que no sientes que es tuyo.\n\n¿Cómo te sientes ahora? ¿Hay algo más que necesites procesar sobre esto?",
+      "metadata": {
+        "order": 6
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:20.934403+00:00"
+    },
+    {
+      "id": "msg-107",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "user",
+      "content": "pero contra quien tengo que reclamar pueden echarme de mi trabajo soñado",
+      "metadata": {
+        "order": 7
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:07:57.657368+00:00"
+    },
+    {
+      "id": "msg-108",
+      "session_id": "40e486b6-6cab-4ab6-bb36-6bbc809fad38",
+      "role": "assistant",
+      "content": "Tranquila, respira hondo. Ese miedo es muy real y muy comprensible: cuando es tu trabajo soñado, hasta una pequeña crítica se siente como una amenaza de perderlo todo. Pero vamos por partes, porque **el pánico no es buen consejero** y aquí hay matices importantes.\n\nPrimero, una verdad clave: **no te van a echar por una sola crítica aislada, a menos que sea algo gravísimo o que ya venga de un historial largo de advertencias.** Un reclamo sobre tu \"forma de ser\" no suele ser causal de despido inmediato, sobre todo si no hubo una falta concreta. Las empresas suelen seguir procesos: advertencia verbal, luego escrita, luego plan de mejora, etc. Así que lo más probable es que tengas tiempo y oportunidad para aclarar las cosas.\n\nAhora, lo de \"contra quién reclamar\": cambiemos esa palabra. **No se trata de \"reclamar contra\" alguien, sino de aclarar la situación con la persona adecuada.** Si el reclamo te lo hizo un compañero, no vas a ir a \"reclamarle\" a tu jefe. Si te lo hizo tu jefe directo, entonces tu interlocutor es él/ella.\n\n**Pasos concretos para no ponerte en riesgo y, al contrario, mostrarte profesional:**\n\n1. **Identifica a la fuente exacta.** ¿Quién te dijo eso? ¿Fue tu jefe directo, un líder de equipo, un compañero? Si no sabes quién lo dijo, puedes preguntar con calma a tu jefe: \"Me llegó un comentario sobre mi trabajo en equipo. Para poder mejorar, ¿podrías indicarme quién lo mencionó o en qué contexto?\" Es una pregunta profesional, no una acusación.\n\n2. **Pide una reunión breve con esa persona.** No vayas a \"reclamar\". Ve a \"entender y alinear\". Puedes decir:\n   > \"Hola [nombre], quería tomar 5 minutos para hablar sobre el feedback que me diste sobre mi forma de trabajar en equipo. Me tomó por sorpresa y me importa mucho este trabajo, así que quiero entender bien qué pasó para poder mejorar y asegurarme de que trabajemos bien juntos.\"\n\n   Eso muestra madurez, no conflicto.\n\n3. **Prepárate para escuchar sin defenderte al instante.** Es difícil, pero si te pones a la defensiva, confirmarás lo de \"conflictiva\". Escucha, asiente, luego explica tu intención. Por ejemplo:\n   > \"Entiendo que en esa reunión pudo sonar fuerte cuando dije [X]. Mi intención era [Y], no cuestionar a nadie. Si lo expresé de una manera que se malinterpretó, lo lamento y lo tendré en cuenta para la próxima.\"\n\n4. **Si no hay ejemplos concretos o la crítica es vaga, pregúntalo.** \"¿Recuerdas alguna situación específica para que yo pueda poner atención en eso?\" Si no te dan ejemplos, es probable que sea una percepción generalizada o incluso un chisme, y eso juega a tu favor.\n\n5. **Si después de aclarar sientes que hay una campaña en tu contra o un mal ambiente, entonces sí podrías hablarlo con RR.HH. o con tu jefe, pero siempre desde la solución, no desde la queja.** \"Me preocupa que haya una percepción que no coincide con mi intención. Quiero asegurarme de que el equipo funcione bien. ¿Qué me recomiendan?\"\n\n**Lo más importante: no entres en pánico ni te paralices.** El hecho de que te importe tanto ya dice que eres una trabajadora comprometida. Usa esa energía para aclarar, no para pelear. Y recuerda: si te echaran por una queja así, sin proceso, sin ejemplos, sin oportunidad de mejora, quizás ese \"trabajo soñado\" no era tan sano como creías.\n\n¿Qué te parece si piensas quién fue la persona que te dio ese feedback y si tienes la confianza para tener esa conversación corta y tranquila?",
+      "metadata": {
+        "order": 8
+      },
+      "telemetry": null,
+      "created_at": "2026-05-19T17:08:26.836317+00:00"
     }
-  ]
+  ],
+  "telemetry": [],
+  "settings": {
+    "default_ai_provider": "openrouter",
+    "default_ai_model": "meta-llama/llama-3.1-8b-instruct"
+  }
 }
