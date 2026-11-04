@@ -1,131 +1,232 @@
-# ISSDE Workshop Chatbot Platform
+# PromptSketch (v2.0)
 
-A complete web platform designed for running interactive, AI-driven case-based workshops. Administrators can create custom scenarios (versions), organize them into campaigns, and share dynamic QR codes or links with participants. Participants are randomly assigned a case and interact with a ChatGPT-like AI to resolve the scenario.
+> **Publication-Grade Scientific Workbench for Educational Prompt A/B Experimentation & Learning Analytics (LAK / AIED)**
 
-## Features
+PromptSketch is an open-source, reproducible experimental platform designed for educational researchers, learning designers, and EdTech engineers. It enables running randomized, pre-registered A/B interventions on pedagogical conversational agents, collecting high-resolution student interaction telemetry, and generating publication-ready statistical analyses adhering to the highest standards of the Learning Analytics & Knowledge (LAK), AIED, and EDM communities.
 
-*   **Two Separate Experiences**: A secure admin dashboard and a frictionless participant interface.
-*   **Chained Campaigns & QR Codes**: Group different case versions into Campaigns. You can chain multiple campaigns together (Step 1 -> Step 2) for an automated sequence. The app automatically generates shareable URLs and QR codes.
-*   **Post-Session Surveys**: Configure custom surveys (Likert scale, multiple choice, checkboxes, open text) that participants must fill out after completing a session.
-*   **Dynamic Scenarios (Versions)**: Create and edit cases using Markdown. Participants can toggle a side-panel to read their specific case while chatting.
-*   **Custom AI Personas**: Set a custom system prompt per Campaign step to control how the AI behaves (e.g., naive mode, strict tutor, casual peer).
-*   **Global Settings Panel**: Configure a default AI provider and model from the admin UI. These defaults pre-fill new campaigns and are used as fallback for analytics.
-*   **Advanced Analytics & Longitudinal Analysis**: The dashboard tracks active sessions, computes survey distributions, visualizes Likert scale averages with charts, generates AI summaries of open-text responses, and provides longitudinal evolution analysis across chained campaign steps.
-*   **Data Export**: Export sessions and full chat transcripts to CSV or JSON for data analysis.
-*   **AI Integration**: Connects directly to OpenRouter or Groq APIs (supporting models like Llama 3/4, Qwen, Gemini, Mixtral).
-*   **Participant Journey Hub**: Participants can review their full session history, transcripts, and survey responses after completing a campaign.
-*   **No-Setup Dev Mode**: Runs out of the box using an in-memory JSON database. Can be easily switched to Supabase (PostgreSQL) for production.
+Built with Next.js 16 (React 19), Tailwind CSS, and a strict **CAD Blueprint / Sketchbook** design system compliant with **WCAG 2.2 Level AAA**, PromptSketch completely eradicates "AI slop" (zero emojis, zero SaaS gradients, zero rounded pills) in favor of 90% technical drawing precision and 10% human marginalia.
 
 ---
 
-## 🚀 Quick Start (Local Development)
+## 1-Click Cloud Deployment
 
-### 1. Prerequisites
-*   Node.js (v18 or higher recommended)
-*   npm
+Deploy your own live PromptSketch instance in less than two minutes:
 
-### 2. Installation
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frydozz%2FPromptSketch&env=DB_PROVIDER,SUPABASE_URL,SUPABASE_ANON_KEY,ADMIN_PASSWORD,GROQ_API_KEY&project-name=promptsketch&repo-name=promptsketch)
+
+---
+
+## Core Capabilities
+
+### 1. Multi-Provider AI Engine & Real-Time Telemetry
+* **Ecosystem Providers:** Native integrations with **Groq Cloud API** (ultra-fast inference, Llama 3.3 70B, Llama 3.1 8B), **OpenRouter**, **OpenAI** (GPT-4o, GPT-4o-mini), **Anthropic** (Claude 3.5 Sonnet), and **Ollama** (offline local inference for air-gapped classrooms).
+* **Deterministic Fallback:** Robust mock engine for zero-cost automated tests and offline demonstrations when no API keys are present.
+* **Granular Telemetry:** Captures exact prompt and completion tokens, Time-to-First-Token (TTFT), total latency, and estimated monetary cost (\$ USD) per turn.
+* **Reasoning Tag Stripping:** Automatically parses and hides internal `<think>...</think>` tags from DeepSeek R1 and reasoning models before rendering to participants, while preserving them in researcher audit logs.
+
+### 2. Assumption-First Statistical Gatekeeper & Rigor LAK
+* **Normality & Homoscedasticity Pre-Flight:** Evaluates Shapiro-Wilk ($W$, $p$) and Levene's variance homogeneity ($F$, $p$) before suggesting inferential tests. When assumptions fail, it automatically gates the analysis toward non-parametric methods and explains *why*.
+* **Inferential Testing:** Computes Welch's $t$ with Cohen's $d$, and Mann-Whitney $U$ with Cliff's delta ($\delta$) derived directly from rank sums:
+  $$\delta = \frac{2U}{n_1 n_2} - 1$$
+* **Family-Wise Error Rate Control:** Step-down Holm-Bonferroni correction ($p_{\text{Holm}}$) adjusted dynamically across multiple survey items and behavioral dimensions.
+* **Psychometrics & Paired Learning Gain:** Cronbach's alpha ($\alpha$) with item-rest correlations, and Hake's normalized learning gain ($g$) for pre/post-test diagnostic pairs:
+  $$g = \frac{\text{Post} - \text{Pre}}{100 - \text{Pre}}$$
+* **Inter-Rater Reliability (IRR) Calibration Lab:** Computes Cohen's kappa ($\kappa$) alongside Gwet's $\text{AC}_1$ to resist the *prevalence paradox* in automated or human qualitative rubric coding.
+* **Conversational Learning Analytics:**
+  - Student/Bot Verbal Ratio ($R_{\text{vol}}$) and Mean Length of Utterance in words (MLU-w).
+  - Normalized Latency: Disentangles estimated reading time (based on bot word count) from formulation latency (student typing speed).
+  - Outlier Detection: Flags disengaged turns where tab inactivity exceeds 180 seconds.
+  - Moving-Average Type-Token Ratio (MATTR, window $W=20$) and cognitive connector density (causal markers: *"porque"*, *"por lo tanto"*, *"sin embargo"*).
+
+### 3. Scientific Interoperability & Export
+* **Tidy Data Formats:** 1-click download of long-format CSV and JSON datasets structured for immediate ingestion in Python (`pandas`), R (`tidyverse`), and SPSS.
+* **Codebook Generation:** Automatic machine-readable dictionary documenting column definitions, measurement scales, and valid value ranges.
+* **LaTeX `booktabs` Export:** Generates clean, publication-ready LaTeX tables ready to paste directly into ACM / IEEE / LAK manuscripts.
+* **Critical LAK Peer-Reviewer Copilot:** Specialized LLM reviewer prompt trained to stress-test sample sizes, statistical assumptions, and effect sizes with the rigor of an ACM senior program committee reviewer.
+
+### 4. Blueprint / Sketchbook Design System (WCAG 2.2 AAA)
+* **Zero AI Slop:** Strict linting rules reject Unicode emojis, blurred box shadows, gradients, and rounded borders.
+* **Visual Identity:** 90% technical CAD drawing (orthographic grids, title blocks, crop marks, tabular JetBrains Mono numerals) + 10% human annotations (Architects Daughter marginalia).
+* **Accessibility:** 42/42 color pairs pass WCAG 2.2 AAA contrast ($\ge 7:1$ for text, $\ge 3:1$ for controls). Includes 44px touch targets, visible 3px focus rings, keyboard `<Abbr/>` definitions, and accessible data table toggles for all chart visualizations.
+
+---
+
+## Quick Start (Zero-Setup Local Mode)
+
+PromptSketch runs immediately out-of-the-box without requiring a database, cloud account, or API key:
+
 ```bash
-# Navigate to the project directory
-cd workshop-app
+# 1. Clone the repository
+git clone https://github.com/rydozz/PromptSketch.git
+cd PromptSketch/workshop-app
 
-# Install dependencies
+# 2. Run the automated setup and launch script
+./run.sh
+```
+
+`./run.sh` will:
+1. Detect or create a local `.env.local` configured with `DB_PROVIDER=memory`.
+2. Seed the in-memory database with the **ISDDE Benchmark Dataset** (2 prompt versions, 2 workshops, 18 complete participant sessions, and 108 chat turns).
+3. Start the Next.js server at `http://localhost:3000`.
+
+Open `http://localhost:3000/admin` (password: `workshop2025` or custom) to explore the full analytics dashboard, drafting table, and campaign builder.
+
+---
+
+## Live Mobile & Conference Testing (`./run-demo.sh`)
+
+When presenting a live workshop or conference demo (e.g. at LAK or ISDDE), university or venue Wi-Fi networks often block local peer-to-peer device discovery.
+
+PromptSketch includes `./run-demo.sh` to provide an instant, secure public HTTPS tunnel with a terminal-rendered QR code:
+
+```bash
+./run-demo.sh
+```
+
+Features of `./run-demo.sh`:
+* Starts the server with an isolated in-memory test database.
+* Exposes a public HTTPS tunnel via `localtunnel` (or `cloudflared`).
+* Generates a high-contrast ASCII QR code directly in the terminal for audience mobile phone scanning.
+* Automatically updates `NEXT_PUBLIC_BASE_URL` so participant links and QR codes route seamlessly through the HTTPS tunnel.
+
+---
+
+## Manual Installation & Environment Setup
+
+If you prefer running commands manually:
+
+```bash
+cd workshop-app
 npm install
 ```
 
-### 3. Environment Configuration
-Create a `.env.local` file in the root of the `workshop-app` directory (one is already provided as a template).
+Create `.env.local` in the `workshop-app/` directory:
 
 ```env
-# Get your API key at https://openrouter.ai/keys
-OPENROUTER_API_KEY=your-openrouter-api-key-here
+# AI Providers (At least one recommended; fallback mock engine used if empty)
+GROQ_API_KEY=gsk_...
+OPENROUTER_API_KEY=sk-or-...
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
 
-# Get your API key at https://console.groq.com/keys
-GROQ_API_KEY=your-groq-api-key-here
-
-# Password to access the /admin dashboard
+# Admin Dashboard Password (required for /admin access)
 ADMIN_PASSWORD=workshop2025
 
-# Database provider: "memory" (for local testing) or "supabase" (for production)
+# Database Provider: "memory" (zero-setup local) or "supabase" (production)
 DB_PROVIDER=memory
 
-# Base URL for generating shareable links (update this when deploying)
+# Base URL for participant links and QR codes
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
-# Default OpenRouter model (optional — can be configured from /admin/settings instead)
-DEFAULT_MODEL=meta-llama/llama-3.1-8b-instruct
+# Default AI Provider & Model (optional; can also be configured in /admin/settings)
+DEFAULT_PROVIDER=groq
+DEFAULT_MODEL=llama-3.3-70b-versatile
 ```
 
-### 4. Run the Development Server
+Run development server:
 ```bash
 npm run dev
 ```
 
----
-
-## 📖 How to Use the Platform
-
-The application has two main entry points:
-
-### 1. The Admin Dashboard (`/admin`)
-Navigate to `http://localhost:3000/admin` and log in using the password defined in `ADMIN_PASSWORD` (default: `workshop2025`).
-
-From here you can:
-1.  **Versions**: Create the base text/scenarios. You can use Markdown to format the cases. (The app comes with 3 seed versions).
-2.  **Campaigns**: Create a new campaign, add multiple steps if you want a chained sequence, select *Versions*, AI provider, specify an AI model, set Custom System Prompts, and add Post-Session Surveys. Provider and model are pre-filled from your global settings.
-3.  Once a Campaign is created, you will be given a **Shareable Link and a QR Code** (only for the first step).
-4.  **Dashboard & Sessions**: Monitor incoming sessions in real-time, read full chat transcripts, and export data.
-5.  **Analytics**: View charts with survey results (Likert averages, multiple choice distributions), generate AI summaries of open-text responses, and run longitudinal evolution analysis across chained campaign steps.
-6.  **Settings**: Configure your default AI provider (OpenRouter or Groq) and model. These defaults are used as pre-fill for new campaigns and as fallback for analytics summaries.
-
-### 2. The Participant Interface (`/session/[code]`)
-Participants will scan the QR code or click the link provided by the Campaign.
-1.  They enter their name (optional).
-2.  They are **randomly and evenly** assigned one of the versions selected for that campaign.
-3.  They chat with the AI to resolve their scenario. They can view the case details by clicking the **"📋 Case"** toggle.
-4.  When finished, they click "Mark Session as Complete".
-5.  If configured, they fill out the **Post-Session Survey**.
-6.  If the campaign is chained, they are automatically forwarded to the next case in the sequence.
+Run production build:
+```bash
+npm run build
+npm start
+```
 
 ---
 
-## 🐣 Step-by-Step Deployment Guide (For Beginners)
+## Production Deployment with Supabase (PostgreSQL)
 
-If you've never deployed a web app before, here is the exact step-by-step process to host this platform for free so anyone can access it from their phone. We will use three services: **GitHub** (to host your code), **Supabase** (for the database), and **Vercel** (to host the live website).
+For production deployments with multi-user concurrency and persistent cloud storage:
 
-### Step 1: Save your code to GitHub
-1. Go to [GitHub](https://github.com/) and create an account.
-2. In the top right corner, click the **"+"** button and select **"New repository"**.
-3. Give it a name (e.g., `my-workshop`) and click **"Create repository"**.
-4. Open the terminal in your project folder and run these commands one by one:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   # Copy the command GitHub gives you starting with "git remote add origin..." and paste it here.
-   git push -u origin main
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Navigate to **SQL Editor** in your Supabase dashboard and run the schema setup script located in:
+   [`workshop-app/lib/db-supabase.js`](file:///home/rydozz/Documents/Proyectos/MT4/ISSDE/workshop-app/lib/db-supabase.js) (see commented SQL at bottom of file).
+3. In your deployment platform (Vercel, Railway, or VPS), set the following environment variables:
+   ```env
+   DB_PROVIDER=supabase
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_ANON_KEY=eyJhbGciOi...
+   ADMIN_PASSWORD=your-secure-admin-password
+   GROQ_API_KEY=gsk_...
+   NEXT_PUBLIC_BASE_URL=https://your-production-domain.com
    ```
-Your code is now safely backed up in the cloud.
 
-### Step 2: Set up the Database in Supabase
-1. Go to [Supabase](https://supabase.com/) and sign up (using "Continue with GitHub" is recommended).
-2. Click **"New Project"**, choose a name and a secure password, and wait a few minutes for it to provision.
-3. **Create the Tables:** On the left menu in Supabase, go to **"SQL Editor"** and click "New Query". 
-   Open the `lib/db-supabase.js` file in your code, copy all the commented SQL text at the very bottom of the file, paste it into the Supabase SQL editor, and click the green **"Run"** button. You should see a "Success" message.
-   *(Note: If prompted about "RLS", choose "Run without RLS" for now. If you already had an older version installed, look at the bottom of the SQL block in `db-supabase.js` to see the ALTER/CREATE statements for upgrading, including the `settings` table).*
-4. **Copy your keys:** In Supabase, go to the bottom left gear icon (**Project Settings**), then to **API**. Leave this tab open; you will need to copy the `Project URL` and the `anon / public key` (Publishable key) in the next step.
+---
 
-### Step 3: Deploy the Website on Vercel
-1. Go to [Vercel](https://vercel.com/) and sign up using "Continue with GitHub".
-2. On your main dashboard, click the black **"Add New..."** button and select **"Project"**.
-3. You will see the GitHub repository you created in Step 1. Click **"Import"**.
-4. **Important! Environment Variables:** Before clicking deploy, open the "Environment Variables" section and add these variables one by one:
-   - Name: `DB_PROVIDER` / Value: `supabase`
-   - Name: `SUPABASE_URL` / Value: *(Paste the URL from Supabase here)*
-   - Name: `SUPABASE_ANON_KEY` / Value: *(Paste the anon key from Supabase here)*
-   - Name: `GROQ_API_KEY` or `OPENROUTER_API_KEY` / Value: *(Your secret AI provider key)*
-   - Name: `ADMIN_PASSWORD` / Value: *(The password you want to use for the /admin dashboard)*
-5. Once all variables are added, click the **"Deploy"** button.
+## Verification & Test Suites
 
-Magic! Vercel will build the app and give you a live URL (e.g., `my-workshop.vercel.app`) in about 2 minutes. **Your platform is now officially on the internet!**
+PromptSketch maintains rigorous automated quality gates:
+
+```bash
+# 1. Verify strict WCAG 2.2 AAA color contrast (42 token pairs)
+npm run test:contrast
+
+# 2. Verify Anti-AI-Slop compliance across all 44 UI components and routes
+npm run test:slop
+
+# 3. Run all unit test suites (Stats, Chat Analytics, Multi-Provider AI Engine) and E2E API tests
+npm test
+```
+
+---
+
+## Directory Structure
+
+```
+workshop-app/
+├── app/
+│   ├── layout.js                     # Root layout with CAD webfonts & skip link
+│   ├── page.js                       # Public participant access & campaign finder
+│   ├── glosario/page.js              # Dedicated interactive statistical glossary
+│   ├── session/[code]/page.js        # Participant flow (Onboarding -> Chat -> Survey -> Journey)
+│   ├── admin/
+│   │   ├── layout.js                 # Admin navigation & breadcrumbs
+│   │   ├── page.js                   # Live Experiment Overview & Quick Metrics
+│   │   ├── versions/page.js          # Drafting Table A/B Prompt Comparator & Diff
+│   │   ├── campaigns/page.js         # Kraft Experiment Gallery & Campaign Builder
+│   │   ├── sessions/page.js          # Participant Session Table & Transcript Inspector
+│   │   ├── analytics/page.js         # Assumption Gatekeeper, Holm-Bonferroni, IRR & Charts
+│   │   └── settings/page.js          # 5-Provider AI Diagnostics & Benchmark Seed Loader
+│   └── api/                          # REST API endpoints for sessions, chat, analytics, exports
+├── components/ui/                    # Blueprint primitives (Panel, SplitButton, StatBadge, etc.)
+├── lib/
+│   ├── ai-engine.js                  # Multi-provider AI router with TTFT & cost telemetry
+│   ├── stats.js                      # Welch t, Mann-Whitney U, Cliff delta, Shapiro-Wilk, Levene
+│   ├── psychometrics.js              # Cronbach alpha, item-rest correlation, Hake gain
+│   ├── irr.js                        # Cohen kappa & Gwet AC1 inter-rater reliability
+│   ├── chat-analytics.js             # Conversational metrics, normalized latency, MATTR
+│   ├── tidy-export.js                # Python/R/SPSS tidy data export transformer
+│   ├── latex-generator.js            # Publication-grade LaTeX booktabs table generator
+│   ├── codebook.js                   # Variable codebook dictionary builder
+│   ├── lak-reviewer-prompt.js        # Senior LAK Reviewer System Prompt
+│   ├── db.js                         # Database abstraction layer (memory vs supabase)
+│   └── seeds/isdde-benchmark.js      # Canonical benchmark dataset generator
+├── run.sh                            # 1-command zero-setup local launch script
+├── run-demo.sh                       # 1-command HTTPS tunnel & terminal QR code demo script
+└── scripts/                          # Automated contrast and anti-slop linters
+```
+
+---
+
+## Citation & Academic Use
+
+If you use PromptSketch in an academic publication, workshop, or research study, please cite our LAK27 companion paper:
+
+```bibtex
+@inproceedings{fuentes2027promptsketch,
+  title={{PromptSketch}: An Open-Source Workbench for Pre-Registered A/B Experimentation and Learning Analytics on Educational Prompts},
+  author={Fuentes-Abarca, Juan Pablo and Astudillo, Gabriel and Hilliger, Isabel and Baier, Jorge},
+  booktitle={Companion Proceedings of the 17th International Conference on Learning Analytics and Knowledge (LAK27)},
+  year={2027},
+  address={Kyoto, Japan},
+  publisher={Society for Learning Analytics Research (SoLAR)}
+}
+```
+
+---
+
+## License
+
+PromptSketch is open-source software released under the [MIT License](LICENSE).
