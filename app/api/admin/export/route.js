@@ -1,15 +1,31 @@
 /**
- * Export endpoint — returns all sessions with full message transcripts.
- * GET /api/admin/export?workshopId=xxx
- * Optional query param: workshopId to filter by specific campaign.
+ * Export endpoint — supports legacy full JSON session transcript export AND
+ * publication-grade Tidy Data (CSV/JSON) + Scientific Codebook exports.
+ *
+ * GET /api/admin/export?workshopId=xxx&format=csv|tidy-json|codebook&level=session|turn|longitudinal
  */
 import { NextResponse } from 'next/server';
 import { getSessions, getMessages, getWorkshops, getVersions } from '@/lib/db';
+import { generateTidyExport } from '@/lib/tidy-export';
+import { generateCodebook } from '@/lib/codebook';
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const workshopId = searchParams.get('workshopId');
+    const format = searchParams.get('format'); // null | 'csv' | 'tidy-json' | 'codebook'
+    const level = searchParams.get('level') || 'session'; // 'session' | 'turn' | 'longitudinal'
+
+    if (format === 'codebook') {
+      const cb = generateCodebook();
+      return new Response(cb.markdown, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/markdown; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="promptsketch_codebook.md"',
+        },
+      });
+    }
 
     // Fetch all reference data
     const [allSessions, workshops, versions] = await Promise.all([
@@ -18,13 +34,15 @@ export async function GET(request) {
       getVersions(),
     ]);
 
-    // Build lookup maps
     const workshopMap = {};
-    workshops.forEach(w => { workshopMap[w.id] = w; });
+    workshops.forEach((w) => {
+      workshopMap[w.id] = w;
+    });
     const versionMap = {};
-    versions.forEach(v => { versionMap[v.id] = v; });
+    versions.forEach((v) => {
+      versionMap[v.id] = v;
+    });
 
-    // Fetch messages for every session in parallel
     const sessionsWithMessages = await Promise.all(
       allSessions.map(async (session) => {
         const messages = await getMessages(session.id);
@@ -32,6 +50,7 @@ export async function GET(request) {
         const version = versionMap[session.version_id];
 
         return {
+          ...session,
           session_id: session.id,
           participant_name: session.participant_name,
           campaign_name: workshop ? workshop.name : 'Unknown',
@@ -48,20 +67,52 @@ export async function GET(request) {
           interaction_count: session.interaction_count,
           started_at: session.started_at,
           completed_at: session.completed_at,
-          duration_seconds: session.completed_at && session.started_at
-            ? Math.round((new Date(session.completed_at) - new Date(session.started_at)) / 1000)
-            : null,
+          duration_seconds:
+            session.duration_seconds ||
+            (session.completed_at && session.started_at
+              ? Math.round((new Date(session.completed_at) - new Date(session.started_at)) / 1000)
+              : null),
           survey_config: workshop ? workshop.survey_config : [],
           survey_answers: session.survey_answers,
           messages: messages.map((m, i) => ({
+            id: m.id,
             message_order: i + 1,
             role: m.role,
             content: m.content,
+            telemetry: m.telemetry || null,
+            metadata: m.metadata || null,
             created_at: m.created_at,
           })),
         };
       })
     );
+
+    if (format === 'csv' || format === 'tidy-json') {
+      const tidy = generateTidyExport({
+        sessions: sessionsWithMessages,
+        workshops,
+        versions,
+        level,
+      });
+
+      if (format === 'csv') {
+        return new Response(tidy.csv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': `attachment; filename="tidy_${level}s.csv"`,
+          },
+        });
+      }
+
+      return new Response(tidy.json, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Disposition': `attachment; filename="tidy_${level}s.json"`,
+        },
+      });
+    }
 
     return NextResponse.json(sessionsWithMessages);
   } catch (error) {

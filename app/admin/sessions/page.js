@@ -1,390 +1,639 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import {
+  BlueprintPanel,
+  SplitButton,
+  StatBadge,
+  TitleBlock,
+  DataTable,
+  MarginNote,
+  HandMark,
+} from '@/components/ui/blueprint';
+import CadIcon from '@/components/ui/cad-icon';
 
-/**
- * Strips <think>...</think> reasoning blocks from AI responses.
- */
 function stripThinkingTags(text) {
-  if (!text) return text;
+  if (!text) return '';
   let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
   cleaned = cleaned.replace(/<think>[\s\S]*$/gi, '');
   return cleaned.trim();
+}
+
+function formatDuration(seconds) {
+  if (seconds === null || seconds === undefined || isNaN(seconds)) return '—';
+  const s = Math.max(0, Math.round(Number(seconds)));
+  if (s >= 3600) {
+    return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`;
+  }
+  if (s >= 60) {
+    return `${Math.floor(s / 60)}m ${s % 60}s`;
+  }
+  return `${s}s`;
 }
 
 export default function SessionsPage() {
   const [sessions, setSessions] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('');
-  const [selectedSession, setSelectedSession] = useState(null);
-  const [transcript, setTranscript] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [loadingTranscript, setLoadingTranscript] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const [exportingLabel, setExportingLabel] = useState('');
+  const [statusBanner, setStatusBanner] = useState(null);
 
-  const fetchData = async () => {
-    const [wRes, dRes] = await Promise.all([
-      fetch('/api/admin/workshops'),
-      fetch('/api/admin/dashboard'),
-    ]);
-    const campaignList = await wRes.json();
-    const dashData = await dRes.json();
-    setCampaigns(campaignList);
-    setSessions(dashData.recentSessions || []);
-    setLoading(false);
-  };
+  // Transcript Inspector modal state
+  const [inspectedSession, setInspectedSession] = useState(null);
 
-  const fetchFilteredSessions = async (workshopId) => {
-    const url = workshopId
-      ? `/api/admin/dashboard?workshopId=${workshopId}`
-      : '/api/admin/dashboard';
-    const res = await fetch(url);
-    const data = await res.json();
-    setSessions(data.recentSessions || []);
-  };
+  // Delete confirmation modal state
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => { fetchData(); }, []);
+  const loadData = useCallback(async (workshopId = '') => {
+    setLoading(true);
+    try {
+      const exportUrl = workshopId
+        ? `/api/admin/export?workshopId=${encodeURIComponent(workshopId)}`
+        : '/api/admin/export';
+      const [wRes, sRes] = await Promise.all([
+        fetch('/api/admin/workshops'),
+        fetch(exportUrl),
+      ]);
+      const wData = await wRes.json();
+      const sData = await sRes.json();
+      setCampaigns(Array.isArray(wData) ? wData : []);
+      setSessions(Array.isArray(sData) ? sData : []);
+    } catch (err) {
+      setStatusBanner({
+        tone: 'verm',
+        text: `Error al sincronizar sesiones: ${err.message}`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    fetchFilteredSessions(selectedCampaign);
-  }, [selectedCampaign]);
+    loadData(selectedCampaign);
+  }, [selectedCampaign, loadData]);
 
-  const viewTranscript = async (sessionId) => {
-    setLoadingTranscript(true);
-    setSelectedSession(sessionId);
-    try {
-      const res = await fetch(`/api/session/${sessionId}`);
-      const data = await res.json();
-      setTranscript(data);
-    } catch {
-      setTranscript({ error: 'Failed to load transcript' });
-    }
-    setLoadingTranscript(false);
-  };
-
-  const closeTranscript = () => {
-    setSelectedSession(null);
-    setTranscript(null);
-  };
-
-  const handleDeleteSession = async (id, e) => {
-    if (e) e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this session and all its messages?')) return;
-    try {
-      const res = await fetch(`/api/session/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        fetchFilteredSessions(selectedCampaign);
-      } else {
-        alert('Failed to delete session');
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (deleteTarget) setDeleteTarget(null);
+        else if (inspectedSession) setInspectedSession(null);
       }
-    } catch (e) {
-      alert('Error: ' + e.message);
-    }
-  };
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [deleteTarget, inspectedSession]);
 
-  const fetchExportData = async () => {
-    const url = selectedCampaign
-      ? `/api/admin/export?workshopId=${selectedCampaign}`
-      : '/api/admin/export';
-    const res = await fetch(url);
-    return res.json();
-  };
-
-  const downloadFile = (content, filename, type) => {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportJSON = async () => {
-    setExporting(true);
+  const confirmDeleteSession = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const data = await fetchExportData();
-      
-      // Map survey answers to question texts
-      const mappedData = data.map(s => {
-        if (!s.survey_answers || !s.survey_config) return s;
-        const mappedAnswers = {};
-        for (const [key, val] of Object.entries(s.survey_answers)) {
-          const question = s.survey_config.find(q => q.id === key);
-          if (question) {
-            mappedAnswers[question.text] = val;
-          } else {
-            mappedAnswers[key] = val;
-          }
-        }
-        return { ...s, survey_answers: mappedAnswers };
+      const targetId = deleteTarget.id || deleteTarget.session_id;
+      const res = await fetch(`/api/session/${targetId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar registro de sesión');
+      setDeleteTarget(null);
+      if (inspectedSession && (inspectedSession.id === targetId || inspectedSession.session_id === targetId)) {
+        setInspectedSession(null);
+      }
+      setStatusBanner({
+        tone: 'em',
+        text: `Sesión de "${deleteTarget.participant_name}" eliminada correctamente.`,
       });
-      
-      const timestamp = new Date().toISOString().slice(0, 10);
-      const campaignLabel = selectedCampaign
-        ? campaigns.find(c => c.id === selectedCampaign)?.name?.replace(/\s+/g, '_') || 'campaign'
-        : 'all_campaigns';
-      downloadFile(
-        JSON.stringify(mappedData, null, 2),
-        `workshop_export_${campaignLabel}_${timestamp}.json`,
-        'application/json'
-      );
-    } catch (e) {
-      alert('Export failed: ' + e.message);
+      await loadData(selectedCampaign);
+    } catch (err) {
+      setStatusBanner({
+        tone: 'verm',
+        text: `No se pudo eliminar la sesión: ${err.message}`,
+      });
+    } finally {
+      setDeleting(false);
     }
-    setExporting(false);
   };
 
-  const exportCSV = async () => {
-    setExporting(true);
+  const triggerExport = async ({ format, level, filename, mimeType }) => {
+    setExportingLabel(filename);
     try {
-      const data = await fetchExportData();
-      // Flatten: one row per message, with session metadata repeated
-      const headers = [
-        'session_id', 'participant_name', 'campaign_name', 'campaign_id',
-        'chain_id', 'chain_order', 'chain_user_id',
-        'version_title', 'version_id', 'ai_provider', 'ai_model', 'campaign_system_prompt',
-        'session_status', 'interaction_count', 'session_started_at', 'session_completed_at', 'duration_seconds',
-        'survey_answers',
-        'message_order', 'message_role', 'message_content', 'message_created_at'
-      ];
+      const params = new URLSearchParams();
+      if (selectedCampaign) params.set('workshopId', selectedCampaign);
+      if (format) params.set('format', format);
+      if (level) params.set('level', level);
 
-      const escapeCSV = (val) => {
-        if (val === null || val === undefined) return '';
-        const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
-        if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
-          return '"' + str.replace(/"/g, '""') + '"';
-        }
-        return str;
-      };
+      const url = `/api/admin/export${params.toString() ? `?${params.toString()}` : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Error al generar archivo de exportación');
 
-      const rows = [headers.join(',')];
-      for (const s of data) {
-        let mappedAnswers = s.survey_answers;
-        if (s.survey_answers && s.survey_config) {
-          mappedAnswers = {};
-          for (const [key, val] of Object.entries(s.survey_answers)) {
-            const question = s.survey_config.find(q => q.id === key);
-            mappedAnswers[question ? question.text : key] = val;
-          }
-        }
+      const content = format === null
+        ? JSON.stringify(await res.json(), null, 2)
+        : await res.text();
 
-        if (!s.messages || s.messages.length === 0) {
-          // Still include sessions with no messages
-          rows.push([
-            s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
-            s.chain_id || '', s.chain_order || '', s.chain_user_id || '',
-            s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
-            s.status, s.interaction_count, s.started_at, s.completed_at || '', s.duration_seconds ?? '',
-            mappedAnswers || '',
-            '', '', '', ''
-          ].map(escapeCSV).join(','));
-        } else {
-          for (const m of s.messages) {
-            rows.push([
-              s.session_id, s.participant_name, s.campaign_name, s.campaign_id,
-              s.chain_id || '', s.chain_order || '', s.chain_user_id || '',
-              s.version_title, s.version_id, s.ai_provider, s.ai_model, s.system_prompt || '',
-              s.status, s.interaction_count, s.started_at, s.completed_at || '', s.duration_seconds ?? '',
-              mappedAnswers || '',
-              m.message_order, m.role, m.content, m.created_at
-            ].map(escapeCSV).join(','));
-          }
-        }
-      }
+      const blob = new Blob([content], { type: mimeType });
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
 
-      const timestamp = new Date().toISOString().slice(0, 10);
-      const campaignLabel = selectedCampaign
-        ? campaigns.find(c => c.id === selectedCampaign)?.name?.replace(/\s+/g, '_') || 'campaign'
-        : 'all_campaigns';
-      downloadFile(
-        rows.join('\n'),
-        `workshop_export_${campaignLabel}_${timestamp}.csv`,
-        'text/csv'
-      );
-    } catch (e) {
-      alert('Export failed: ' + e.message);
+      setStatusBanner({
+        tone: 'em',
+        text: `Archivo científico "${filename}" descargado (compatible con R, pandas y SPSS).`,
+      });
+    } catch (err) {
+      setStatusBanner({
+        tone: 'verm',
+        text: `Fallo en exportación: ${err.message}`,
+      });
+    } finally {
+      setExportingLabel('');
     }
-    setExporting(false);
   };
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><div className="spinner" /></div>;
+  const filteredSessions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return sessions;
+    return sessions.filter((s) => {
+      const pName = (s.participant_name || '').toLowerCase();
+      const cName = (s.campaign_name || '').toLowerCase();
+      const vName = (s.version_title || '').toLowerCase();
+      return pName.includes(q) || cName.includes(q) || vName.includes(q);
+    });
+  }, [sessions, searchQuery]);
+
+  const tableRows = useMemo(() => {
+    return filteredSessions.map((s) => {
+      const msgs = s.messages || [];
+      let stuWords = 0;
+      let botWords = 0;
+      msgs.forEach((m) => {
+        const wc = (m.content || '').trim().split(/\s+/).filter(Boolean).length;
+        if (m.role === 'user') stuWords += wc;
+        else if (m.role === 'assistant') botWords += wc;
+      });
+      return {
+        ...s,
+        id: s.id || s.session_id,
+        turnsCount: msgs.length || s.interaction_count || 0,
+        wordBalance: `${stuWords} / ${botWords}`,
+        durationFormatted: formatDuration(s.duration_seconds),
+      };
+    });
+  }, [filteredSessions]);
+
+  const columns = [
+    {
+      key: 'participant_name',
+      label: 'Participante',
+      sortable: true,
+      format: (val, row) => (
+        <div>
+          <div className="font-semibold text-ink">{val || 'Anónimo'}</div>
+          {row.chain_order ? (
+            <div className="font-ui-mono text-xs text-cobalt">Paso {row.chain_order}</div>
+          ) : null}
+        </div>
+      ),
+    },
+    {
+      key: 'campaign_name',
+      label: 'Experimento / Condición',
+      sortable: true,
+    },
+    {
+      key: 'version_title',
+      label: 'Escenario',
+      sortable: true,
+    },
+    {
+      key: 'status',
+      label: 'Estado',
+      sortable: true,
+      format: (val) => (
+        <StatBadge
+          label="Estado"
+          value={val === 'completed' ? 'COMPLETADA' : 'EN CURSO'}
+          variant={val === 'completed' ? 'em' : 'cobalt'}
+        />
+      ),
+    },
+    {
+      key: 'turnsCount',
+      label: 'Mensajes',
+      align: 'right',
+      sortable: true,
+    },
+    {
+      key: 'wordBalance',
+      label: 'Palabras (Est./IA)',
+      align: 'right',
+    },
+    {
+      key: 'durationFormatted',
+      label: 'Duración',
+      align: 'right',
+    },
+    {
+      key: 'actions',
+      label: 'Acciones',
+      align: 'center',
+      format: (_, row) => (
+        <div className="inline-flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setInspectedSession(row)}
+            className="min-h-[44px] px-3 inline-flex items-center gap-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink"
+          >
+            <CadIcon name="Eye" size={14} />
+            <span>Traza</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget(row)}
+            aria-label={`Eliminar sesión de ${row.participant_name}`}
+            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-vermilion-ink bg-vermilion-tint text-vermilion-ink hover:bg-paper"
+          >
+            <CadIcon name="Trash2" size={14} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const todayStamp = new Date().toISOString().slice(0, 10);
 
   return (
-    <>
-      <div className="admin-header">
-        <h1>Sessions</h1>
-        <p>Browse participant sessions and view conversation transcripts</p>
-      </div>
-
-      <div style={{ marginBottom: 24, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-        <select className="select" style={{ maxWidth: 300 }} value={selectedCampaign} onChange={(e) => setSelectedCampaign(e.target.value)}>
-          <option value="">All Campaigns</option>
-          {campaigns.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
-        </select>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          <button className="btn btn-secondary btn-sm" onClick={exportCSV} disabled={exporting || sessions.length === 0}>
-            {exporting ? '⏳' : '📊'} Export CSV
-          </button>
-          <button className="btn btn-secondary btn-sm" onClick={exportJSON} disabled={exporting || sessions.length === 0}>
-            {exporting ? '⏳' : '📦'} Export JSON
-          </button>
-        </div>
-      </div>
-
-      {sessions.length === 0 ? (
-        <div className="glass-card empty-state">
-          <div className="empty-icon">📭</div>
-          <p>No sessions found. Share a campaign link to get started!</p>
-        </div>
-      ) : (
-        <div className="glass-card" style={{ padding: 24 }}>
-          <div className="section-header">
-            <h2>{sessions.length} session{sessions.length !== 1 ? 's' : ''}</h2>
+    <div className="space-y-6">
+      {/* Header */}
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line-control pb-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-3 mb-1">
+            <span className="font-ui-mono text-xs uppercase tracking-wider px-2 py-0.5 border border-line-control bg-paper-subtle text-ink">
+              MOD_04 // TRAZAS CONVERSACIONALES Y EXPORTACIÓN TIDY
+            </span>
+            <MarginNote tone="cobalt" rotate={1}>
+              DATOS LISTOS PARA R Y PANDAS
+            </MarginNote>
           </div>
-          <div className="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Participant</th>
-                  <th>Version</th>
-                  <th>Status</th>
-                  <th>Messages</th>
-                  <th>Started</th>
-                  <th>Finished</th>
-                  <th>Duration</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sessions.map((s) => {
-                  const duration = s.completed_at && s.started_at
-                    ? Math.round((new Date(s.completed_at) - new Date(s.started_at)) / 1000)
-                    : null;
-                  const durationStr = duration !== null
-                    ? (duration >= 3600 
-                        ? `${Math.floor(duration / 3600)}h ${Math.floor((duration % 3600) / 60)}m`
-                        : duration >= 60 
-                          ? `${Math.floor(duration / 60)}m ${duration % 60}s`
-                          : `${duration}s`)
-                    : null;
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">
+            Registro de{' '}
+            <HandMark type="underline" tone="cobalt">
+              Sesiones y Trazas
+            </HandMark>
+          </h1>
+          <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">
+            Inspeccione cada diálogo turno a turno junto a sus respuestas de encuesta y exporte tablas Tidy (Wickham, 2014) acompañadas de libro de códigos científico.
+          </p>
+        </div>
 
-                  return (
-                  <tr key={s.id} style={{ cursor: 'pointer' }} onClick={() => viewTranscript(s.id)}>
-                    <td>{s.participant_name}</td>
-                    <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.version_title}</td>
-                    <td><span className={`badge ${s.status === 'completed' ? 'badge-completed' : 'badge-active'}`}>{s.status}</span></td>
-                    <td>{s.interaction_count}</td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{new Date(s.started_at).toLocaleString()}</td>
-                    <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                      {s.completed_at ? new Date(s.completed_at).toLocaleString() : <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>—</span>}
-                    </td>
-                    <td style={{ fontSize: '0.85rem', fontWeight: durationStr ? 500 : 400, color: durationStr ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
-                      {durationStr || <span style={{ fontStyle: 'italic' }}>—</span>}
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={(e) => { e.stopPropagation(); viewTranscript(s.id); }}
-                        >
-                          💬 View
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={(e) => handleDeleteSession(s.id, e)}
-                          title="Delete Session"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+        {/* Scientific Export SplitButton + Codebook */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            disabled={Boolean(exportingLabel)}
+            onClick={() =>
+              triggerExport({
+                format: 'codebook',
+                level: 'session',
+                filename: `promptsketch_codebook_${todayStamp}.md`,
+                mimeType: 'text/markdown;charset=utf-8',
+              })
+            }
+            className="min-h-[44px] px-3.5 inline-flex items-center gap-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs font-semibold uppercase text-ink"
+          >
+            <CadIcon name="BookOpen" size={14} />
+            <span>Codebook (.md)</span>
+          </button>
+
+          <SplitButton
+            variant="primary"
+            iconBox="Download"
+            loading={Boolean(exportingLabel)}
+            disabled={sessions.length === 0}
+            primaryAction={{
+              label: 'Exportar Tidy Sesiones (.csv)',
+              icon: 'Download',
+              onClick: () =>
+                triggerExport({
+                  format: 'csv',
+                  level: 'session',
+                  filename: `tidy_sessions_${todayStamp}.csv`,
+                  mimeType: 'text/csv;charset=utf-8',
+                }),
+            }}
+            menuActions={[
+              {
+                label: 'Tidy Turnos Conversacionales (.csv)',
+                icon: 'FileSpreadsheet',
+                onClick: () =>
+                  triggerExport({
+                    format: 'csv',
+                    level: 'turn',
+                    filename: `tidy_turns_${todayStamp}.csv`,
+                    mimeType: 'text/csv;charset=utf-8',
+                  }),
+              },
+              {
+                label: 'Tidy Longitudinal Pre/Post (.csv)',
+                icon: 'GitCompare',
+                onClick: () =>
+                  triggerExport({
+                    format: 'csv',
+                    level: 'longitudinal',
+                    filename: `tidy_longitudinal_${todayStamp}.csv`,
+                    mimeType: 'text/csv;charset=utf-8',
+                  }),
+              },
+              {
+                label: 'Transcripciones Completas (.json)',
+                icon: 'FileCode',
+                onClick: () =>
+                  triggerExport({
+                    format: null,
+                    level: null,
+                    filename: `sessions_full_${todayStamp}.json`,
+                    mimeType: 'application/json;charset=utf-8',
+                  }),
+              },
+            ]}
+          />
+        </div>
+      </header>
+
+      {statusBanner && (
+        <div
+          role="status"
+          className={`p-3 border flex items-center justify-between gap-3 font-ui-mono text-xs ${
+            statusBanner.tone === 'verm'
+              ? 'bg-vermilion-tint border-vermilion-ink text-vermilion-ink'
+              : 'bg-emerald-tint border-emerald text-emerald'
+          }`}
+        >
+          <span>{statusBanner.text}</span>
+          <button
+            type="button"
+            onClick={() => setStatusBanner(null)}
+            aria-label="Cerrar notificación"
+            className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-current bg-paper text-ink"
+          >
+            <CadIcon name="X" size={14} />
+          </button>
         </div>
       )}
 
-      {/* Transcript Modal */}
-      {selectedSession && (
-        <div className="modal-overlay" onClick={closeTranscript}>
-          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 700, maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}>
-            {loadingTranscript ? (
-              <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><div className="spinner" /></div>
-            ) : transcript?.error ? (
-              <div style={{ padding: 24 }}>
-                <h2>Error</h2>
-                <p>{transcript.error}</p>
-                <button className="btn btn-secondary" onClick={closeTranscript}>Close</button>
+      {/* Filter & Search Bar */}
+      <BlueprintPanel
+        codeTag="FILTROS"
+        title={`Explorador de Muestra (${filteredSessions.length} de ${sessions.length} sesiones)`}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="campaign-filter-select"
+              className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
+            >
+              Filtrar por Experimento / Condición
+            </label>
+            <select
+              id="campaign-filter-select"
+              value={selectedCampaign}
+              onChange={(e) => setSelectedCampaign(e.target.value)}
+              className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-ui-mono text-xs text-ink"
+            >
+              <option value="">Todos los experimentos ({campaigns.length})</option>
+              {campaigns.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="session-search-input"
+              className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
+            >
+              Buscar por participante o escenario
+            </label>
+            <input
+              id="session-search-input"
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Ej.: Participante 01, Authorship, Caso..."
+              className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-body text-xs text-ink"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          {loading ? (
+            <p className="font-ui-mono text-xs text-ink-2 py-8 text-center">
+              Cargando registro completo de sesiones y mensajes...
+            </p>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={tableRows}
+              caption="Registro auditable de sesiones experimentales y balance léxico"
+              emptyText="No se encontraron sesiones para los criterios seleccionados."
+            />
+          )}
+        </div>
+      </BlueprintPanel>
+
+      {/* Transcript Inspector Modal */}
+      {inspectedSession && (
+        <div
+          className="fixed inset-0 z-50 bg-ink/65 flex items-start justify-center p-4 overflow-y-auto"
+          onClick={() => setInspectedSession(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="transcript-modal-title"
+            className="w-full max-w-3xl my-6 bg-paper border-2 border-ink shadow-hard flex flex-col max-h-[88vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-paper-subtle border-b border-line-control">
+              <div className="flex items-center gap-2">
+                <CadIcon name="MessageSquare" size={16} className="text-cobalt" />
+                <h2
+                  id="transcript-modal-title"
+                  className="font-ui-mono text-xs uppercase tracking-wider font-semibold text-ink m-0"
+                >
+                  INSPECTOR DE TRAZA CONVERSACIONAL · {inspectedSession.participant_name}
+                </h2>
               </div>
-            ) : (
-              <>
-                <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
-                  <h2 style={{ margin: 0 }}>💬 Conversation Transcript</h2>
-                  <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    <span>👤 <strong style={{ color: 'var(--text-secondary)' }}>{transcript.participant_name}</strong></span>
-                    <span>📋 {transcript.version?.title || 'Unknown'}</span>
-                    <span>📅 {new Date(transcript.started_at).toLocaleString()}</span>
-                    <span className={`badge ${transcript.status === 'completed' ? 'badge-completed' : 'badge-active'}`}>{transcript.status}</span>
-                  </div>
-                  <div style={{ marginTop: 12, fontSize: '0.85rem', padding: '8px 12px', background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border-color)' }}>
-                    <strong>System Prompt:</strong> {transcript.system_prompt ? <span style={{ color: 'var(--text-primary)' }}>{transcript.system_prompt}</span> : <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None (Naive Mode)</span>}
-                  </div>
+              <button
+                type="button"
+                onClick={() => setInspectedSession(null)}
+                aria-label="Cerrar inspector de traza"
+                className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-line-control bg-paper text-ink"
+              >
+                <CadIcon name="X" size={16} />
+              </button>
+            </div>
+
+            <TitleBlock
+              sheetNumber={(inspectedSession.id || '').slice(0, 8)}
+              status={inspectedSession.status === 'completed' ? 'COMPLETADA' : 'EN CURSO'}
+              rev={inspectedSession.chain_order ? `PASO ${inspectedSession.chain_order}` : 'INDIVIDUAL'}
+              n={`${inspectedSession.turnsCount || 0} MSGS`}
+              title={inspectedSession.campaign_name}
+              subtitle={inspectedSession.version_title}
+            />
+
+            <div className="p-5 overflow-y-auto space-y-5 flex-1">
+              {/* System Prompt Box */}
+              <div className="p-3 bg-paper-subtle border border-line-control">
+                <div className="font-ui-mono text-xs uppercase font-semibold text-ink mb-1">
+                  System Prompt Activo en esta Sesión
                 </div>
-                <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
-                  {(!transcript.messages || transcript.messages.length === 0) ? (
-                    <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
-                      <p>No messages in this session.</p>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {transcript.messages.map((msg, i) => (
-                        <div key={i} style={{
-                          display: 'flex',
-                          flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-                          gap: 8,
-                          alignItems: 'flex-start',
-                        }}>
-                          <div style={{
-                            width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', flexShrink: 0,
-                            background: msg.role === 'user' ? 'var(--accent-purple)' : 'var(--accent-cyan)',
-                          }}>
-                            {msg.role === 'user' ? '👤' : '🤖'}
-                          </div>
-                          <div style={{
-                            maxWidth: '80%',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            fontSize: '0.9rem',
-                            lineHeight: 1.5,
-                            background: msg.role === 'user' ? 'var(--accent-purple)' : 'var(--bg-glass)',
-                            border: msg.role === 'user' ? 'none' : '1px solid var(--border-color)',
-                            color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
-                          }}>
-                            <div className="markdown-content">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripThinkingTags(msg.content)}</ReactMarkdown>
-                            </div>
-                            <div style={{ fontSize: '0.7rem', marginTop: 6, opacity: 0.6, textAlign: 'right' }}>
-                              {new Date(msg.created_at).toLocaleTimeString()}
-                            </div>
+                <pre className="font-ui-mono text-xs text-ink-2 whitespace-pre-wrap m-0 max-h-36 overflow-y-auto">
+                  {inspectedSession.system_prompt
+                    ? inspectedSession.system_prompt
+                    : 'Sin System Prompt adicional (Condición Base / Naive Mode)'}
+                </pre>
+              </div>
+
+              {/* Conversation Log */}
+              <div
+                role="log"
+                aria-label="Transcripción turno a turno"
+                className="space-y-3"
+              >
+                {(!inspectedSession.messages || inspectedSession.messages.length === 0) ? (
+                  <p className="font-ui-mono text-xs text-ink-2 text-center py-6">
+                    Esta sesión no registra mensajes conversacionales.
+                  </p>
+                ) : (
+                  inspectedSession.messages.map((msg, idx) => {
+                    const isUser = msg.role === 'user';
+                    const cleanText = stripThinkingTags(msg.content);
+                    const wordCount = cleanText.trim().split(/\s+/).filter(Boolean).length;
+                    const tel = msg.telemetry || msg.metadata?.telemetry || null;
+
+                    return (
+                      <div
+                        key={msg.id || idx}
+                        className={`p-3.5 border ${
+                          isUser
+                            ? 'bg-paper-subtle border-line-control ml-0 sm:ml-8'
+                            : 'bg-paper border-l-4 border-l-cobalt border-line-control mr-0 sm:mr-8'
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-dotted border-rule pb-1.5 mb-2 font-ui-mono text-xs">
+                          <span className={isUser ? 'font-bold text-ink' : 'font-bold text-cobalt'}>
+                            #{idx + 1} · {isUser ? 'ESTUDIANTE' : 'ASISTENTE IA'}
+                          </span>
+                          <div className="flex flex-wrap items-center gap-2 text-ink-2 stat">
+                            <span>{wordCount} palabras</span>
+                            {tel?.ttft_ms ? <span>· TTFT {Math.round(tel.ttft_ms)} ms</span> : null}
+                            {tel?.cost_usd ? <span>· USD {Number(tel.cost_usd).toFixed(5)}</span> : null}
+                            {msg.created_at ? (
+                              <span>· {new Date(msg.created_at).toLocaleTimeString()}</span>
+                            ) : null}
                           </div>
                         </div>
-                      ))}
+                        <div className="font-body text-sm text-ink leading-relaxed prose max-w-none">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{cleanText}</ReactMarkdown>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Post-Session Survey Responses */}
+              {inspectedSession.survey_answers &&
+                Object.keys(inspectedSession.survey_answers).length > 0 && (
+                  <div className="p-4 bg-paper-subtle border border-line-control space-y-2.5">
+                    <div className="font-ui-mono text-xs uppercase font-semibold text-cobalt">
+                      Respuestas del Instrumento Post-Sesión
                     </div>
-                  )}
-                </div>
-                <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
-                  <button className="btn btn-secondary" onClick={closeTranscript}>Close</button>
-                </div>
-              </>
-            )}
+                    <dl className="space-y-2 m-0">
+                      {Object.entries(inspectedSession.survey_answers).map(([k, val]) => {
+                        const matchedQ = (inspectedSession.survey_config || []).find(
+                          (q) => q.id === k
+                        );
+                        const label = matchedQ ? matchedQ.text : k;
+                        const displayVal = Array.isArray(val) ? val.join(' · ') : String(val);
+                        return (
+                          <div key={k} className="border-b border-dotted border-rule pb-1.5">
+                            <dt className="font-ui-mono text-xs text-ink-2">{label}</dt>
+                            <dd className="font-body text-xs font-semibold text-ink m-0 mt-0.5">
+                              {displayVal}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                  </div>
+                )}
+            </div>
+
+            <div className="flex justify-end gap-3 px-5 py-3 bg-paper-subtle border-t border-line-control">
+              <button
+                type="button"
+                onClick={() => setInspectedSession(null)}
+                className="min-h-[44px] px-4 border border-line-control bg-paper font-ui-mono text-xs font-semibold uppercase text-ink"
+              >
+                Cerrar Inspector
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </>
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 bg-ink/70 flex items-center justify-center p-4"
+          onClick={() => setDeleteTarget(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-session-title"
+            className="w-full max-w-md bg-paper border-2 border-vermilion-ink shadow-hard p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 text-vermilion-ink">
+              <CadIcon name="AlertTriangle" size={18} />
+              <h3 id="delete-session-title" className="font-ui-mono text-xs uppercase font-bold m-0">
+                CONFIRMAR ELIMINACIÓN DE SESIÓN
+              </h3>
+            </div>
+            <p className="font-body text-sm text-ink m-0">
+              ¿Desea eliminar permanentemente la sesión de{' '}
+              <strong>{deleteTarget.participant_name}</strong> y todos sus turnos conversacionales?
+            </p>
+            <div className="flex justify-end gap-3 pt-2 border-t border-line-control">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="min-h-[44px] px-4 border border-line-control bg-paper font-ui-mono text-xs uppercase text-ink"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={confirmDeleteSession}
+                className="min-h-[44px] px-4 border border-vermilion-ink bg-vermilion-tint font-ui-mono text-xs font-bold uppercase text-vermilion-ink"
+              >
+                {deleting ? 'Eliminando…' : 'Eliminar Sesión'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

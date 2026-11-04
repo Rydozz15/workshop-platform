@@ -5,9 +5,35 @@
 import { NextResponse } from 'next/server';
 import { getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion, getSessionsByChainUserId, getMessages } from '@/lib/db';
 
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const code = searchParams.get('code');
+    if (!code) {
+      return NextResponse.json({ error: 'Workshop code is required' }, { status: 400 });
+    }
+    const workshop = await getWorkshopByCode(code);
+    if (!workshop) {
+      return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
+    }
+    return NextResponse.json({
+      id: workshop.id,
+      name: workshop.name,
+      share_code: workshop.share_code,
+      is_active: workshop.is_active,
+      onboarding_instructions: workshop.onboarding_instructions || null,
+      analysis_type: workshop.analysis_type || 'preregistrado',
+      chain_id: workshop.chain_id || null,
+      chain_order: workshop.chain_order || 1,
+    });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   try {
-    const { code, participant_name, chain_user_id } = await request.json();
+    const { code, participant_name, chain_user_id, onboarding_answers } = await request.json();
 
     if (!code) {
       return NextResponse.json({ error: 'Workshop code is required' }, { status: 400 });
@@ -75,6 +101,7 @@ export async function POST(request) {
       version_id: assignedVersionId,
       participant_name: participant_name || 'Anonymous',
       chain_user_id: chain_user_id || null,
+      onboarding_answers: onboarding_answers || null,
     });
 
     // For chained sessions (step > 1), find the first user message from the previous session
@@ -108,6 +135,10 @@ export async function POST(request) {
         case_content: version.case_content,
       },
       workshop_name: workshop.name,
+      onboarding_instructions: workshop.onboarding_instructions || null,
+      analysis_type: workshop.analysis_type || 'preregistrado',
+      chain_id: workshop.chain_id || null,
+      chain_order: workshop.chain_order || 1,
       survey_config: workshop.survey_config || [],
       previous_first_message: previousFirstMessage,
     });

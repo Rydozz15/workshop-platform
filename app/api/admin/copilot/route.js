@@ -1,0 +1,174 @@
+import { NextResponse } from 'next/server';
+import { chat, getProviderConfig } from '@/lib/ai-engine';
+import { getSettings } from '@/lib/db';
+import {
+  STUDY_DESIGN_COPILOT_SYSTEM_PROMPT,
+  buildLakReviewerMessages,
+  generateDeterministicLakCritique,
+  generateDeterministicStudyDesign,
+} from '@/lib/lak-reviewer-prompt';
+
+function resolveActiveProvider(settings = {}, requestedProvider, requestedModel) {
+  const candidates = [
+    requestedProvider,
+    settings.default_ai_provider,
+    process.env.GROQ_API_KEY ? 'groq' : null,
+    process.env.OPENROUTER_API_KEY ? 'openrouter' : null,
+    process.env.OPENAI_API_KEY ? 'openai' : null,
+    process.env.ANTHROPIC_API_KEY ? 'anthropic' : null,
+    'groq',
+  ].filter(Boolean);
+
+  for (const prov of candidates) {
+    const keyOverride = settings[`api_key_${prov}`];
+    const baseUrl = settings.ollama_base_url || process.env.OLLAMA_BASE_URL;
+    const cfg = getProviderConfig({
+      provider: prov,
+      apiKey: keyOverride,
+      model: requestedModel || settings.default_ai_model,
+      baseUrl,
+    });
+    if (!cfg.isMock) {
+      return {
+        provider: cfg.provider,
+        apiKey: keyOverride,
+        model: cfg.model,
+        baseUrl,
+        isLive: true,
+      };
+    }
+  }
+
+  return {
+    provider: requestedProvider || settings.default_ai_provider || 'groq',
+    model: requestedModel || settings.default_ai_model || 'llama-3.3-70b-versatile',
+    isLive: false,
+  };
+}
+
+function extractJsonBlock(text) {
+  if (!text) return null;
+  const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) return null;
+  try {
+    return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+  } catch {
+    return null;
+  }
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { mode = 'lak-review', goal, metricsPayload, provider, model, lang = 'es' } = body;
+
+    let settings = {};
+    try {
+      settings = await getSettings();
+    } catch {
+      settings = {};
+    }
+
+    const active = resolveActiveProvider(settings, provider, model);
+
+    if (mode === 'design') {
+      const userGoal = (goal || '').trim();
+      if (!userGoal) {
+        return NextResponse.json(
+          { error: 'Describa el objetivo pedagógico o pregunta de investigación.' },
+          { status: 400 }
+        );
+      }
+
+      if (active.isLive) {
+        try {
+          const langInstruction =
+            lang === 'pt-BR' || lang === 'pt'
+              ? 'Gere todos os campos do protocolo JSON estritamente em Português do Brasil.'
+              : lang === 'en'
+              ? 'Generate all fields of the JSON protocol strictly in academic English.'
+              : 'Genera todos los campos del protocolo JSON estrictamente en español.';
+
+          const response = await chat({
+            provider: active.provider,
+            apiKey: active.apiKey,
+            model: active.model,
+            baseUrl: active.baseUrl,
+            temperature: 0.4,
+            maxTokens: 2048,
+            messages: [
+              { role: 'system', content: STUDY_DESIGN_COPILOT_SYSTEM_PROMPT },
+              {
+                role: 'user',
+                content: `Diseña un protocolo experimental A/B en PromptSketch para el siguiente objetivo de investigación:\n\n${userGoal}\n\n${langInstruction}`,
+              },
+            ],
+          });
+
+          const parsed = extractJsonBlock(response.content);
+          if (parsed && parsed.condition_b_prompt) {
+            return NextResponse.json({
+              design: parsed,
+              telemetry: response.telemetry,
+              source: 'live_llm',
+            });
+          }
+        } catch (err) {
+          console.warn('Study Design Copilot live call failed, using deterministic synthesis:', err.message);
+        }
+      }
+
+      const fallbackDesign = generateDeterministicStudyDesign(userGoal, lang);
+      return NextResponse.json({
+        design: fallbackDesign,
+        telemetry: {
+          provider: 'deterministic-architect',
+          model: 'lak-protocol-synthesizer-v2',
+          cost_usd: 0,
+        },
+        source: 'deterministic_fallback',
+      });
+    }
+
+    // Default mode: 'lak-review' (Critical LAK Methodological Peer Reviewer)
+    if (active.isLive) {
+      try {
+        const response = await chat({
+          provider: active.provider,
+          apiKey: active.apiKey,
+          model: active.model,
+          baseUrl: active.baseUrl,
+          temperature: 0.3,
+          maxTokens: 2048,
+          messages: buildLakReviewerMessages(metricsPayload || {}, lang),
+        });
+
+        if (response.content && !response.content.startsWith('Modo de demostración')) {
+          return NextResponse.json({
+            critique: response.content,
+            telemetry: response.telemetry,
+            source: 'live_llm',
+          });
+        }
+      } catch (err) {
+        console.warn('LAK Reviewer live call failed, using deterministic mathematical audit:', err.message);
+      }
+    }
+
+    const deterministicCritique = generateDeterministicLakCritique(metricsPayload || {}, lang);
+    return NextResponse.json({
+      critique: deterministicCritique,
+      telemetry: {
+        provider: 'deterministic-auditor',
+        model: 'lak-statistical-reviewer-v2',
+        cost_usd: 0,
+      },
+      source: 'deterministic_fallback',
+    });
+  } catch (error) {
+    console.error('Copilot API error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

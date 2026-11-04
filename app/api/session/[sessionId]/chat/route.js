@@ -1,8 +1,7 @@
 /**
- * Chat endpoint with streaming support.
- * POST - Send a message and get a streamed AI response.
- * Strips <think>...</think> reasoning tags from modern models before
- * forwarding to the client.
+ * Chat endpoint with Multi-Provider AI streaming & Learning Analytics telemetry.
+ * POST - Send a participant message, record client latency telemetry,
+ * stream clean SSE tokens via lib/ai-engine.js, and persist provider token/cost/TTFT telemetry.
  */
 import { NextResponse } from 'next/server';
 import {
@@ -11,20 +10,21 @@ import {
   createMessage,
   incrementInteractionCount,
   getWorkshop,
-  getVersion,
+  getSettings,
+  addTelemetry,
 } from '@/lib/db';
-import { streamChat, stripThinkingTags } from '@/lib/openrouter';
+import { streamChat } from '@/lib/ai-engine';
 
 export async function POST(request, { params }) {
   try {
     const { sessionId } = await params;
-    const { message } = await request.json();
+    const body = await request.json();
+    const { message, client_telemetry = null } = body;
 
-    if (!message) {
+    if (!message || !String(message).trim()) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // Validate session exists
     const session = await getSession(sessionId);
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
@@ -34,144 +34,156 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'This session has been completed' }, { status: 403 });
     }
 
-    // Get the workshop model
-    const workshop = await getWorkshop(session.workshop_id);
-    const model = workshop?.openrouter_model || process.env.DEFAULT_MODEL;
-    const provider = workshop?.ai_provider || 'openrouter';
+    const [workshop, settings] = await Promise.all([
+      getWorkshop(session.workshop_id),
+      Promise.resolve().then(() => getSettings()).catch(() => ({})),
+    ]);
 
-    // Save the user message
+    const provider = (
+      workshop?.ai_provider ||
+      settings?.default_ai_provider ||
+      'openrouter'
+    ).toLowerCase();
+    const model =
+      workshop?.openrouter_model ||
+      settings?.default_ai_model ||
+      process.env.DEFAULT_MODEL;
+    const apiKeyOverride = settings?.[`api_key_${provider}`] || undefined;
+    const baseUrl = settings?.ollama_base_url || process.env.OLLAMA_BASE_URL || undefined;
+
+    // Persist user message with client reading/composition latency metadata
     await createMessage({
       session_id: sessionId,
       role: 'user',
       content: message,
+      telemetry: client_telemetry || null,
     });
 
-    // Increment interaction count
-    await incrementInteractionCount(sessionId);
-
-    // Build conversation history from stored messages
-    const storedMessages = await getMessages(sessionId);
-    
-    // Use custom system prompt if defined for this campaign, otherwise use a minimal default
-    const conversationHistory = [];
-    
-    if (workshop?.system_prompt && workshop.system_prompt.trim() !== '') {
-      conversationHistory.push({
-        role: 'system',
-        content: workshop.system_prompt.trim()
-      });
-    } else {
-      // Minimal fallback: only ensures the model responds in the user's language
-      // instead of defaulting to Chinese (common with DeepSeek/Qwen models).
-      // Kept deliberately neutral to avoid biasing research interactions.
-      conversationHistory.push({
-        role: 'system',
-        content: 'Always respond in the same language the user writes in.'
+    if (client_telemetry && addTelemetry) {
+      await addTelemetry(sessionId, {
+        event_type: 'user_turn',
+        ...client_telemetry,
       });
     }
 
-    // Append all previous messages
-    conversationHistory.push(...storedMessages.map((m) => ({
-      role: m.role,
-      content: m.content,
-    })));
+    await incrementInteractionCount(sessionId);
 
-    // Get streaming response from AI provider
-    const stream = await streamChat(conversationHistory, model, provider);
+    const storedMessages = await getMessages(sessionId);
+    const conversationHistory = [];
 
-    // Create a TransformStream that:
-    // 1. Accumulates the raw response (with <think> tags) for proper boundary detection
-    // 2. Forwards only the clean (stripped) content to the client
-    // 3. Saves the clean content to the database
-    let fullResponseRaw = '';
-    let lastCleanLength = 0;
-    let buffer = '';
+    if (workshop?.system_prompt && workshop.system_prompt.trim() !== '') {
+      conversationHistory.push({
+        role: 'system',
+        content: workshop.system_prompt.trim(),
+      });
+    } else {
+      conversationHistory.push({
+        role: 'system',
+        content: 'Always respond in the same language the user writes in.',
+      });
+    }
+
+    conversationHistory.push(
+      ...storedMessages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      }))
+    );
+
+    // Initiate multi-provider stream (already strips <think>...</think> statefully and appends telemetry SSE)
+    const upstream = await streamChat({
+      provider,
+      model,
+      messages: conversationHistory,
+      apiKey: apiKeyOverride,
+      baseUrl,
+    });
+
+    let assistantText = '';
+    let assistantTelemetry = null;
+    let sseBuffer = '';
     const decoder = new TextDecoder();
-    const encoder = new TextEncoder();
 
-    const transformStream = new TransformStream({
+    const tapStream = new TransformStream({
       transform(chunk, controller) {
-        const text = decoder.decode(chunk, { stream: true });
-        buffer += text;
-        
-        const events = buffer.split('\n\n');
-        buffer = events.pop() || '';
-        
-        for (const event of events) {
-          const lines = event.split('\n');
+        // Forward SSE chunk immediately for low TTFT
+        controller.enqueue(chunk);
+
+        sseBuffer += decoder.decode(chunk, { stream: true });
+        const events = sseBuffer.split('\n\n');
+        sseBuffer = events.pop() || '';
+
+        for (const evt of events) {
+          const lines = evt.split('\n');
+          let isTelemetryEvent = false;
           for (const line of lines) {
-            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            if (line.startsWith('event: telemetry')) {
+              isTelemetryEvent = true;
+            } else if (line.startsWith('data: ') && line !== 'data: [DONE]') {
               try {
-                const json = JSON.parse(line.slice(6));
-                const content = json.choices?.[0]?.delta?.content || '';
-                fullResponseRaw += content;
-              } catch (e) {
-                // Ignore parse errors for partial chunks
+                const parsed = JSON.parse(line.slice(6));
+                if (isTelemetryEvent || parsed.telemetry) {
+                  assistantTelemetry = parsed.telemetry || parsed;
+                } else {
+                  const delta = parsed.choices?.[0]?.delta?.content ?? parsed.chunk ?? '';
+                  assistantText += delta;
+                }
+              } catch {
+                // Ignore partial JSON
               }
             }
-            if (line === 'data: [DONE]') {
-              // Forward the DONE event as-is
-              controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-            }
           }
-        }
-
-        // Compute the clean version and emit only the new delta
-        const cleanSoFar = stripThinkingTags(fullResponseRaw);
-        if (cleanSoFar.length > lastCleanLength) {
-          const newCleanContent = cleanSoFar.slice(lastCleanLength);
-          lastCleanLength = cleanSoFar.length;
-          // Re-encode as SSE chunk
-          const sseChunk = {
-            choices: [{ delta: { content: newCleanContent } }],
-          };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseChunk)}\n\n`));
         }
       },
       async flush() {
-        // Process any remaining buffer
-        if (buffer.trim()) {
-          const lines = buffer.split('\n');
+        if (sseBuffer.trim()) {
+          const lines = sseBuffer.split('\n');
+          let isTelemetryEvent = false;
           for (const line of lines) {
-            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            if (line.startsWith('event: telemetry')) {
+              isTelemetryEvent = true;
+            } else if (line.startsWith('data: ') && line !== 'data: [DONE]') {
               try {
-                const json = JSON.parse(line.slice(6));
-                const content = json.choices?.[0]?.delta?.content || '';
-                fullResponseRaw += content;
-              } catch (e) { /* ignore */ }
+                const parsed = JSON.parse(line.slice(6));
+                if (isTelemetryEvent || parsed.telemetry) {
+                  assistantTelemetry = parsed.telemetry || parsed;
+                } else {
+                  const delta = parsed.choices?.[0]?.delta?.content ?? parsed.chunk ?? '';
+                  assistantText += delta;
+                }
+              } catch {
+                // ignore
+              }
             }
           }
         }
 
-        // Final clean pass and emit any remaining clean content
-        const finalClean = stripThinkingTags(fullResponseRaw);
-        if (finalClean.length > lastCleanLength) {
-          const remaining = finalClean.slice(lastCleanLength);
-          const sseChunk = {
-            choices: [{ delta: { content: remaining } }],
-          };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(sseChunk)}\n\n`));
-        }
-
-        // Save the clean assistant response to the database
-        if (finalClean) {
+        const cleanFinal = assistantText.trim();
+        if (cleanFinal) {
           await createMessage({
             session_id: sessionId,
             role: 'assistant',
-            content: finalClean,
+            content: cleanFinal,
+            telemetry: assistantTelemetry,
+          });
+        }
+
+        if (assistantTelemetry && addTelemetry) {
+          await addTelemetry(sessionId, {
+            event_type: 'assistant_turn',
+            ...assistantTelemetry,
           });
         }
       },
     });
 
-    // Pipe the AI stream through our transform (which now re-encodes clean SSE)
-    const responseStream = stream.pipeThrough(transformStream);
+    const responseStream = upstream.pipeThrough(tapStream);
 
     return new Response(responseStream, {
       headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
       },
     });
   } catch (error) {

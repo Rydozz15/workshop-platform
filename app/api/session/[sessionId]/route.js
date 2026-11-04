@@ -43,6 +43,10 @@ export async function GET(request, { params }) {
       ...session,
       messages,
       workshop_name: workshop ? workshop.name : '',
+      onboarding_instructions: workshop ? workshop.onboarding_instructions || null : null,
+      analysis_type: workshop ? workshop.analysis_type || 'preregistrado' : 'preregistrado',
+      chain_id: workshop ? workshop.chain_id || null : null,
+      chain_order: workshop ? workshop.chain_order || 1 : 1,
       system_prompt: workshop ? workshop.system_prompt : null,
       survey_config: workshop ? workshop.survey_config : [],
       version: version
