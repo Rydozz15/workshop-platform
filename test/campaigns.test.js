@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { testDbPath } from './e2e/harness/env.js';
 import { groupCampaigns, stepsOfCampaign, campaignIdOf } from '../lib/campaigns.js';
-import { saveCampaign, getCampaignDetail, deleteCampaign, validateCampaignPayload } from '../lib/campaign-service.js';
+import { saveCampaign, getCampaignDetail, deleteCampaign, setCampaignActive, validateCampaignPayload } from '../lib/campaign-service.js';
 import { getWorkshops, getVersions, createSession, getSessions } from '../lib/db.js';
 import { resetStore } from '../lib/db-memory.js';
 
@@ -107,6 +107,20 @@ await check('a condition prompt is stored per condition and absent when empty', 
   assert.ok(socratic.system_prompt);
   const neutral = c.steps.flatMap((s) => s.conditions).find((v) => v.title === 'Neutro');
   assert.equal(neutral.system_prompt, null);
+});
+
+await check('closing a campaign deactivates every step, keeps data, and reopening restores it', async () => {
+  const before = (await getWorkshops()).filter((w) => w.chain_id === saved.id);
+  assert.ok(before.length > 0 && before.every((w) => w.is_active));
+  assert.equal(await setCampaignActive(saved.id, false), true);
+  let steps = (await getWorkshops()).filter((w) => w.chain_id === saved.id);
+  assert.equal(steps.length, before.length);
+  assert.ok(steps.every((w) => w.is_active === false));
+  assert.equal((await groupCampaigns(await getWorkshops(), await getSessions())).find((c) => c.id === saved.id).is_active, false);
+  assert.equal(await setCampaignActive(saved.id, true), true);
+  steps = (await getWorkshops()).filter((w) => w.chain_id === saved.id);
+  assert.ok(steps.every((w) => w.is_active === true));
+  assert.equal(await setCampaignActive('does-not-exist', false), false);
 });
 
 await check('deleting a campaign removes steps and unused conditions but keeps sessions untouched elsewhere', async () => {

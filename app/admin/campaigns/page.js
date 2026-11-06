@@ -11,7 +11,7 @@ import QrProjector from '@/components/admin/qr-projector';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
 const BTN_PRIMARY = 'min-h-[44px] px-4 py-2 border border-line-strong bg-cobalt hover:bg-cobalt-hover text-paper font-body text-sm font-semibold inline-flex items-center gap-2';
 
-function CampaignCard({ campaign, origin, onDeleted }) {
+function CampaignCard({ campaign, origin, onDeleted, onChanged }) {
   const tr = useTr();
   const [confirming, setConfirming] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -27,6 +27,24 @@ function CampaignCard({ campaign, origin, onDeleted }) {
     } catch {
       window.prompt?.(tr('Copia el enlace'), link);
     }
+  };
+
+  const [toggleError, setToggleError] = useState('');
+  const toggleActive = async () => {
+    setBusy(true);
+    setToggleError('');
+    try {
+      const res = await fetch(`/api/admin/campaigns/${encodeURIComponent(campaign.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !campaign.is_active }),
+      });
+      if (res.ok) onChanged();
+      else setToggleError(tr('No se pudo cambiar el estado de la campaña.'));
+    } catch {
+      setToggleError(tr('No se pudo cambiar el estado de la campaña.'));
+    }
+    setBusy(false);
   };
 
   const remove = async () => {
@@ -47,7 +65,7 @@ function CampaignCard({ campaign, origin, onDeleted }) {
               campaign.is_active ? 'border-emerald bg-emerald-tint text-emerald' : 'border-line-control bg-paper-subtle text-ink-2'
             }`}
           >
-            {campaign.is_active ? tr('Activa') : tr('Pausada')}
+            {campaign.is_active ? tr('Activa') : tr('Cerrada')}
           </span>
         </div>
         {campaign.description && <p className="ps-lead">{campaign.description}</p>}
@@ -57,7 +75,12 @@ function CampaignCard({ campaign, origin, onDeleted }) {
           <div><dt className="inline text-ink-2">{tr('Participantes:')}{' '}</dt><dd className="inline font-semibold m-0">{campaign.participants}</dd></div>
           <div><dt className="inline text-ink-2">{tr('Sesiones completas:')}{' '}</dt><dd className="inline font-semibold m-0">{campaign.sessions_completed}/{campaign.sessions_total}</dd></div>
         </dl>
+        {toggleError && <p role="alert" className="font-body text-sm text-vermilion-ink m-0">{toggleError}</p>}
         <div className="flex flex-wrap gap-2 pt-1">
+          <button type="button" disabled={busy} onClick={toggleActive} className={BTN}>
+            <CadIcon name={campaign.is_active ? 'Lock' : 'Unlock'} size={16} />{' '}
+            {campaign.is_active ? tr('Cerrar campaña') : tr('Reabrir campaña')}
+          </button>
           <Link href={`/admin/campaigns/${encodeURIComponent(campaign.id)}`} className={BTN}>
             <CadIcon name="Pencil" size={16} />{' '}{tr('Editar')}</Link>
           <Link href={`/admin/results?campaign=${encodeURIComponent(campaign.id)}`} className={BTN}>
@@ -142,7 +165,7 @@ export default function CampaignsPage() {
 
       <div className="space-y-4">
         {campaigns?.map((c) => (
-          <CampaignCard key={c.id} campaign={c} origin={origin} onDeleted={load} />
+          <CampaignCard key={c.id} campaign={c} origin={origin} onDeleted={load} onChanged={load} />
         ))}
       </div>
 

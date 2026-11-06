@@ -142,7 +142,11 @@ export default function SessionPage({ params }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || tr('No se pudo iniciar la sesión.'));
+        setError(
+          data.code === 'campaign_closed'
+            ? tr('Esta campaña ya terminó: ya no se aceptan nuevos participantes.')
+            : data.error || tr('No se pudo iniciar la sesión.')
+        );
         setJoining(false);
         return;
       }

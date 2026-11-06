@@ -106,7 +106,7 @@ export async function POST(request) {
     const workshop = order ? order.step : codeWorkshop;
 
     if (!workshop.is_active) {
-      return NextResponse.json({ error: 'This workshop is no longer active' }, { status: 403 });
+      return NextResponse.json({ error: 'This workshop is no longer active', code: 'campaign_closed' }, { status: 403 });
     }
 
     if (!workshop.selected_version_ids || workshop.selected_version_ids.length === 0) {
