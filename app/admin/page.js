@@ -30,6 +30,7 @@ export default function LivePage() {
   const [error, setError] = useState('');
   const [paused, setPaused] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [view, setView] = useState('bars');
   const [updatedAt, setUpdatedAt] = useState(null);
 
   useEffect(() => {
@@ -133,31 +134,96 @@ export default function LivePage() {
             )}
           </BlueprintPanel>
 
-          <BlueprintPanel title={tr('Avance por paso')} subtitle={tr('Cuántas personas hay en cada paso y cómo se reparten las condiciones.')}>
-            <ol className="list-none m-0 p-0 space-y-5">
-              {st.steps.map((s) => {
-                const max = Math.max(1, ...s.conditions.map((c) => c.count));
-                return (
-                  <li key={s.id}>
-                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                      <h3 className="ps-h3">{s.order}. {s.name}</h3>
-                      <span className="ps-meta">{tr('{started} iniciaron · {active} en curso · {completed} terminaron', { started: s.started, active: s.active, completed: s.completed })}</span>
-                    </div>
-                    <ul className="list-none m-0 p-0 mt-2 space-y-1.5">
-                      {s.conditions.map((c, i) => (
-                        <li key={c.id} className={`ps-cond-${(i % 6) + 1} grid grid-cols-[minmax(6rem,12rem)_1fr_2.5rem] items-center gap-3 font-body text-sm`}>
-                          <span className="truncate text-ink" title={c.title}>{c.title}</span>
-                          <span className="h-3 bg-paper-muted border border-line-control">
-                            <span className="block h-full" style={{ width: `${(c.count / max) * 100}%`, backgroundColor: 'var(--cond)' }} />
-                          </span>
-                          <span className="font-stat font-semibold text-ink text-right">{c.count}</span>
-                        </li>
+          <BlueprintPanel
+            title={tr('Avance por paso')}
+            subtitle={tr('Cuántas personas hay en cada paso y cómo se reparten las condiciones.')}
+            headerSlot={
+              <div role="group" aria-label={tr('Ver como')} className="inline-flex border border-line-control bg-paper">
+                {[['bars', 'Barras'], ['share', 'Proporción'], ['table', 'Tabla']].map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-pressed={view === id}
+                    onClick={() => setView(id)}
+                    className={`min-h-[44px] px-3 font-body text-sm ${view === id ? 'bg-ink text-paper font-semibold' : 'bg-paper text-ink hover:bg-paper-subtle'}`}
+                  >
+                    {tr(label)}
+                  </button>
+                ))}
+              </div>
+            }
+          >
+            {view === 'table' ? (
+              <div className="overflow-x-auto">
+                <table className="w-full font-body text-sm text-left">
+                  <thead>
+                    <tr className="text-ink-2 border-b border-line-control">
+                      <th className="py-2 pr-4 font-semibold">{tr('Paso')}</th>
+                      {(st.steps[0]?.conditions || []).map((c) => (
+                        <th key={c.id} className="py-2 pr-4 font-semibold text-right">{c.title}</th>
                       ))}
-                    </ul>
-                  </li>
-                );
-              })}
-            </ol>
+                      <th className="py-2 font-semibold text-right">{tr('Total')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {st.steps.map((s) => (
+                      <tr key={s.id} className="border-b border-dotted border-rule hover:bg-cobalt-tint">
+                        <td className="py-2 pr-4 text-ink">{s.order}. {s.name}</td>
+                        {s.conditions.map((c) => (
+                          <td key={c.id} className="py-2 pr-4 text-right font-stat">{c.count}</td>
+                        ))}
+                        <td className="py-2 text-right font-stat font-semibold">{s.started}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <ol className="list-none m-0 p-0 space-y-5">
+                {st.steps.map((s) => {
+                  const max = Math.max(1, ...s.conditions.map((c) => c.count));
+                  const total = s.conditions.reduce((a, c) => a + c.count, 0);
+                  return (
+                    <li key={s.id}>
+                      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                        <h3 className="ps-h3">{s.order}. {s.name}</h3>
+                        <span className="ps-meta">{tr('{started} iniciaron · {active} en curso · {completed} terminaron', { started: s.started, active: s.active, completed: s.completed })}</span>
+                      </div>
+                      {view === 'share' ? (
+                        <div className="mt-2">
+                          <div className="flex h-6 border border-line-strong bg-paper-muted" role="img" aria-label={s.conditions.map((c) => `${c.title}: ${c.count}`).join(', ')}>
+                            {s.conditions.map((c, i) => (
+                              <span key={c.id} className={`ps-cond-${(i % 6) + 1} block h-full`} style={{ width: `${total ? (c.count / total) * 100 : 0}%`, backgroundColor: 'var(--cond)' }} />
+                            ))}
+                          </div>
+                          <ul className="list-none m-0 p-0 mt-2 flex flex-wrap gap-x-5 gap-y-1 font-body text-sm">
+                            {s.conditions.map((c, i) => (
+                              <li key={c.id} className={`ps-cond-${(i % 6) + 1} flex items-center gap-2 text-ink`}>
+                                <span aria-hidden="true" className="inline-block w-3 h-3" style={{ backgroundColor: 'var(--cond)' }} />
+                                {c.title}: <span className="font-stat font-semibold">{c.count}</span>
+                                {total > 0 && <span className="text-ink-2">({Math.round((c.count / total) * 100)}%)</span>}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <ul className="list-none m-0 p-0 mt-2 space-y-1.5">
+                          {s.conditions.map((c, i) => (
+                            <li key={c.id} className={`ps-cond-${(i % 6) + 1} grid grid-cols-[minmax(6rem,12rem)_1fr_2.5rem] items-center gap-3 font-body text-sm`}>
+                              <span className="truncate text-ink" title={c.title}>{c.title}</span>
+                              <span className="h-3 bg-paper-muted border border-line-control">
+                                <span className="block h-full" style={{ width: `${(c.count / max) * 100}%`, backgroundColor: 'var(--cond)' }} />
+                              </span>
+                              <span className="font-stat font-semibold text-ink text-right">{c.count}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
           </BlueprintPanel>
 
           <BlueprintPanel

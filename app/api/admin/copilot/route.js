@@ -8,6 +8,7 @@ import {
   generateDeterministicStudyDesign,
 } from '@/lib/methodology-reviewer-prompt';
 import { ASSISTANT_SYSTEM_PROMPT, deterministicAssistantReply } from '@/lib/assistant-prompt';
+import { translateText } from '@/lib/i18n/messages';
 
 function resolveActiveProvider(settings = {}, requestedProvider, requestedModel) {
   const candidates = [
@@ -105,7 +106,8 @@ export async function POST(request) {
           console.warn('Assistant live call failed, using offline answer:', err.message);
         }
       }
-      return NextResponse.json({ ...deterministicAssistantReply(lastUser.content, page), source: 'offline' });
+      const locale = ['en', 'pt-BR'].includes(lang) ? lang : lang === 'pt' ? 'pt-BR' : 'es';
+      return NextResponse.json({ ...deterministicAssistantReply(lastUser.content, page, (t, v) => translateText(locale, t, v)), source: 'offline' });
     }
 
     if (mode === 'design') {

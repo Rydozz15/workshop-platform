@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import CadIcon from '@/components/ui/cad-icon';
 import { suggestionsForPage } from '@/lib/assistant-prompt';
-import { useTr } from '@/lib/i18n/context';
+import { useTr, useLanguage } from '@/lib/i18n/context';
 
 /**
  * Floating assistant available on every admin page. Asks /api/admin/copilot (mode "assist"),
@@ -13,6 +13,7 @@ import { useTr } from '@/lib/i18n/context';
  */
 export default function AssistantWidget() {
   const tr = useTr();
+  const { locale } = useLanguage();
   const pathname = usePathname() || '';
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -47,7 +48,7 @@ export default function AssistantWidget() {
       const res = await fetch('/api/admin/copilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'assist', messages: next.map(({ role, content }) => ({ role, content })), page: pathname }),
+        body: JSON.stringify({ mode: 'assist', messages: next.map(({ role, content }) => ({ role, content })), page: pathname, lang: locale }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || tr('No pude responder ahora.'));

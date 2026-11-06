@@ -58,4 +58,13 @@ check('guards: one condition, or too few answers', () => {
   assert.equal(analyzeMeasure({ A: [1, 2, 3], B: [] }).status, 'not_enough_groups');
 });
 
+import { MESSAGES, translateText } from '../lib/i18n/messages.js';
+check('the sentence follows the UI language (English text and decimal point)', () => {
+  const tr = (t, v) => translateText('en', t, v);
+  const r = analyzeMeasure({ Neutro: [2, 3, 2, 3, 2, 3, 2, 3], 'Socrático': [5, 4, 5, 4, 5, 4, 5, 5] }, { ordinal: true, tr, decimal: '.' });
+  assert.match(r.summary, /^“Socrático” got higher values \(average 4\.\d\)/);
+  assert.match(r.summary, /fewer than 20 people per condition/);
+  assert.match(r.summary, /effect is (large|medium|small)/);
+  assert.ok(MESSAGES.en);
+});
 console.log(`\nquick-analysis: ${passed} tests passed`);

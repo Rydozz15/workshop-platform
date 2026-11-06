@@ -53,6 +53,10 @@ test('live view shows alerts and results can be downloaded as CSV', async ({ pag
   await adminLogin(page);
   await page.getByRole('combobox').first().selectOption({ label: 'Para descargar' });
   await expect(page.getByText('Avance por paso')).toBeVisible();
+  await page.getByRole('button', { name: 'Tabla', exact: true }).click();
+  await expect(page.getByRole('columnheader', { name: 'Total' })).toBeVisible();
+  await page.getByRole('button', { name: 'Proporción', exact: true }).click();
+  await expect(page.getByRole('img').first()).toBeVisible();
 
   await page.getByRole('link', { name: 'Resultados' }).first().click();
   await expect(page.getByRole('heading', { name: 'Resultados' })).toBeVisible();
