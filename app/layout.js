@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 const jetbrainsMono = JetBrains_Mono({
+  // Sin `weight`: la fuente es variable y Turbopack (Next 16.2) falla con varios pesos explícitos.
   subsets: ['latin', 'latin-ext', 'greek'],
-  weight: ['400', '500', '600'],
   variable: '--font-jbm',
   display: 'swap',
 });
