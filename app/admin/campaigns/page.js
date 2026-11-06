@@ -58,7 +58,7 @@ function CampaignCard({ campaign, origin, onDeleted }) {
           <Link href={`/admin/campaigns/${encodeURIComponent(campaign.id)}`} className={BTN}>
             <CadIcon name="Pencil" size={16} /> Editar
           </Link>
-          <Link href={`/admin/sessions?campaign=${encodeURIComponent(campaign.id)}`} className={BTN}>
+          <Link href={`/admin/results?campaign=${encodeURIComponent(campaign.id)}`} className={BTN}>
             <CadIcon name="BarChart2" size={16} /> Ver resultados
           </Link>
           {confirming ? (

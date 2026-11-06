@@ -229,7 +229,7 @@ export default function SessionsPage() {
     },
     {
       key: 'wordBalance',
-      label: 'Palabras (Est./IA)',
+      label: 'Palabras (participante / asistente)',
       align: 'right',
     },
     {
@@ -249,7 +249,7 @@ export default function SessionsPage() {
             className="min-h-[44px] px-3 inline-flex items-center gap-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink"
           >
             <CadIcon name="Eye" size={14} />
-            <span>Traza</span>
+            <span>Ver detalle</span>
           </button>
           <button
             type="button"
@@ -282,11 +282,11 @@ export default function SessionsPage() {
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">
             Registro de{' '}
             <HandMark type="underline" tone="cobalt">
-              Sesiones y Trazas
+              Sesiones
             </HandMark>
           </h1>
           <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">
-            Inspeccione cada diálogo turno a turno junto a sus respuestas de encuesta y exporte tablas Tidy (Wickham, 2014) acompañadas de libro de códigos científico.
+            Lee cada conversación mensaje a mensaje junto con las respuestas de la encuesta. Para descargar los datos, ve a Resultados.
           </p>
         </div>
 
@@ -306,7 +306,7 @@ export default function SessionsPage() {
             className="min-h-[44px] px-3.5 inline-flex items-center gap-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs font-semibold uppercase text-ink"
           >
             <CadIcon name="BookOpen" size={14} />
-            <span>Codebook (.md)</span>
+            <span>Diccionario de variables</span>
           </button>
 
           <SplitButton
@@ -315,7 +315,7 @@ export default function SessionsPage() {
             loading={Boolean(exportingLabel)}
             disabled={sessions.length === 0}
             primaryAction={{
-              label: 'Exportar Tidy Sesiones (.csv)',
+              label: 'Descargar sesiones (.csv)',
               icon: 'Download',
               onClick: () =>
                 triggerExport({
@@ -327,7 +327,7 @@ export default function SessionsPage() {
             }}
             menuActions={[
               {
-                label: 'Tidy Turnos Conversacionales (.csv)',
+                label: 'Descargar mensajes (.csv)',
                 icon: 'FileSpreadsheet',
                 onClick: () =>
                   triggerExport({
@@ -338,7 +338,7 @@ export default function SessionsPage() {
                   }),
               },
               {
-                label: 'Tidy Longitudinal Pre/Post (.csv)',
+                label: 'Descargar seguimiento por participante (.csv)',
                 icon: 'GitCompare',
                 onClick: () =>
                   triggerExport({
@@ -473,7 +473,7 @@ export default function SessionsPage() {
               <button
                 type="button"
                 onClick={() => setInspectedSession(null)}
-                aria-label="Cerrar inspector de traza"
+                aria-label="Cerrar el detalle de la sesión"
                 className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-line-control bg-paper text-ink"
               >
                 <CadIcon name="X" size={16} />

@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   BlueprintPanel,
-  StatBadge,
+  Disclosure,
   Field,
-  MarginNote,
   LanguageSelector,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
@@ -158,6 +157,7 @@ const GLOSSARY_ENTRIES = [
 ];
 
 export default function GlosarioPage() {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
 
@@ -182,124 +182,69 @@ export default function GlosarioPage() {
   }, [query, selectedCategory]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      {/* Header Navigation */}
-      <header className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-line-control">
-        <div>
-          <span className="font-ui-mono text-xs uppercase tracking-wider text-cobalt font-semibold">
-            MOD_06 // REFERENCIA METODOLÓGICA ABIERTA
-          </span>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink mt-1 m-0">
-            Glosario Estadístico y de Learning Analytics
-          </h1>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <header className="space-y-3 pb-4 border-b border-line-control">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => (window.history.length > 1 ? router.back() : router.push('/admin/results'))}
+            className="min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2"
+          >
+            <CadIcon name="ArrowLeft" size={16} />
+            <span>Volver</span>
+          </button>
           <LanguageSelector compact={true} />
-          <Link
-            href="/"
-            className="min-h-[44px] px-3.5 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink inline-flex items-center gap-1.5"
-          >
-            <CadIcon name="Home" size={14} />
-            <span>Inicio</span>
-          </Link>
-          <Link
-            href="/admin/analytics"
-            className="min-h-[44px] px-3.5 py-2 border border-cobalt bg-cobalt text-paper hover:bg-cobalt-hover font-ui-mono text-xs font-medium inline-flex items-center gap-1.5"
-          >
-            <CadIcon name="BarChart2" size={14} />
-            <span>Ir al Panel Estadístico</span>
-          </Link>
+        </div>
+        <div>
+          <h1 className="ps-h1">Glosario</h1>
+          <p className="ps-lead mt-1">Qué significa cada término que ves en los resultados, en palabras simples.</p>
         </div>
       </header>
 
-      {/* Filter & Search Bar */}
-      <BlueprintPanel
-        codeTag="FILTRO_GLOSARIO"
-        title="Consulta de Fórmulas, Umbrales e Interpretación Sencilla"
-        headerSlot={
-          <MarginNote tone="cobalt" rotate={-1.5}>
-            ESTÁNDAR ACADÉMICO
-          </MarginNote>
-        }
-      >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-          <div className="md:col-span-6">
-            <Field label="Buscar indicador, símbolo o concepto" className="mb-0">
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ej. Cliff, Holm, Likert, Gwet, MATTR..."
-                className="ps-field__control w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2"
-              />
-            </Field>
-          </div>
-          <div className="md:col-span-6 flex flex-wrap gap-2">
-            {categories.map((cat) => {
-              const active = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`min-h-[44px] px-3 py-1.5 border font-ui-mono text-xs ${
-                    active
-                      ? 'bg-cobalt text-paper border-cobalt font-semibold'
-                      : 'bg-paper-subtle text-ink border-line-control hover:bg-paper'
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </BlueprintPanel>
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_16rem] gap-4">
+        <Field label="Buscar un término" className="mb-0">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ej.: valor p, tamaño del efecto, Holm"
+            className="ps-field__control w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2"
+          />
+        </Field>
+        <Field label="Tema" className="mb-0">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2"
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
 
-      {/* Glossary Cards */}
+      {filtered.length === 0 && <p className="ps-lead" role="status">No encontramos ese término. Prueba con otra palabra.</p>}
+
       <div className="space-y-4">
         {filtered.map((item) => (
           <article key={item.id} id={item.id} className="scroll-mt-24">
-            <BlueprintPanel
-              codeTag={item.symbol}
-              title={item.title}
-              subtitle={item.category}
-              headingLevel={2}
-              headerSlot={<StatBadge label="Ancla" value={item.id} variant="cobalt" />}
-            >
-              <div className="space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="p-3 bg-paper-subtle border border-line-control">
-                    <div className="font-ui-mono text-xs uppercase text-ink-2 mb-1">
-                      Definición matemática
+            <BlueprintPanel title={item.title} subtitle={item.category} headingLevel={2}>
+              <p className="font-body text-base text-ink leading-relaxed m-0">{item.plain}</p>
+              <div className="mt-4">
+                <Disclosure title="Fórmula, criterios y referencia" summary={item.symbol}>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="ps-meta m-0 mb-1">Fórmula</p>
+                      <code className="font-stat text-sm font-semibold text-ink break-words">{item.formula}</code>
                     </div>
-                    <code className="font-stat text-xs sm:text-sm font-semibold text-ink break-words">
-                      {item.formula}
-                    </code>
-                  </div>
-                  <div className="p-3 bg-paper-subtle border border-line-control">
-                    <div className="font-ui-mono text-xs uppercase text-ink-2 mb-1">
-                      Criterios de interpretación
+                    <div>
+                      <p className="ps-meta m-0 mb-1">Cómo interpretarlo</p>
+                      <p className="font-body text-sm text-ink m-0">{item.thresholds}</p>
                     </div>
-                    <p className="font-ui-mono text-xs text-ink m-0 leading-relaxed">
-                      {item.thresholds}
-                    </p>
+                    <p className="ps-meta m-0">Referencia: {item.citation}</p>
                   </div>
-                </div>
-
-                <div className="p-3.5 bg-cobalt-tint border-l-4 border-cobalt">
-                  <p className="font-body text-sm text-ink leading-relaxed m-0">
-                    <strong className="font-ui-mono text-xs uppercase tracking-wider text-cobalt mr-1.5">
-                      En palabras simples:
-                    </strong>
-                    {item.plain}
-                  </p>
-                </div>
-
-                <footer className="pt-2 border-t border-dotted border-rule font-ui-mono text-xs text-ink-2">
-                  Referencia canónica: {item.citation}
-                </footer>
+                </Disclosure>
               </div>
             </BlueprintPanel>
           </article>

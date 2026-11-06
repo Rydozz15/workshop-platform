@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useLanguage } from '@/lib/i18n/context';
+import AssistantWidget from '@/components/admin/assistant-widget';
 
 export default function AdminLayout({ children }) {
   const { t } = useLanguage();
@@ -20,7 +21,7 @@ export default function AdminLayout({ children }) {
   const navItems = [
     { href: '/admin/campaigns', label: t('nav.campaigns', 'Campañas'), icon: 'Layers', match: ['/admin/campaigns', '/admin/versions'] },
     { href: '/admin', label: t('nav.live', 'En vivo'), icon: 'Activity', match: ['/admin'], exact: true },
-    { href: '/admin/sessions', label: t('nav.results', 'Resultados'), icon: 'BarChart2', match: ['/admin/sessions', '/admin/analytics'] },
+    { href: '/admin/results', label: t('nav.results', 'Resultados'), icon: 'BarChart2', match: ['/admin/results', '/admin/sessions', '/admin/analytics'] },
   ];
   const settingsItem = { href: '/admin/settings', label: t('nav.settings', 'Ajustes'), icon: 'Settings' };
   const isActiveItem = (item) =>
@@ -310,6 +311,7 @@ export default function AdminLayout({ children }) {
       <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 md:py-8">
         {children}
       </div>
+      <AssistantWidget />
     </div>
   );
 }

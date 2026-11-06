@@ -7,6 +7,7 @@ import {
   generateDeterministicLakCritique,
   generateDeterministicStudyDesign,
 } from '@/lib/methodology-reviewer-prompt';
+import { ASSISTANT_SYSTEM_PROMPT, deterministicAssistantReply } from '@/lib/assistant-prompt';
 
 function resolveActiveProvider(settings = {}, requestedProvider, requestedModel) {
   const candidates = [
@@ -72,6 +73,40 @@ export async function POST(request) {
     }
 
     const active = resolveActiveProvider(settings, provider, model);
+
+    if (mode === 'assist') {
+      const history = (Array.isArray(body.messages) ? body.messages : [])
+        .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+        .slice(-10)
+        .map((m) => ({ role: m.role, content: m.content.slice(0, 2000) }));
+      const lastUser = [...history].reverse().find((m) => m.role === 'user');
+      if (!lastUser) {
+        return NextResponse.json({ error: 'Escribe tu pregunta.' }, { status: 400 });
+      }
+      const page = typeof body.page === 'string' ? body.page.slice(0, 200) : '';
+      if (active.isLive) {
+        try {
+          const response = await chat({
+            provider: active.provider,
+            apiKey: active.apiKey,
+            model: active.model,
+            baseUrl: active.baseUrl,
+            temperature: 0.4,
+            maxTokens: 700,
+            messages: [
+              { role: 'system', content: `${ASSISTANT_SYSTEM_PROMPT}\n\nLa persona está en la página: ${page || 'desconocida'}.` },
+              ...history,
+            ],
+          });
+          if (response.content && !response.content.startsWith('Modo de demostración')) {
+            return NextResponse.json({ reply: response.content, links: [], source: 'live_llm' });
+          }
+        } catch (err) {
+          console.warn('Assistant live call failed, using offline answer:', err.message);
+        }
+      }
+      return NextResponse.json({ ...deterministicAssistantReply(lastUser.content, page), source: 'offline' });
+    }
 
     if (mode === 'design') {
       const userGoal = (goal || '').trim();

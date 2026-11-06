@@ -1,281 +1,217 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {
-  BlueprintPanel,
-  SplitButton,
-  StatBadge,
-  DataTable,
-  ChartFrame,
-  Field,
-  MarginNote,
-} from '@/components/ui/blueprint';
+import { QRCodeSVG } from 'qrcode.react';
+import { BlueprintPanel, Kpi, Drawer } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
+import { useLanguage } from '@/lib/i18n/context';
 
-export default function DashboardPage() {
-  const [metrics, setMetrics] = useState(null);
-  const [campaigns, setCampaigns] = useState([]);
-  const [selectedCampaign, setSelectedCampaign] = useState('');
-  const [seeding, setSeeding] = useState(false);
-  const [seedFeedback, setSeedFeedback] = useState('');
+const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
+const REFRESH_MS = 8000;
+const SEVERITY = {
+  warning: { box: 'border-vermilion-ink bg-vermilion-tint', icon: 'AlertTriangle', text: 'text-vermilion-ink' },
+  error: { box: 'border-vermilion-ink bg-vermilion-tint', icon: 'XCircle', text: 'text-vermilion-ink' },
+  info: { box: 'border-cobalt bg-cobalt-tint', icon: 'Info', text: 'text-cobalt' },
+};
 
-  const fetchMetrics = useCallback(async () => {
-    const url = selectedCampaign
-      ? `/api/admin/dashboard?workshopId=${encodeURIComponent(selectedCampaign)}`
-      : '/api/admin/dashboard';
-    try {
-      const res = await fetch(url);
-      if (res.ok) {
-        setMetrics(await res.json());
-      }
-    } catch {
-      // Ignore transient poll errors
-    }
-  }, [selectedCampaign]);
+function timeAgo(iso) {
+  const min = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (min < 1) return 'ahora';
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.round(min / 60);
+  return h < 24 ? `hace ${h} h` : `hace ${Math.round(h / 24)} d`;
+}
 
-  const fetchCampaigns = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/workshops');
-      if (res.ok) {
-        setCampaigns(await res.json());
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
+export default function LivePage() {
+  const { t } = useLanguage();
+  const [campaignId, setCampaignId] = useState('');
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+  const [paused, setPaused] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [updatedAt, setUpdatedAt] = useState(null);
 
   useEffect(() => {
-    fetchCampaigns();
-  }, [fetchCampaigns]);
+    let cancelled = false;
+    const tick = () =>
+      fetch(`/api/admin/live${campaignId ? `?campaignId=${encodeURIComponent(campaignId)}` : ''}`)
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error('No pudimos actualizar los datos.'))))
+        .then((json) => {
+          if (cancelled) return;
+          setData(json);
+          setUpdatedAt(new Date());
+          setError('');
+        })
+        .catch((e) => !cancelled && setError(e.message));
+    tick();
+    if (paused) return () => { cancelled = true; };
+    const id = setInterval(tick, REFRESH_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [campaignId, paused]);
 
-  useEffect(() => {
-    fetchMetrics();
-    const pauseLive = typeof window !== 'undefined' && localStorage.getItem('ps_pause_telemetry') === '1';
-    if (pauseLive) return undefined;
-    const interval = setInterval(fetchMetrics, 12000);
-    return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const sel = data?.selected;
+  const st = data?.status;
+  const link = sel ? `${origin}/session/${sel.share_code}` : '';
 
-  const handleSeedBenchmark = async () => {
-    setSeeding(true);
-    setSeedFeedback('');
-    try {
-      const res = await fetch('/api/admin/seed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setSeedFeedback(
-          `[OK] Conjunto empírico ISDDE (N=9 pareado, 18 sesiones, 108 turnos) cargado: +${data.seeded.sessionsCount} sesiones nuevas.`
-        );
-        await Promise.all([fetchCampaigns(), fetchMetrics()]);
-      } else {
-        setSeedFeedback(`[AVISO] ${data.error || 'No se pudo cargar la semilla.'}`);
-      }
-    } catch (err) {
-      setSeedFeedback(`[ERROR] ${err.message}`);
-    }
-    setSeeding(false);
-  };
-
-  if (!metrics) {
+  if (data && !sel) {
     return (
-      <BlueprintPanel codeTag="MOD_01" title="Cargando tablero experimental…">
-        <p className="font-ui-mono text-xs text-ink-2 m-0">Consultando métricas de sesiones activas…</p>
+      <BlueprintPanel title="Aún no hay campañas" subtitle="Crea una para empezar a ver a tus participantes en vivo.">
+        <Link href="/admin/campaigns/new" className="min-h-[44px] px-4 py-2 border border-line-strong bg-cobalt hover:bg-cobalt-hover text-paper font-body text-sm font-semibold inline-flex items-center gap-2">
+          <CadIcon name="Plus" size={16} /> Crear campaña
+        </Link>
       </BlueprintPanel>
     );
   }
 
-  const distEntries = Object.entries(metrics.versionDistribution || {});
-  const valA = distEntries[0]?.[1] ?? 0;
-  const valB = distEntries[1]?.[1] ?? 0;
-  const labelA = distEntries[0]?.[0] || 'Condición / Escenario A';
-  const labelB = distEntries[1]?.[0] || 'Condición / Escenario B';
-
-  const distTableRows = distEntries.map(([label, count], idx) => ({
-    id: idx + 1,
-    version: label,
-    sessions: count,
-    share:
-      metrics.totalSessions > 0
-        ? `${((count / metrics.totalSessions) * 100).toFixed(1)}%`
-        : '0.0%',
-  }));
-
-  const sessionColumns = [
-    { key: 'participant_name', label: 'Participante', sortable: true },
-    { key: 'version_title', label: 'Escenario / Condición', sortable: true },
-    {
-      key: 'status',
-      label: 'Estado',
-      sortable: true,
-      format: (val) => (
-        <StatBadge
-          label="Estado"
-          value={val === 'completed' ? 'Completada' : 'En curso'}
-          variant={val === 'completed' ? 'em' : 'cobalt'}
-        />
-      ),
-    },
-    { key: 'interaction_count', label: 'Turnos', align: 'right', sortable: true },
-    {
-      key: 'started_at',
-      label: 'Inicio',
-      sortable: true,
-      format: (val) => (val ? new Date(val).toLocaleString('es-CL') : '—'),
-    },
-  ];
-
   return (
     <div className="space-y-6">
-      {/* Header Row */}
-      <div className="flex flex-wrap items-end justify-between gap-4 pb-4 border-b border-line-control">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <span className="font-ui-mono text-xs uppercase tracking-wider text-cobalt font-semibold">
-            MOD_01 // CENTRO DE OPERACIONES EXPERIMENTAL
-          </span>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink mt-1 m-0">
-            Tablero General de Campañas A/B
-          </h1>
+          <h1 className="ps-h1">{t('live.title', 'En vivo')}</h1>
+          <p className="ps-lead mt-1">{sel ? `Qué está pasando ahora en “${sel.name}”.` : 'Cargando…'}</p>
         </div>
-
         <div className="flex flex-wrap items-center gap-2">
-          <MarginNote tone="cobalt" rotate={-1.5}>
-            TELEMETRÍA EN VIVO
-          </MarginNote>
-          <Link
-            href="/admin/analytics"
-            className="min-h-[44px] px-3.5 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink inline-flex items-center gap-2"
-          >
-            <CadIcon name="BarChart2" size={14} />
-            <span>Ver Análisis Estadístico</span>
-          </Link>
-          <Link
-            href="/admin/campaigns"
-            className="min-h-[44px] px-3.5 py-2 border border-cobalt bg-cobalt text-paper hover:bg-cobalt-hover font-ui-mono text-xs font-medium inline-flex items-center gap-2 shadow-hard"
-          >
-            <CadIcon name="Plus" size={14} />
-            <span>Nuevo Experimento A/B</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Campaign Filter & Benchmark Seeder Strip */}
-      <BlueprintPanel
-        codeTag="FILTRO_ACTIVO"
-        title="Selección de Serie Experimental"
-        headerSlot={
-          <button
-            type="button"
-            disabled={seeding}
-            onClick={handleSeedBenchmark}
-            className="min-h-[44px] px-3 py-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink-2 hover:text-ink inline-flex items-center gap-1.5"
-            title="Carga 18 sesiones simuladas para explorar las gráficas y pruebas de hipótesis sin alumnos reales"
-          >
-            <CadIcon name="Database" size={13} />
-            <span>{seeding ? 'Cargando muestra…' : 'Cargar datos de prueba (N=9)'}</span>
-          </button>
-        }
-      >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-          <div className="md:col-span-6">
-            <Field label="Filtrar indicadores por campaña" className="mb-0">
+          {data && data.campaigns.length > 1 && (
+            <label className="flex items-center gap-2 font-body text-sm text-ink">
+              <span className="sr-only sm:not-sr-only">Campaña</span>
               <select
-                value={selectedCampaign}
-                onChange={(e) => setSelectedCampaign(e.target.value)}
-                className="ps-field__control w-full font-ui-mono text-xs text-ink bg-paper border border-line-control px-3 py-2"
+                value={sel?.id || ''}
+                onChange={(e) => setCampaignId(e.target.value)}
+                className="min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2 max-w-[16rem]"
               >
-                <option value="">Todas las campañas registradas ({campaigns.length})</option>
-                {campaigns.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} [{c.share_code}]
-                  </option>
+                {data.campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
-            </Field>
-          </div>
-          <div className="md:col-span-6 font-body text-xs text-ink-2 leading-relaxed">
-            <strong>En palabras simples:</strong> Este tablero resume cuántas sesiones se han iniciado y
-            completado en tus campañas activas, asegurando que el balance aleatorio entre condiciones A y B se
-            mantenga equilibrado durante talleres presenciales o remotos.
-          </div>
+            </label>
+          )}
+          <button type="button" onClick={() => setQrOpen(true)} className={BTN} disabled={!sel}>
+            <CadIcon name="QrCode" size={16} /> Proyectar QR
+          </button>
+          <button type="button" onClick={() => setPaused((p) => !p)} aria-pressed={paused} className={BTN}>
+            <CadIcon name={paused ? 'Play' : 'Pause'} size={16} /> {paused ? 'Reanudar' : 'Pausar'} actualización
+          </button>
         </div>
-
-        {seedFeedback && (
-          <div
-            role="status"
-            className="mt-3 p-3 bg-paper-subtle border border-line-control font-ui-mono text-xs text-ink"
-          >
-            {seedFeedback}
-          </div>
-        )}
-      </BlueprintPanel>
-
-      {/* KPI Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {[
-          { code: 'KPI_01', label: 'Sesiones Totales', value: metrics.totalSessions, sub: 'Muestra acumulada' },
-          { code: 'KPI_02', label: 'Completadas', value: metrics.completedSessions, sub: 'Con cierre registrado' },
-          { code: 'KPI_03', label: 'Activas Ahora', value: metrics.activeSessions, sub: 'En diálogo abierto' },
-          { code: 'KPI_04', label: 'Turnos Estudiante', value: metrics.totalInteractions, sub: 'Intervenciones totales' },
-          { code: 'KPI_05', label: 'Turnos / Sesión', value: metrics.avgInteractions, sub: 'Promedio dialógico' },
-        ].map((kpi) => (
-          <BlueprintPanel key={kpi.code} codeTag={kpi.code} title={kpi.label}>
-            <div className="font-stat text-3xl font-semibold text-ink stat">
-              {kpi.value}
-            </div>
-            <div className="font-ui-mono text-xs text-ink-2 mt-1">
-              {kpi.sub}
-            </div>
-          </BlueprintPanel>
-        ))}
       </div>
 
-      {/* Distribution ChartFrame */}
-      {distEntries.length > 0 && (
-        <ChartFrame
-          title="Balance de Asignación por Escenario / Condición"
-          subtitle="Comparación visual de sesiones asignadas (Trama diagonal vs. Cobalto sólido)"
-          data={{
-            conditionA: { mean: valA, sd: 0, ci: 0, label: labelA },
-            conditionB: { mean: valB, sd: 0, ci: 0, label: labelB },
-            diff: valB - valA,
-          }}
-          tableColumns={[
-            { key: 'version', label: 'Escenario / Condición', sortable: true },
-            { key: 'sessions', label: 'Sesiones (n)', align: 'right', sortable: true },
-            { key: 'share', label: 'Proporción', align: 'right' },
-          ]}
-          tableData={distTableRows}
-          trendSummary={`Se observan ${metrics.totalSessions} sesiones distribuidas en ${distEntries.length} variante(s) activas. El balanceador asigna cada nuevo participante a la condición con menor conteo acumulado.`}
-        />
+      {error && <div role="alert" className="border-2 border-vermilion-ink bg-vermilion-tint text-vermilion-ink p-3 font-body text-sm">{error}</div>}
+
+      {st && (
+        <>
+          <section aria-label="Resumen" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <Kpi label="En curso ahora" value={st.totals.active} icon="Activity" tone="cobalt" hint="Personas que están dentro de la actividad en este momento." />
+            <Kpi label="Terminaron" value={st.totals.completed} icon="CheckCircle" tone="emerald" hint="Sesiones que llegaron hasta el final, incluida la encuesta." />
+            <Kpi label="Participantes" value={st.totals.participants} icon="Users" tone="graphite" hint="Personas distintas que comenzaron la campaña." />
+            <Kpi label="Mensajes por sesión" value={st.totals.avgMessages} icon="MessageSquare" tone="graphite" hint="Promedio de mensajes que escribe cada participante. Si es muy bajo, quizá no están entendiendo la tarea." />
+          </section>
+
+          <BlueprintPanel
+            title={st.alerts.length ? 'Requiere tu atención' : 'Todo en orden'}
+            subtitle={st.alerts.length ? 'Lo más importante primero.' : 'No detectamos problemas en este momento.'}
+            headerSlot={updatedAt && <span className="ps-meta">Actualizado {updatedAt.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>}
+          >
+            {st.alerts.length === 0 ? (
+              <p className="flex items-center gap-2 font-body text-sm text-emerald"><CadIcon name="CheckCircle" size={18} /> Sin alertas.</p>
+            ) : (
+              <ul className="list-none m-0 p-0 space-y-3">
+                {st.alerts.map((a) => {
+                  const sev = SEVERITY[a.severity] || SEVERITY.info;
+                  return (
+                    <li key={a.id} className={`border-2 p-3 flex gap-3 ${sev.box}`}>
+                      <CadIcon name={sev.icon} size={20} className={`${sev.text} shrink-0 mt-0.5`} />
+                      <div className="min-w-0">
+                        <p className={`font-body text-sm font-semibold m-0 ${sev.text}`}>{a.title}</p>
+                        <p className="font-body text-sm text-ink m-0 mt-0.5">{a.detail}</p>
+                        {a.action && <Link href={a.action.href} className="font-body text-sm font-semibold text-cobalt underline mt-1 inline-block min-h-[44px] leading-[44px]">{a.action.label}</Link>}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </BlueprintPanel>
+
+          <BlueprintPanel title="Avance por paso" subtitle="Cuántas personas hay en cada paso y cómo se reparten las condiciones.">
+            <ol className="list-none m-0 p-0 space-y-5">
+              {st.steps.map((s) => {
+                const max = Math.max(1, ...s.conditions.map((c) => c.count));
+                return (
+                  <li key={s.id}>
+                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                      <h3 className="ps-h3">{s.order}. {s.name}</h3>
+                      <span className="ps-meta">{s.started} iniciaron · {s.active} en curso · {s.completed} terminaron</span>
+                    </div>
+                    <ul className="list-none m-0 p-0 mt-2 space-y-1.5">
+                      {s.conditions.map((c, i) => (
+                        <li key={c.id} className={`ps-cond-${(i % 6) + 1} grid grid-cols-[minmax(6rem,12rem)_1fr_2.5rem] items-center gap-3 font-body text-sm`}>
+                          <span className="truncate text-ink" title={c.title}>{c.title}</span>
+                          <span className="h-3 bg-paper-muted border border-line-control">
+                            <span className="block h-full" style={{ width: `${(c.count / max) * 100}%`, backgroundColor: 'var(--cond)' }} />
+                          </span>
+                          <span className="font-stat font-semibold text-ink text-right">{c.count}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              })}
+            </ol>
+          </BlueprintPanel>
+
+          <BlueprintPanel
+            title="Últimas sesiones"
+            headerSlot={<Link href="/admin/sessions" className="font-body text-sm font-semibold text-cobalt underline">Ver todas</Link>}
+          >
+            {st.recent.length === 0 ? (
+              <p className="ps-lead">Cuando alguien entre, lo verás aquí.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full font-body text-sm text-left">
+                  <thead>
+                    <tr className="text-ink-2 border-b border-line-control">
+                      <th className="py-2 pr-4 font-semibold">Participante</th>
+                      <th className="py-2 pr-4 font-semibold">Paso</th>
+                      <th className="py-2 pr-4 font-semibold">Estado</th>
+                      <th className="py-2 pr-4 font-semibold text-right">Mensajes</th>
+                      <th className="py-2 font-semibold">Inicio</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {st.recent.map((r) => (
+                      <tr key={r.id} className="border-b border-dotted border-rule hover:bg-cobalt-tint">
+                        <td className="py-2 pr-4 text-ink">{r.participant_name}</td>
+                        <td className="py-2 pr-4 text-ink">{r.step_name}</td>
+                        <td className="py-2 pr-4">
+                          <span className={r.status === 'completed' ? 'text-emerald font-semibold' : 'text-cobalt font-semibold'}>
+                            {r.status === 'completed' ? 'Terminó' : 'En curso'}
+                          </span>
+                        </td>
+                        <td className="py-2 pr-4 text-right font-stat">{r.interaction_count}</td>
+                        <td className="py-2 text-ink-2">{timeAgo(r.started_at)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </BlueprintPanel>
+        </>
       )}
 
-      {/* Recent Sessions DataTable */}
-      <BlueprintPanel
-        codeTag="BITACORA_SESIONES"
-        title="Últimas Sesiones Registradas"
-        subtitle="Muestra las 20 interacciones más recientes; consulta el módulo 04 Sesiones para ver transcripciones completas."
-        headerSlot={
-          <Link
-            href="/admin/sessions"
-            className="min-h-[44px] px-3 py-1.5 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-cobalt font-medium inline-flex items-center gap-1.5"
-          >
-            <span>Inspeccionar transcripciones</span>
-            <CadIcon name="ArrowRight" size={13} />
-          </Link>
-        }
-      >
-        <DataTable
-          caption="Registro cronológico de sesiones recientes"
-          columns={sessionColumns}
-          data={metrics.recentSessions || []}
-          emptyText="Aún no hay sesiones registradas. Carga el Benchmark ISDDE (N=9) arriba o comparte un enlace desde 03 Experimentos."
-        />
-      </BlueprintPanel>
+      <Drawer open={qrOpen} onClose={() => setQrOpen(false)} title="Código para participantes" closeLabel="Cerrar">
+        {sel && (
+          <div className="text-center space-y-4">
+            <QRCodeSVG value={link} size={256} bgColor="transparent" fgColor="currentColor" className="text-ink mx-auto max-w-full h-auto" aria-label={`Código QR de ${sel.name}`} />
+            <p className="font-stat text-4xl font-bold tracking-widest text-ink m-0">{sel.share_code}</p>
+            <p className="ps-meta m-0 break-all">{link}</p>
+          </div>
+        )}
+      </Drawer>
     </div>
   );
 }

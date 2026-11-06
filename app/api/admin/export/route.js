@@ -8,11 +8,13 @@ import { NextResponse } from 'next/server';
 import { getSessions, getMessages, getWorkshops, getVersions } from '@/lib/db';
 import { generateTidyExport } from '@/lib/tidy-export';
 import { generateCodebook } from '@/lib/codebook';
+import { filterSessionsByCampaign } from '@/lib/campaigns';
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const workshopId = searchParams.get('workshopId');
+    const campaignId = searchParams.get('campaignId'); // all steps of a campaign
     const format = searchParams.get('format'); // null | 'csv' | 'tidy-json' | 'codebook'
     const level = searchParams.get('level') || 'session'; // 'session' | 'turn' | 'longitudinal'
 
@@ -28,11 +30,12 @@ export async function GET(request) {
     }
 
     // Fetch all reference data
-    const [allSessions, workshops, versions] = await Promise.all([
+    const [rawSessions, workshops, versions] = await Promise.all([
       getSessions(workshopId || undefined),
       getWorkshops(),
       getVersions(),
     ]);
+    const allSessions = campaignId ? filterSessionsByCampaign(rawSessions, workshops, campaignId) : rawSessions;
 
     const workshopMap = {};
     workshops.forEach((w) => {

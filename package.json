@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "lint:design": "node scripts/lint-slop.js",
-    "test": "node test/admin-auth.test.js && node test/campaigns.test.js && node test/stats-multigroup.test.js && node test/stats.test.js && node test/chat-analytics.test.js && node test/ai-engine.test.js && node test/e2e/runner.js",
+    "test": "node test/admin-auth.test.js && node test/campaigns.test.js && node test/stats-multigroup.test.js && node test/live-monitor.test.js && node test/quick-analysis.test.js && node test/stats.test.js && node test/chat-analytics.test.js && node test/ai-engine.test.js && node test/e2e/runner.js",
     "test:contrast": "node scripts/check-contrast.js",
     "test:slop": "node scripts/lint-slop.js"
   },

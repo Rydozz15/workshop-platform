@@ -817,7 +817,7 @@ export default function AnalyticsPage() {
               MOD_05 // INFERENCIA CON SUPUESTOS, PSICOMETRÍA E IRR
             </span>
             <MarginNote tone="cobalt" rotate={-2}>
-              SUPUESTOS ANTES DE INFERIR
+              Primero los supuestos
             </MarginNote>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">
@@ -827,7 +827,7 @@ export default function AnalyticsPage() {
             </HandMark>
           </h1>
           <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">
-            Verificación automática de escala y normalidad previa a cada contraste, corrección secuencial de Holm-Bonferroni, consistencia psicométrica, calibración inter-jueces y analítica lingüística del diálogo.
+            Análisis detallado para quien quiera revisar los supuestos y las pruebas. Si buscas una primera lectura, ve a Resultados.
           </p>
         </div>
 
