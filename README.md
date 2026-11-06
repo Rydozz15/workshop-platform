@@ -4,8 +4,6 @@ Design, run and analyze educational activities with an AI assistant. Compare ver
 
 Built for teachers, researchers and learning designers. Available in Spanish, English and Portuguese (Brazil).
 
-> **Built with Claude Code.** This project was developed with [Claude Code](https://claude.com/claude-code) (Anthropic) working under the direction of the maintainers. See [Development with Claude Code](#development-with-claude-code) for what that means and what it does not.
-
 ---
 
 ## How it works
@@ -100,16 +98,16 @@ Conventions: Spanish is the source language for UI text (`tr('Texto')`, translat
 
 ## Development with Claude Code
 
-PromptSketch was built iteratively with Claude Code, Anthropic's agentic coding tool (models Claude Opus 5.5 and Sonnet 5.5). In line with common practice for AI-assisted projects:
+The first iteration of PromptSketch, its features and its product direction were designed and written by Juan Pablo Fuentes Abarca. The current version was then improved and programmed with [Claude Code](https://claude.com/claude-code) (Anthropic; models Claude Opus 5.5 and Sonnet 5.5) following those guidelines. In line with common practice for AI-assisted projects:
 
 - **Transparency.** Commits made with Claude Code carry a `Co-Authored-By: Claude …` trailer, so AI-assisted changes can be traced in the history.
-- **Human direction and ownership.** The maintainers set the goals, the product decisions and the review criteria, and own the result. The logo is based on the maintainers' own artwork.
-- **What was generated.** Application code, tests, documentation and the English and Portuguese translations were drafted with Claude Code.
+- **Human direction and ownership.** The maintainer sets the goals, the product decisions and the review criteria, and owns the result. The logo is based on the maintainer's own artwork.
+- **What Claude Code produced.** The redesign and most of the current code, tests, documentation and the English and Portuguese translations were drafted with Claude Code on top of the original product.
 - **Verification, not blind trust.** Changes are gated by the automated suites above (logic, statistics against SciPy reference values, UI journeys, accessibility contrast, design lint). These catch regressions; they are not a substitute for review.
 - **Known limits.**
   - The code has not had an independent security audit.
   - The English and Portuguese translations have not been reviewed by native speakers.
-  - Usability has not yet been tested with real facilitators; a protocol is in `docs/PRUEBA_USABILIDAD.md`.
+  - The earlier iteration was validated with facilitators; this latest version has not yet been tested with real facilitators. A protocol for that is in `docs/PRUEBA_USABILIDAD.md`.
   - Check privacy, consent and data-protection requirements before using it with real participants.
 
 If you contribute, please say how AI was used in your pull request, keep the test suites green and review generated code as you would any other.
@@ -120,19 +118,4 @@ If you contribute, please say how AI was used in your pull request, keep the tes
 
 ## License
 
-MIT, see [`LICENSE`](LICENSE). The copyright line says "PromptSketch contributors"; the maintainers may replace it with their names.
-
-## Citation
-
-If you use PromptSketch in academic work, please cite the companion paper:
-
-```bibtex
-@inproceedings{fuentes2027promptsketch,
-  title={{PromptSketch}: An Open-Source Workbench for Pre-Registered A/B Experimentation and Learning Analytics on Educational Prompts},
-  author={Fuentes-Abarca, Juan Pablo and Astudillo, Gabriel and Hilliger, Isabel and Baier, Jorge},
-  booktitle={Companion Proceedings of the 17th International Conference on Learning Analytics and Knowledge (LAK27)},
-  year={2027},
-  address={Kyoto, Japan},
-  publisher={Society for Learning Analytics Research (SoLAR)}
-}
-```
+MIT, see [`LICENSE`](LICENSE).
