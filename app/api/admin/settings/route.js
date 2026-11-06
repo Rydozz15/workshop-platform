@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSettings, updateSetting } from '@/lib/db';
+import { AI_CONSENT_KEY } from '@/lib/ai-consent';
 
 const ALLOWED_KEYS = [
   'default_ai_provider',
@@ -9,6 +10,7 @@ const ALLOWED_KEYS = [
   'api_key_openrouter',
   'api_key_openai',
   'api_key_anthropic',
+  AI_CONSENT_KEY,
 ];
 
 function maskSecret(val) {
@@ -23,6 +25,7 @@ function buildPublicSettings(raw = {}) {
     default_ai_model: raw.default_ai_model || 'llama-3.3-70b-versatile',
     ollama_base_url: raw.ollama_base_url || process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     db_provider: process.env.DB_PROVIDER || 'memory',
+    [AI_CONSENT_KEY]: raw[AI_CONSENT_KEY] || '',
     env_keys: {
       groq: Boolean(process.env.GROQ_API_KEY || raw.api_key_groq),
       openrouter: Boolean(process.env.OPENROUTER_API_KEY || raw.api_key_openrouter),
@@ -56,8 +59,8 @@ export async function PUT(request) {
     for (const [key, value] of Object.entries(updates)) {
       if (ALLOWED_KEYS.includes(key) && typeof value === 'string') {
         const trimmed = value.trim();
-        // Allow clearing custom API keys when empty string is explicitly passed, or setting non-empty values
-        if (trimmed || key.startsWith('api_key_')) {
+        // Allow clearing custom API keys (and revoking the AI consent) with an empty string, or setting non-empty values
+        if (trimmed || key.startsWith('api_key_') || key === AI_CONSENT_KEY) {
           await updateSetting(key, trimmed);
         }
       }

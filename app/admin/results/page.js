@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { extractMeasures, analyzeMeasure } from '@/lib/quick-analysis';
+import { buildStepEvolution, buildOpenResponses } from '@/lib/step-evolution';
+import StepEvolutionPanel from '@/components/admin/step-evolution-panel';
+import OpenResponsesPanel from '@/components/admin/open-responses-panel';
 import { useTr, useLanguage } from '@/lib/i18n/context';
 import useSelectedCampaign, { withCampaign } from '@/lib/use-selected-campaign';
 
@@ -17,6 +20,8 @@ const DATASETS = [
   { id: 'turn', label: 'Una fila por mensaje', hint: 'Cada mensaje de la conversación, con tiempos y métricas del texto.', file: 'mensajes' },
   { id: 'longitudinal', label: 'Seguimiento de cada participante entre pasos', hint: 'Una fila por participante con sus resultados en cada paso (útil para comparar antes y después).', file: 'seguimiento' },
 ];
+// Only offered when the campaign has steps that can be compared (see lib/step-evolution.js).
+const WIDE_DATASET = { id: 'wide', label: 'Una columna por pregunta y paso', hint: 'Una fila por participante y una columna por pregunta y paso, para cualquier cantidad de pasos.', file: 'por-paso' };
 
 function download(content, filename, type) {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -80,13 +85,23 @@ function ResultsInner() {
   const measure = measures.find((m) => m.id === measureId) || measures[0];
   const result = useMemo(() => (measure ? analyzeMeasure(measure.groups, { ordinal: measure.ordinal, tr, decimal: locale === 'en' ? '.' : ',' }) : null), [measure, tr, locale]);
   const sessionCount = analytics?.sessions?.length ?? 0;
+  const evolution = useMemo(
+    () => (detail && analytics ? buildStepEvolution({ steps: detail.steps, sessions: analytics.sessions }) : null),
+    [detail, analytics]
+  );
+  const openGroups = useMemo(
+    () => (detail && analytics ? buildOpenResponses({ steps: detail.steps, sessions: analytics.sessions }) : []),
+    [detail, analytics]
+  );
+  const datasets = evolution ? [...DATASETS, WIDE_DATASET] : DATASETS;
+  const activeDataset = datasets.find((d) => d.id === dataset) || DATASETS[0];
 
   const runDownload = async () => {
     setBusy(true);
     setNotice(null);
     try {
-      const ds = DATASETS.find((d) => d.id === dataset);
-      const q = new URLSearchParams({ campaignId, format: 'csv', level: dataset });
+      const ds = activeDataset;
+      const q = new URLSearchParams({ campaignId, format: 'csv', level: ds.id });
       if (stepId) q.set('workshopId', stepId);
       const res = await fetch(`/api/admin/export?${q}`);
       if (!res.ok) throw new Error(tr('No pudimos preparar el archivo.'));
@@ -131,9 +146,9 @@ function ResultsInner() {
 
       <BlueprintPanel title={tr('Descargar datos')} subtitle={tr('Archivos CSV que se abren en Excel, R, Python o SPSS.')}>
         <div className="grid md:grid-cols-2 gap-x-6">
-          <Field label={tr('¿Qué quieres descargar?')} help={tr(DATASETS.find((d) => d.id === dataset).hint)}>
-            <select className={SELECT} value={dataset} onChange={(e) => setDataset(e.target.value)}>
-              {DATASETS.map((d) => <option key={d.id} value={d.id}>{tr(d.label)}</option>)}
+          <Field label={tr('¿Qué quieres descargar?')} help={tr(activeDataset.hint)}>
+            <select className={SELECT} value={activeDataset.id} onChange={(e) => setDataset(e.target.value)}>
+              {datasets.map((d) => <option key={d.id} value={d.id}>{tr(d.label)}</option>)}
             </select>
           </Field>
           <Field label={tr('¿De qué parte?')}>
@@ -244,6 +259,10 @@ function ResultsInner() {
           </div>
         )}
       </BlueprintPanel>
+
+      <StepEvolutionPanel evolution={evolution} tr={tr} fmt={fmt} />
+
+      <OpenResponsesPanel groups={openGroups} tr={tr} />
 
       <BlueprintPanel title={tr('Revisar las conversaciones')} subtitle={tr('Lee cada sesión mensaje a mensaje y corrige lo que haga falta.')}>
         <Link href={withCampaign('/admin/sessions', campaignId)} className={BTN}><CadIcon name="MessageSquare" size={16} />{' '}{tr('Ver sesiones')}{analytics ? ` (${sessionCount})` : ''}</Link>

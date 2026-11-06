@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getSettings } from '@/lib/db';
+import { hasAiConsent, consentRequiredResponse } from '@/lib/ai-consent';
 
 export async function POST(request) {
   try {
-    const { stepsData, ai_provider, model } = await request.json();
+    const { stepsData, question, ai_provider, model } = await request.json();
 
     if (!stepsData || stepsData.length === 0) {
       return NextResponse.json({ error: 'No data provided' }, { status: 400 });
@@ -12,6 +13,9 @@ export async function POST(request) {
     // Load global settings as fallback
     let settings = {};
     try { settings = await getSettings(); } catch (e) { /* ignore */ }
+
+    // Participants' answers leave the platform: only with the admin's recorded consent.
+    if (!hasAiConsent(settings)) return consentRequiredResponse(NextResponse);
 
     const openrouterKey = process.env.OPENROUTER_API_KEY;
     const groqKey = process.env.GROQ_API_KEY;
@@ -36,7 +40,9 @@ export async function POST(request) {
     const systemPrompt = "You are an expert qualitative data analyst. You are analyzing the evolution of participants' opinions across a chained workshop sequence. Read the provided survey responses broken down by steps, and provide a comparative summary. Focus on: 1) What changed between the steps? 2) Were there paradigm shifts? 3) Common longitudinal themes. Use bullet points and respond in the same language as the responses (mostly Spanish).";
     
     // Format the prompt
-    let userPrompt = "Here are the qualitative responses tracked over time:\n\n";
+    let userPrompt = question
+      ? `Question asked in every step: "${String(question).slice(0, 500)}"\n\nHere are the qualitative responses tracked over time:\n\n`
+      : "Here are the qualitative responses tracked over time:\n\n";
     
     stepsData.forEach(step => {
       userPrompt += `--- ${step.step} ---\n`;

@@ -2,7 +2,7 @@
  * Export endpoint — supports legacy full JSON session transcript export AND
  * publication-grade Tidy Data (CSV/JSON) + Scientific Codebook exports.
  *
- * GET /api/admin/export?workshopId=xxx&format=csv|tidy-json|codebook&level=session|turn|longitudinal
+ * GET /api/admin/export?workshopId=xxx&format=csv|tidy-json|codebook&level=session|turn|longitudinal|wide
  */
 import { NextResponse } from 'next/server';
 import { getSessions, getMessages, getWorkshops, getVersions } from '@/lib/db';
@@ -16,7 +16,7 @@ export async function GET(request) {
     const workshopId = searchParams.get('workshopId');
     const campaignId = searchParams.get('campaignId'); // all steps of a campaign
     const format = searchParams.get('format'); // null | 'csv' | 'tidy-json' | 'codebook'
-    const level = searchParams.get('level') || 'session'; // 'session' | 'turn' | 'longitudinal'
+    const level = searchParams.get('level') || 'session'; // 'session' | 'turn' | 'longitudinal' | 'wide'
 
     if (format === 'codebook') {
       const cb = generateCodebook();

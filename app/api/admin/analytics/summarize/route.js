@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getSettings } from '@/lib/db';
+import { hasAiConsent, consentRequiredResponse } from '@/lib/ai-consent';
 
 export async function POST(request) {
   try {
-    const { texts, ai_provider = 'openrouter', model = 'meta-llama/llama-3.1-8b-instruct' } = await request.json();
+    const { texts, question, ai_provider = 'openrouter', model = 'meta-llama/llama-3.1-8b-instruct' } = await request.json();
 
     if (!texts || !Array.isArray(texts) || texts.length === 0) {
       return NextResponse.json({ error: 'No texts provided' }, { status: 400 });
@@ -13,11 +14,14 @@ export async function POST(request) {
     let settings = {};
     try { settings = await getSettings(); } catch (e) { /* ignore */ }
 
+    // Participants' answers leave the platform: only with the admin's recorded consent.
+    if (!hasAiConsent(settings)) return consentRequiredResponse(NextResponse);
+
     const systemPrompt = "You are an expert qualitative data analyst. Read the following survey responses and provide a concise summary of the main topics and themes mentioned by the participants. Use bullet points. Respond in the same language as the responses (mostly Spanish).";
     
     // Limit to 50 most recent responses to avoid LLM context window overflow
     const sampledTexts = texts.slice(-50);
-    const userPrompt = "Here are the responses:\n" + sampledTexts.map((t, i) => `${i + 1}. ${t}`).join('\n');
+    const userPrompt = (question ? `Question asked: "${String(question).slice(0, 500)}"\n\n` : '') + "Here are the responses:\n" + sampledTexts.map((t, i) => `${i + 1}. ${t}`).join('\n');
 
     const openrouterKey = process.env.OPENROUTER_API_KEY;
     const groqKey = process.env.GROQ_API_KEY;

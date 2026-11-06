@@ -6,6 +6,8 @@
 import { TestSuite, assert, assertEqual, assertApproxEqual } from '../harness/test-utils.js';
 import { apiClient } from '../harness/api-client.js';
 import { setupTestDatabase } from '../harness/memory-db-harness.js';
+import { POST as evolutionRoute } from '../../../app/api/admin/analytics/evolution/route.js';
+import { POST as summarizeRoute } from '../../../app/api/admin/analytics/summarize/route.js';
 
 export function createMultiProviderSettingsSuite() {
   const suite = new TestSuite('Multi-Provider AI Settings & Telemetry (Tier 1)', 1);
@@ -76,6 +78,47 @@ export function createMultiProviderSettingsSuite() {
     const failResult = await simulateProviderPing('groq', null);
     assertEqual(failResult.ok, false);
     assertEqual(failResult.error, 'Missing API key');
+  });
+
+  // AI consent gate: participants' open answers only leave the platform after the admin accepts.
+  const aiPost = (route, body) =>
+    route(new Request('http://localhost:3000/api/admin/analytics/x', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }));
+  const evolutionBody = { question: 'Q', stepsData: [{ step: 'A', responses: ['uno'] }, { step: 'B', responses: ['dos'] }] };
+  const withoutProviderKeys = async (fn) => {
+    const saved = { o: process.env.OPENROUTER_API_KEY, g: process.env.GROQ_API_KEY };
+    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.GROQ_API_KEY;
+    try {
+      return await fn();
+    } finally {
+      if (saved.o !== undefined) process.env.OPENROUTER_API_KEY = saved.o;
+      if (saved.g !== undefined) process.env.GROQ_API_KEY = saved.g;
+    }
+  };
+
+  suite.test('AI summaries of open answers are refused (403) until the admin has accepted the warning', async () => {
+    setupTestDatabase();
+    await withoutProviderKeys(async () => {
+      const evo = await aiPost(evolutionRoute, evolutionBody);
+      assertEqual(evo.status, 403);
+      assertEqual((await evo.json()).error, 'consent_required');
+      const sum = await aiPost(summarizeRoute, { texts: ['uno', 'dos'] });
+      assertEqual(sum.status, 403);
+    });
+  });
+
+  suite.test('Accepting is stored in settings and the routes then run; revoking blocks them again', async () => {
+    setupTestDatabase();
+    await withoutProviderKeys(async () => {
+      assertEqual((await apiClient.getSettings()).data.ai_open_responses_consent, '', 'No consent recorded at first');
+      const put = await apiClient.updateSettings({ ai_open_responses_consent: new Date().toISOString() });
+      assertEqual(put.status, 200);
+      assert(put.data.ai_open_responses_consent, 'The acceptance is recorded');
+      const ok = await aiPost(evolutionRoute, evolutionBody);
+      assert(ok.status !== 403, 'Allowed after accepting');
+      await apiClient.updateSettings({ ai_open_responses_consent: '' });
+      assertEqual((await aiPost(evolutionRoute, evolutionBody)).status, 403, 'Revoked consent blocks again');
+    });
   });
 
   return suite;

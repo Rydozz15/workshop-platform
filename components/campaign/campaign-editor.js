@@ -9,6 +9,7 @@ import { useTr } from '@/lib/i18n/context';
 import { normalizeQuestion, canonicalType, parseOptions } from '@/lib/survey-schema';
 import QuestionEditor from './question-editor';
 import QuestionImport from './question-import';
+import QuestionCopy from './question-copy';
 
 const INPUT = 'w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
@@ -143,6 +144,19 @@ export default function CampaignEditor({ campaignId = null }) {
     const step = newStep(steps.length + 1);
     setSteps((list) => [...list, step]);
     setOpenKey(step.key);
+  };
+  // Keeps each question's id, so the same question can be compared across steps.
+  const copyQuestionsFromPrevious = (index, mode) => {
+    const source = steps[index - 1]?.questions || [];
+    setSteps((list) =>
+      list.map((s, i) => {
+        if (i !== index) return s;
+        const base = mode === 'replace' ? [] : s.questions;
+        const taken = new Set(base.map((q) => q.id));
+        const copied = source.filter((q) => !taken.has(q.id)).map((q) => ({ ...q, key: nextKey() }));
+        return { ...s, questions: [...base, ...copied] };
+      })
+    );
   };
   const duplicateStep = (index) => {
     const src = steps[index];
@@ -376,6 +390,14 @@ export default function CampaignEditor({ campaignId = null }) {
                         <div className="flex flex-wrap gap-2">
                           <button type="button" onClick={() => patchStep(step.key, { questions: [...step.questions, newQuestion()] })} className={BTN}>
                             <CadIcon name="Plus" size={16} />{' '}{tr('Agregar pregunta')}</button>
+                          {index > 0 && (
+                            <QuestionCopy
+                              tr={tr}
+                              sourceCount={steps[index - 1].questions.length}
+                              hasQuestions={step.questions.length > 0}
+                              onCopy={(mode) => copyQuestionsFromPrevious(index, mode)}
+                            />
+                          )}
                         </div>
                         <QuestionImport
                           tr={tr}

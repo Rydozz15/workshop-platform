@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useTr } from '@/lib/i18n/context';
+import { AI_CONSENT_KEY } from '@/lib/ai-consent';
 
 const SELECT = 'w-full min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2 disabled:opacity-60';
@@ -47,6 +48,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [banner, setBanner] = useState(null);
   const [demo, setDemo] = useState({ loaded: false, busy: false, available: true });
+  const [consent, setConsent] = useState({ at: '', busy: false });
   const [plano, setPlano] = useState(() => {
     try { return typeof window !== 'undefined' && localStorage.getItem('ps_theme') === 'plano'; } catch { return false; }
   });
@@ -60,6 +62,7 @@ export default function SettingsPage() {
     setOllamaUrl(s.ollama_base_url || '');
     setConfigured(s.env_keys || {});
     setMasked(s.masked_keys || {});
+    setConsent((c) => ({ ...c, at: s[AI_CONSENT_KEY] || '' }));
   };
 
   useEffect(() => {
@@ -106,6 +109,21 @@ export default function SettingsPage() {
       flash(false, e.message || tr('No pudimos guardar los cambios.'));
     }
     setSaving(false);
+  };
+
+  // Takes back the permission to send open answers to the AI provider; it is asked again on next use.
+  const revokeConsent = async () => {
+    setConsent((c) => ({ ...c, busy: true }));
+    try {
+      const res = await fetch('/api/admin/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [AI_CONSENT_KEY]: '' }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      applySettings(data);
+      flash(true, tr('Permiso revocado. Te lo volveremos a preguntar.'));
+    } catch {
+      flash(false, tr('No pudimos revocar el permiso.'));
+    }
+    setConsent((c) => ({ ...c, busy: false }));
   };
 
   const testProvider = async (p) => {
@@ -272,6 +290,19 @@ export default function SettingsPage() {
         <Toggle id="theme" checked={plano} onChange={togglePlano} label={tr('Tema “Plano azul” (prueba)')} hint={tr('Fondo azul claro como papel de planos, con acento ocre. Solo cambia los colores.')} />
         <Toggle id="motion" checked={reduced} onChange={toggleReduced} label={tr('Reducir el movimiento')} hint={tr('Quita animaciones y transiciones.')} />
       </Disclosure>
+
+      <BlueprintPanel title={tr('Privacidad de las respuestas abiertas')} subtitle={tr('Si usas el resumen con IA, lo que escribieron tus participantes se envía al proveedor de IA configurado.')}>
+        <p className="font-body text-sm text-ink m-0 mb-3">
+          {consent.at
+            ? tr('Aceptaste este envío el {date}.', { date: new Date(consent.at).toLocaleDateString() })
+            : tr('Todavía no has aceptado este envío: te lo preguntaremos la primera vez que uses el resumen con IA.')}
+        </p>
+        {consent.at && (
+          <button type="button" disabled={consent.busy} onClick={revokeConsent} className={BTN}>
+            <CadIcon name="Undo2" size={16} />{' '}{consent.busy ? tr('Un momento…') : tr('Revocar permiso')}
+          </button>
+        )}
+      </BlueprintPanel>
 
       <BlueprintPanel title={tr('Modo demo')} subtitle={demo.loaded ? tr('Estás viendo datos de ejemplo.') : tr('Carga datos de ejemplo para explorar la plataforma.')}>
         <p className="font-body text-sm text-ink m-0 mb-3">
