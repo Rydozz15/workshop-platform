@@ -120,7 +120,7 @@ If you contribute, please say how AI was used in your pull request, keep the tes
 
 ## License
 
-MIT.
+MIT, see [`LICENSE`](LICENSE). The copyright line says "PromptSketch contributors"; the maintainers may replace it with their names.
 
 ## Citation
 
