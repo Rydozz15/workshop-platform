@@ -13,7 +13,7 @@ All commands run from the `workshop-app/` directory.
 ### Commands
 
 ```bash
-./run.sh                 # dev server on :3000 with the in-memory DB (data.json)
+./scripts/run.sh                 # dev server on :3000 with the in-memory DB (data.json)
 npm run local            # cross-platform local mode (Windows/macOS/Linux): installs, builds, starts, prints the admin password
 npm run dev              # plain next dev
 npm test                 # logic suites + 126 E2E API/logic tests (fast, no server)

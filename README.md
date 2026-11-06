@@ -34,7 +34,7 @@ Conditions are assigned at random and balanced. Two conditions are not a limit: 
 git clone https://github.com/Rydozz15/workshop-platform.git
 cd workshop-platform
 npm install
-./run.sh          # in-memory database, http://localhost:3000
+./scripts/run.sh          # in-memory database, http://localhost:3000
 ```
 
 Open `http://localhost:3000/admin`. Outside production the local default password is `workshop2025`; set `ADMIN_PASSWORD` to use your own. In **production the admin stays locked until `ADMIN_PASSWORD` is set**.
@@ -44,7 +44,7 @@ Open `http://localhost:3000/admin`. Outside production the local default passwor
 For a booth or classroom demo with a public HTTPS link and a terminal QR code:
 
 ```bash
-./run-demo.sh     # generates an admin password for the session if none is set
+./scripts/run-demo.sh     # generates an admin password for the session if none is set
 ```
 
 ## Configuration
