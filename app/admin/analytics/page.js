@@ -29,6 +29,9 @@ import { calculateCronbachAlpha, calculateHakeGain } from '@/lib/psychometrics';
 import { calculateIRR } from '@/lib/irr';
 import { stepsOfCampaign } from '@/lib/campaigns';
 import useSelectedCampaign from '@/lib/use-selected-campaign';
+import { extractMeasures, analyzeMeasure } from '@/lib/quick-analysis';
+import OpenResponsesPanel from '@/components/admin/open-responses-panel';
+import { buildOpenResponses } from '@/lib/step-evolution';
 import SectionTrail from '@/components/admin/section-trail';
 import { analyzeConversation } from '@/lib/chat-analytics';
 import { generateBooktabsTable } from '@/lib/latex-generator';
@@ -147,6 +150,7 @@ export default function AnalyticsPage() {
 
   // Chart metric focus
   const [selectedChartMetricKey, setSelectedChartMetricKey] = useState('');
+  const [stepMeasureId, setStepMeasureId] = useState('');
 
   // IRR Calibration Mode
   const [irrMode, setIrrMode] = useState('isdde_outcome'); // 'isdde_outcome' | 'isdde_flow' | 'prevalence_demo' | 'custom'
@@ -160,15 +164,42 @@ export default function AnalyticsPage() {
   const [lakLoading, setLakLoading] = useState(false);
   const [lakReview, setLakReview] = useState(null);
 
-  const [selectedCampaignId] = useSelectedCampaign();
+  const [selectedCampaignId, setSelectedCampaignId] = useSelectedCampaign();
+  const [campaigns, setCampaigns] = useState(null);
+  const [campaignDetail, setCampaignDetail] = useState(null);
+
+  // Everything below depends on one campaign. Without a stored choice, open the active (or newest) one.
+  useEffect(() => {
+    fetch('/api/admin/campaigns')
+      .then((r) => r.json())
+      .then((list) => {
+        const all = Array.isArray(list) ? list : [];
+        setCampaigns(all);
+        if (!all.some((c) => c.id === selectedCampaignId)) {
+          setSelectedCampaignId((all.find((c) => c.is_active) || all[0])?.id || '');
+        }
+      })
+      .catch(() => setCampaigns([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadAnalytics = useCallback(async () => {
-    setLoading(true);
+    if (campaigns === null) return;
     try {
-      const res = await fetch('/api/admin/analytics');
+      const query = selectedCampaignId ? `?campaignId=${encodeURIComponent(selectedCampaignId)}` : '';
+      const [res, detailRes] = await Promise.all([
+        fetch(`/api/admin/analytics${query}`),
+        selectedCampaignId ? fetch(`/api/admin/campaigns/${encodeURIComponent(selectedCampaignId)}`) : Promise.resolve(null),
+      ]);
+      setCampaignDetail(detailRes && detailRes.ok ? await detailRes.json() : null);
       const json = await res.json();
-      const ws = Array.isArray(json.workshops) ? json.workshops : [];
-      const vs = Array.isArray(json.versions) ? json.versions : [];
+      const allWs = Array.isArray(json.workshops) ? json.workshops : [];
+      const allVs = Array.isArray(json.versions) ? json.versions : [];
+      // Only this campaign's steps and conditions are offered for comparison.
+      const inCampaign = selectedCampaignId ? stepsOfCampaign(allWs, selectedCampaignId) : allWs;
+      const ws = inCampaign.length > 0 ? inCampaign : allWs;
+      const conditionIds = new Set(ws.flatMap((w) => w.selected_version_ids || []));
+      const vs = conditionIds.size > 0 ? allVs.filter((v) => conditionIds.has(v.id)) : allVs;
       const ss = Array.isArray(json.sessions) ? json.sessions : [];
 
       // Sort chained steps naturally so Step 1 = A and Step 2 = B by default
@@ -191,23 +222,25 @@ export default function AnalyticsPage() {
       const campaignSteps = selectedCampaignId ? stepsOfCampaign(sortedWs, selectedCampaignId) : [];
       const pool = campaignSteps.length > 0 ? campaignSteps : sortedWs;
 
+      setVersionScopeWorkshopId('');
       if (pool.length >= 2) {
-        setCampaignAId((prev) => prev || pool[0].id);
-        setCampaignBId((prev) => prev || pool[1].id);
+        setCampaignAId(pool[0].id);
+        setCampaignBId(pool[1].id);
+        setCompareAxis('campaigns');
       } else if (pool.length === 1) {
-        setCampaignAId((prev) => prev || pool[0].id);
-        setCampaignBId((prev) => prev || pool[0].id);
+        setCampaignAId(pool[0].id);
+        setCampaignBId(pool[0].id);
         if (vs.length >= 2) {
           setCompareAxis('versions');
         }
       }
 
       if (vs.length >= 2) {
-        setVersionAId((prev) => prev || vs[0].id);
-        setVersionBId((prev) => prev || vs[1].id);
+        setVersionAId(vs[0].id);
+        setVersionBId(vs[1].id);
       } else if (vs.length === 1) {
-        setVersionAId((prev) => prev || vs[0].id);
-        setVersionBId((prev) => prev || vs[0].id);
+        setVersionAId(vs[0].id);
+        setVersionBId(vs[0].id);
       }
     } catch (err) {
       setStatusBanner({
@@ -217,10 +250,12 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  }, [tr, selectedCampaignId]);
+  }, [tr, selectedCampaignId, campaigns]);
 
   useEffect(() => {
-    loadAnalytics();
+    // Deferred so the fetch results never set state inside the effect body itself.
+    const timer = setTimeout(loadAnalytics, 0);
+    return () => clearTimeout(timer);
   }, [loadAnalytics]);
 
   useEffect(() => {
@@ -283,6 +318,32 @@ export default function AnalyticsPage() {
     versionAId,
     versionBId,
   ]);
+
+  // Conditions offered in the "Entre condiciones" selectors: only those used by the chosen step.
+  const scopeVersions = useMemo(() => {
+    const scopeStep = raw.workshops.find((w) => w.id === versionScopeWorkshopId);
+    const ids = scopeStep?.selected_version_ids;
+    return ids && ids.length > 0 ? raw.versions.filter((v) => ids.includes(v.id)) : raw.versions;
+  }, [raw, versionScopeWorkshopId]);
+
+  // All steps of the campaign at once (3 or more), with the omnibus test + pairwise follow-ups.
+  const stepMeasures = useMemo(
+    () => (raw.workshops.length >= 3
+      ? extractMeasures({ sessions: raw.sessions, workshops: raw.workshops, versions: raw.versions, groupBy: 'step' })
+      : []),
+    [raw]
+  );
+  const stepMeasure = stepMeasures.find((m) => m.id === stepMeasureId) || stepMeasures[0];
+  const stepResult = useMemo(
+    () => (stepMeasure ? analyzeMeasure(stepMeasure.groups, { ordinal: stepMeasure.ordinal, tr, decimal: locale === 'en' ? '.' : ',' }) : null),
+    [stepMeasure, tr, locale]
+  );
+
+  // Open answers of this campaign, summarized inside the lab next to the comparison they belong to.
+  const openGroups = useMemo(
+    () => (campaignDetail ? buildOpenResponses({ steps: campaignDetail.steps, sessions: raw.sessions }) : []),
+    [campaignDetail, raw.sessions]
+  );
 
   // 2. Dialogic & Observability Metrics per session and per condition
   const dialogicSummary = useMemo(() => {
@@ -527,15 +588,7 @@ export default function AnalyticsPage() {
     return holmAdjusted;
   }, [cohortData, dialogicSummary, tr]);
 
-  // Keep selectedChartMetricKey synced
-  useEffect(() => {
-    if (
-      inferentialBundle.length > 0 &&
-      !inferentialBundle.some((r) => r.key === selectedChartMetricKey)
-    ) {
-      setSelectedChartMetricKey(inferentialBundle[0].key);
-    }
-  }, [inferentialBundle, selectedChartMetricKey]);
+  // The chart metric falls back to the first one (activeChartRow), so no syncing effect is needed.
 
   // 4. Behavioral Checklist Comparison (e.g. Contextual Inquiry 0% vs 89% in ISDDE)
   const checklistComparison = useMemo(() => {
@@ -845,6 +898,20 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          {campaigns && campaigns.length > 0 && (
+            <label className="flex items-center gap-2 font-body text-sm text-ink">
+              <span className="font-semibold">{tr('Campaña')}</span>
+              <select
+                value={selectedCampaignId}
+                onChange={(e) => setSelectedCampaignId(e.target.value)}
+                className="min-h-[44px] w-auto max-w-[18rem] px-3 border border-line-control bg-paper font-body text-sm text-ink"
+              >
+                {campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
           <button
             type="button"
             onClick={() => setShowLatexModal(true)}
@@ -888,7 +955,7 @@ export default function AnalyticsPage() {
       {/* Cohort & Axis Selector Panel */}
       <BlueprintPanel
         title={tr('¿Qué quieres comparar?')}
-        subtitle={tr('Elige dos condiciones o dos campañas para compararlas.')}
+        subtitle={tr('Dentro de la campaña elegida, compara dos pasos o dos condiciones.')}
         headerSlot={
           <div className="inline-flex border border-line-control bg-paper">
             <button
@@ -899,7 +966,7 @@ export default function AnalyticsPage() {
                   ? 'bg-ink text-paper font-semibold'
                   : 'bg-paper text-ink hover:bg-paper-subtle'
               }`}
-            >{tr('Entre Campañas / Pasos')}</button>
+            >{tr('Entre pasos')}</button>
             <button
               type="button"
               onClick={() => setCompareAxis('versions')}
@@ -908,7 +975,7 @@ export default function AnalyticsPage() {
                   ? 'bg-ink text-paper font-semibold'
                   : 'bg-paper text-ink hover:bg-paper-subtle'
               }`}
-            >{tr('Entre Escenarios')}</button>
+            >{tr('Entre condiciones')}</button>
           </div>
         }
         titleBlock={{
@@ -966,14 +1033,24 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-version-scope"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-              >{tr('Ámbito de Experimento')}</label>
+              >{tr('Paso donde mirar')}</label>
               <select
                 id="select-version-scope"
                 value={versionScopeWorkshopId}
-                onChange={(e) => setVersionScopeWorkshopId(e.target.value)}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  setVersionScopeWorkshopId(id);
+                  // Keep A and B inside the conditions that step actually uses.
+                  const ids = raw.workshops.find((w) => w.id === id)?.selected_version_ids || [];
+                  const options = ids.length > 0 ? raw.versions.filter((v) => ids.includes(v.id)) : raw.versions;
+                  if (options.length > 0) {
+                    setVersionAId(options[0].id);
+                    setVersionBId((options[1] || options[0]).id);
+                  }
+                }}
                 className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-ui-mono text-xs text-ink"
               >
-                <option value="">{tr('Todos los experimentos combinados')}</option>
+                <option value="">{tr('Todos los pasos de la campaña')}</option>
                 {raw.workshops.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.name}
@@ -986,14 +1063,14 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-ver-a"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-              >{tr('Escenario A (Trama)')}</label>
+              >{tr('Condición A (Trama)')}</label>
               <select
                 id="select-ver-a"
                 value={versionAId}
                 onChange={(e) => setVersionAId(e.target.value)}
                 className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-ui-mono text-xs text-ink"
               >
-                {raw.versions.map((v) => (
+                {scopeVersions.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.title}
                   </option>
@@ -1005,14 +1082,14 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-ver-b"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-cobalt mb-1.5"
-              >{tr('Escenario B (Cobalto)')}</label>
+              >{tr('Condición B (Cobalto)')}</label>
               <select
                 id="select-ver-b"
                 value={versionBId}
                 onChange={(e) => setVersionBId(e.target.value)}
                 className="min-h-[44px] w-full px-3 border border-cobalt bg-paper font-ui-mono text-xs text-ink"
               >
-                {raw.versions.map((v) => (
+                {scopeVersions.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.title}
                   </option>
@@ -1330,6 +1407,59 @@ export default function AnalyticsPage() {
       </div>
 
       {/* SECTION 4: CONVERSATIONAL ANALYTICS & NORMALIZED LATENCY */}
+      {stepMeasure && stepResult && (
+        <AnalysisSection
+          title={tr('¿Cambian los resultados a lo largo de todos los pasos?')}
+          summary={tr('Compara los {n} pasos de la campaña a la vez', { n: raw.workshops.length })}
+        >
+          <label className="block font-body text-sm text-ink">
+            <span className="font-semibold">{tr('Medida')}</span>
+            <select
+              value={stepMeasure.id}
+              onChange={(e) => setStepMeasureId(e.target.value)}
+              className="mt-1 min-h-[44px] w-full px-3 border border-line-control bg-paper font-body text-sm text-ink"
+            >
+              {stepMeasures.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+            </select>
+          </label>
+          <p className="font-body text-sm text-ink m-0">{stepResult.summary}</p>
+          <div className="overflow-x-auto">
+            <table className="w-full font-body text-sm text-left">
+              <thead>
+                <tr className="border-b border-line-control">
+                  <th className="py-2 pr-4">{tr('Paso')}</th>
+                  <th className="py-2 pr-4">n</th>
+                  <th className="py-2 pr-4">{tr('Media')}</th>
+                  <th className="py-2">{tr('Mediana')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stepResult.descriptives.map((d) => (
+                  <tr key={d.label} className="border-b border-dotted border-rule">
+                    <td className="py-2 pr-4 text-ink">{d.label}</td>
+                    <td className="py-2 pr-4 font-stat">{d.n}</td>
+                    <td className="py-2 pr-4 font-stat">{Number.isFinite(d.mean) ? d.mean.toFixed(2) : '–'}</td>
+                    <td className="py-2 font-stat">{Number.isFinite(d.median) ? d.median.toFixed(2) : '–'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {stepResult.posthoc?.length > 0 && (
+            <ul className="list-disc pl-5 m-0 font-body text-sm text-ink space-y-1">
+              {stepResult.posthoc.map((p) => (
+                <li key={`${p.a}-${p.b}`}>
+                  {tr('{a} vs {b}', { a: p.a, b: p.b })}{': '}{tr('p ajustado = {p}', { p: p.adjustedP.toFixed(3) })}{' · '}{p.significant ? tr('Se distinguen') : tr('No se distinguen')}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="ps-meta m-0">{tr('Los mismos participantes pasan por todos los pasos, así que trata este resultado como una guía y no como una prueba definitiva.')}</p>
+        </AnalysisSection>
+      )}
+
+      <OpenResponsesPanel groups={openGroups} tr={tr} />
+
       <AnalysisSection title={tr('¿Cómo conversaron los participantes?')} summary={tr('Largo de los mensajes, vocabulario y ritmo de lectura')}>
         <DataTable
           caption={tr('Comparación de indicadores objetivos del discurso y telemetría cognitiva')}

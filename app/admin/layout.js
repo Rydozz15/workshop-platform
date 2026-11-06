@@ -49,7 +49,9 @@ export default function AdminLayout({ children }) {
     if (savedMotion) {
       document.documentElement.dataset.motion = 'reduced';
     }
-    setLoading(false);
+    // Deferred so the state update does not run inside the effect body.
+    const timer = setTimeout(() => setLoading(false), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLogin = async (e) => {

@@ -5,9 +5,8 @@ import Link from 'next/link';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { extractMeasures, analyzeMeasure } from '@/lib/quick-analysis';
-import { buildStepEvolution, buildOpenResponses } from '@/lib/step-evolution';
+import { buildStepEvolution } from '@/lib/step-evolution';
 import StepEvolutionPanel from '@/components/admin/step-evolution-panel';
-import OpenResponsesPanel from '@/components/admin/open-responses-panel';
 import { useTr, useLanguage } from '@/lib/i18n/context';
 import useSelectedCampaign, { withCampaign } from '@/lib/use-selected-campaign';
 
@@ -87,10 +86,6 @@ function ResultsInner() {
   const sessionCount = analytics?.sessions?.length ?? 0;
   const evolution = useMemo(
     () => (detail && analytics ? buildStepEvolution({ steps: detail.steps, sessions: analytics.sessions }) : null),
-    [detail, analytics]
-  );
-  const openGroups = useMemo(
-    () => (detail && analytics ? buildOpenResponses({ steps: detail.steps, sessions: analytics.sessions }) : []),
     [detail, analytics]
   );
   const datasets = evolution ? [...DATASETS, WIDE_DATASET] : DATASETS;
@@ -261,8 +256,6 @@ function ResultsInner() {
       </BlueprintPanel>
 
       <StepEvolutionPanel evolution={evolution} tr={tr} fmt={fmt} />
-
-      <OpenResponsesPanel groups={openGroups} tr={tr} />
 
       <BlueprintPanel title={tr('Revisar las conversaciones')} subtitle={tr('Lee cada sesión mensaje a mensaje y corrige lo que haga falta.')}>
         <Link href={withCampaign('/admin/sessions', campaignId)} className={BTN}><CadIcon name="MessageSquare" size={16} />{' '}{tr('Ver sesiones')}{analytics ? ` (${sessionCount})` : ''}</Link>

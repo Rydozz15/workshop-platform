@@ -43,6 +43,8 @@ function fromDetail(detail) {
       consent_required: Boolean(detail.consent_required),
       consent_url: detail.consent_url || '',
       randomize_order: Boolean(detail.randomize_order),
+      final_message: detail.final_message || '',
+      show_condition: Boolean(detail.show_condition),
     },
     steps: detail.steps.map((s) => ({
       key: nextKey(),
@@ -102,7 +104,7 @@ export default function CampaignEditor({ campaignId = null }) {
   const tr = useTr();
   const router = useRouter();
   const [loading, setLoading] = useState(Boolean(campaignId));
-  const [meta, setMeta] = useState({ name: '', description: '', consent_required: false, consent_url: '', randomize_order: false });
+  const [meta, setMeta] = useState({ name: '', description: '', consent_required: false, consent_url: '', randomize_order: false, final_message: '', show_condition: false });
   const [steps, setSteps] = useState(() => [newStep(1)]);
   const [openKey, setOpenKey] = useState(() => steps[0]?.key ?? null);
   const [confirmDeleteKey, setConfirmDeleteKey] = useState(null);
@@ -246,6 +248,22 @@ export default function CampaignEditor({ campaignId = null }) {
             onChange={(e) => setMeta({ ...meta, description: e.target.value })}
           />
         </Field>
+        <Field label={tr('Mensaje final para los participantes')} help={tr('Se muestra al terminar, para que nadie quede sin saber qué hacer (por ejemplo: "Quédate en tu asiento, comenzamos el plenario en 5 minutos"). Opcional.')}>
+          <textarea
+            className={INPUT}
+            rows={3}
+            value={meta.final_message}
+            onChange={(e) => setMeta({ ...meta, final_message: e.target.value })}
+            placeholder={tr('Ej.: Gracias por participar. Cuando todos terminen, comentaremos la experiencia en grupo.')}
+          />
+        </Field>
+        <label className="flex items-start gap-2 font-body text-sm text-ink min-h-[44px]">
+          <input type="checkbox" className="w-5 h-5 mt-0.5" checked={meta.show_condition} onChange={(e) => setMeta({ ...meta, show_condition: e.target.checked })} />
+          <span>
+            <span className="font-semibold">{tr('Mostrar a los participantes qué caso o condición les tocó')}</span>
+            <span className="block text-ink-2">{tr('Si lo desactivas, el resumen final solo dice "Paso 1", "Paso 2"… y no revela la condición.')}</span>
+          </span>
+        </label>
         <Disclosure title={tr('Consentimiento informado')} summary={meta.consent_required ? tr('Se pedirá antes de comenzar') : tr('No se pide')}>
           <label className="flex items-center gap-2 font-body text-sm text-ink min-h-[44px]">
             <input

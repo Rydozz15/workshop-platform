@@ -29,6 +29,14 @@ const architectsDaughter = Architects_Daughter({
   display: 'swap',
 });
 
+// On Android Chrome the on-screen keyboard resizes the page (instead of covering it), so the message
+// box stays right above the keyboard and the chat shrinks smoothly rather than jumping.
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  interactiveWidget: 'resizes-content',
+};
+
 export const metadata = {
   title: 'PromptSketch — Educational Prompt A/B & Learning Analytics Platform',
   description: 'Rigorous open-source platform for educational prompt experimentation and Learning Analytics.',

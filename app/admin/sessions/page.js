@@ -79,7 +79,9 @@ export default function SessionsPage() {
   }, [tr]);
 
   useEffect(() => {
-    loadData(selectedCampaign);
+    // Deferred so the fetch never sets state inside the effect body itself.
+    const timer = setTimeout(() => loadData(selectedCampaign), 0);
+    return () => clearTimeout(timer);
   }, [selectedCampaign, loadData]);
 
   useEffect(() => {

@@ -10,7 +10,6 @@ import {
   CompletionScreen,
   Stepper,
   Drawer,
-  DrawerHandle,
   LanguageSelector,
   Logo,
 } from '@/components/ui/blueprint';
@@ -67,7 +66,7 @@ export default function SessionPage({ params }) {
   const blurStartRef = useRef(null);
   const inactiveMsRef = useRef(0);
 
-  const messagesEndRef = useRef(null);
+  const logRef = useRef(null);
   const inputRef = useRef(null);
 
   // Track browser tab visibility changes to flag inactivity outliers accurately
@@ -102,8 +101,18 @@ export default function SessionPage({ params }) {
       typeof window !== 'undefined' &&
       (document.documentElement.dataset.motion === 'reduced' ||
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-    messagesEndRef.current?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
+    // Scroll only the message list: scrollIntoView would also move the whole page and make it jump.
+    const log = logRef.current;
+    log?.scrollTo({ top: log.scrollHeight, behavior: prefersReduced ? 'auto' : 'smooth' });
   }, [messages]);
+
+  // Grow the message box with what is typed (up to ~5 lines), like other chat apps.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
+  }, [input]);
 
   const joinWorkshop = async ({
     participantName: overrideName = null,
@@ -229,7 +238,7 @@ export default function SessionPage({ params }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-  // Load JourneyHub history upon completion
+  // Load the participant's history (recap screen) upon completion
   useEffect(() => {
     if (phase !== 'completed') return;
     const fetchHistory = async () => {
@@ -553,11 +562,21 @@ export default function SessionPage({ params }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <div className="lg:col-span-8">
           <BlueprintPanel title={tr('Conversación')} subtitle={tr('Escribe con tus palabras. El asistente te responderá.')} headingLevel={2}>
+            <div className="lg:hidden mb-3">
+              <button
+                type="button"
+                onClick={() => setCaseOpenMobile(true)}
+                className="min-h-[44px] px-3 py-2 border border-line-strong bg-paper hover:bg-paper-subtle font-body text-sm font-semibold text-ink inline-flex items-center gap-2"
+              >
+                <CadIcon name="FileText" size={16} />{' '}{tr('Ver caso')}
+              </button>
+            </div>
             <div
               role="log"
               aria-live="polite"
               aria-label={tr('Mensajes de la conversación')}
-              className="min-h-[340px] max-h-[540px] overflow-y-auto p-3 sm:p-4 bg-paper-subtle border border-line-control space-y-4 mb-4"
+              ref={logRef}
+              className="min-h-[200px] max-h-[calc(100dvh-22rem)] lg:min-h-[340px] lg:max-h-[540px] overflow-y-auto overscroll-contain scroll-smooth p-3 sm:p-4 bg-paper-subtle border border-line-control space-y-4 mb-4"
             >
               {messages.length === 0 && (
                 <div className="p-6 bg-paper border border-dashed border-line-control text-center space-y-2">
@@ -586,7 +605,6 @@ export default function SessionPage({ params }) {
                   </article>
                 );
               })}
-              <div ref={messagesEndRef} />
             </div>
 
             {previousFirstMessage && !suggestionDismissed && messages.length === 0 && (
@@ -616,20 +634,24 @@ export default function SessionPage({ params }) {
               </div>
             )}
 
-            <div className="space-y-2">
-              <label htmlFor="session-chat-input" className="font-body text-sm font-semibold text-ink block">{tr('Tu mensaje')}{' '}<span className="font-normal text-ink-2">{tr('(Enter envía · Shift + Enter salto de línea)')}</span>
+            <div className="space-y-2 sticky bottom-0 z-10 bg-paper pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:static lg:pt-0 lg:pb-0">
+              <label htmlFor="session-chat-input" className="font-body text-sm font-semibold text-ink block">{tr('Tu mensaje')}{' '}<span className="hidden sm:inline font-normal text-ink-2">{tr('(Enter envía · Shift + Enter salto de línea)')}</span>
               </label>
               <div className="flex flex-col sm:flex-row gap-2 items-stretch">
                 <textarea
                   id="session-chat-input"
                   ref={inputRef}
-                  rows={2}
+                  rows={1}
                   value={input}
                   onChange={handleInputChange}
+                  onFocus={() => setTimeout(() => {
+                    const log = logRef.current;
+                    log?.scrollTo({ top: log.scrollHeight, behavior: 'smooth' });
+                  }, 250)}
                   onKeyDown={handleKeyDown}
                   placeholder={tr('Escribe aquí…')}
                   disabled={streaming}
-                  className="flex-1 p-3 bg-paper border border-line-control font-body text-base text-ink min-h-[56px]"
+                  className="flex-1 p-3 bg-paper border border-line-control font-body text-base text-ink min-h-[48px] max-h-[140px] resize-none"
                 />
                 <SplitButton variant="primary" iconBox="Send" onClick={sendMessage} disabled={!input.trim() || streaming} loading={streaming} aria-label={tr('Enviar mensaje')}>{tr('Enviar')}</SplitButton>
               </div>
@@ -663,7 +685,6 @@ export default function SessionPage({ params }) {
       </div>
 
       <div className="lg:hidden">
-        <DrawerHandle onClick={() => setCaseOpenMobile(true)} label={tr('Ver caso')} icon="FileText" />
         <Drawer open={caseOpenMobile} onClose={() => setCaseOpenMobile(false)} title={version?.title || tr('Tu caso')} closeLabel={tr('Cerrar caso')}>
           <div className="font-body text-base text-ink leading-relaxed prose max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || tr('Conversación abierta.')}</ReactMarkdown>
