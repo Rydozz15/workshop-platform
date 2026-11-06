@@ -56,7 +56,7 @@ CLOUDFLARED_BIN=$(command -v cloudflared || true)
 if [ -n "$CLOUDFLARED_BIN" ]; then
   echo "✓ Found cloudflared tunnel client at: $CLOUDFLARED_BIN"
   echo "Starting background Next.js server on port $PORT..."
-  npm run dev -- -p "$PORT" > /tmp/promptsketch-dev.log 2>&1 &
+  if command -v pnpm >/dev/null 2>&1; then pnpm dev -p "$PORT"; else npm run dev -- -p "$PORT"; fi > /tmp/promptsketch-dev.log 2>&1 &
   SERVER_PID=$!
 
   # Wait for local port to be ready
@@ -90,7 +90,7 @@ if [ -n "$CLOUDFLARED_BIN" ]; then
 else
   echo "! cloudflared not detected in PATH; using local network endpoint."
   echo "Starting Next.js server on port $PORT..."
-  npm run dev -- -p "$PORT" &
+  if command -v pnpm >/dev/null 2>&1; then pnpm dev -p "$PORT"; else npm run dev -- -p "$PORT"; fi &
   SERVER_PID=$!
 fi
 

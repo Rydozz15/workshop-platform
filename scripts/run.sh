@@ -20,8 +20,8 @@ echo "=========================================================="
 
 if [ ! -d "node_modules" ]; then
   echo "Installing dependencies..."
-  npm install
+  if command -v pnpm >/dev/null 2>&1; then pnpm install; else npm install; fi
 fi
 
 # Launch Next.js dev server
-npm run dev -- -p "$PORT"
+if command -v pnpm >/dev/null 2>&1; then pnpm dev -p "$PORT"; else npm run dev -- -p "$PORT"; fi

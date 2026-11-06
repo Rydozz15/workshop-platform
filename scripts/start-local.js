@@ -72,8 +72,24 @@ function ensureEnv(envPath = path.join(ROOT, '.env.local')) {
 }
 
 function run(cmd, args, opts = {}) {
-  const r = spawnSync(cmd, args, { cwd: ROOT, stdio: 'inherit', shell: process.platform === 'win32' && cmd === 'npm', ...opts });
+  const r = spawnSync(cmd, args, { cwd: ROOT, stdio: 'inherit', ...opts });
   return r.status === 0;
+}
+
+/** Installs with pnpm (the project's package manager); falls back to corepack's pnpm, then to npm. */
+function installDependencies() {
+  const hasLock = fs.existsSync(path.join(ROOT, 'pnpm-lock.yaml'));
+  const attempts = [
+    ['pnpm', ['install', ...(hasLock ? ['--frozen-lockfile'] : [])]],
+    ['corepack', ['pnpm', 'install', ...(hasLock ? ['--frozen-lockfile'] : [])]],
+    ['npm', ['install', '--no-audit', '--no-fund']],
+  ];
+  for (const [cmd, args] of attempts) {
+    const probe = spawnSync(cmd, ['--version'], { shell: process.platform === 'win32', stdio: 'ignore' });
+    if (probe.status !== 0) continue;
+    if (run(cmd, args, { shell: process.platform === 'win32' })) return true;
+  }
+  return false;
 }
 
 function openBrowser(url) {
@@ -109,7 +125,7 @@ async function main() {
   console.log('\n=== PromptSketch: modo local ===\n');
   if (!fs.existsSync(path.join(ROOT, 'node_modules'))) {
     console.log('Instalando componentes (solo la primera vez, puede tardar unos minutos)...');
-    if (!run('npm', ['install', '--no-audit', '--no-fund'])) {
+    if (!installDependencies()) {
       console.error('\nNo se pudo instalar. Revisa tu conexión a internet y vuelve a intentarlo.');
       process.exit(1);
     }

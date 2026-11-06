@@ -1,0 +1,28 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect and what did you get?
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen?
+      options: [Participant screens, Admin (campaigns), Admin (live), Admin (results), Settings, Local mode launcher, Other]
+    validations:
+      required: true
+  - type: input
+    id: setup
+    attributes:
+      label: How are you running it?
+      placeholder: "e.g. iniciar.bat on Windows 11 / Vercel + Supabase / pnpm dev on Linux"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Messages or screenshots
+      description: Do not paste passwords, API keys or participant data.

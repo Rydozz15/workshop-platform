@@ -33,13 +33,13 @@ Conditions are assigned at random and balanced. Two conditions are not a limit: 
 ```bash
 git clone https://github.com/Rydozz15/workshop-platform.git
 cd workshop-platform
-npm install
+pnpm install
 ./scripts/run.sh          # in-memory database, http://localhost:3000
 ```
 
 Open `http://localhost:3000/admin`. Outside production the local default password is `workshop2025`; set `ADMIN_PASSWORD` to use your own. In **production the admin stays locked until `ADMIN_PASSWORD` is set**.
 
-**Not a programmer, or on Windows?** Double-click `iniciar.bat` (Windows) or `iniciar.command` (macOS); both run `npm run local`. Step-by-step guide in Spanish: [`docs/MODO_LOCAL.md`](docs/MODO_LOCAL.md). The `.sh` scripts need a Unix shell (macOS, Linux, or WSL on Windows).
+**Not a programmer, or on Windows?** Double-click `iniciar.bat` (Windows) or `iniciar.command` (macOS); both run `pnpm run local`. Step-by-step guide in Spanish: [`docs/MODO_LOCAL.md`](docs/MODO_LOCAL.md). The `.sh` scripts need a Unix shell (macOS, Linux, or WSL on Windows).
 
 For a booth or classroom demo with a public HTTPS link and a terminal QR code:
 
@@ -77,11 +77,11 @@ Conversations are sent to the AI provider you choose. Review its data policy and
 ## Testing
 
 ```bash
-npm test               # unit and logic suites + 126 E2E API/logic tests (no server needed)
-npm run test:ui        # Playwright journeys in Google Chrome (starts its own dev server)
-npm run test:contrast  # WCAG AAA contrast of the design tokens
-npm run test:slop      # design-rule lint (no emojis, no layout-shifting hover, ...)
-npm run lint
+pnpm test               # unit and logic suites + 126 E2E API/logic tests (no server needed)
+pnpm test:ui        # Playwright journeys in Google Chrome (starts its own dev server)
+pnpm test:contrast  # WCAG AAA contrast of the design tokens
+pnpm test:slop      # design-rule lint (no emojis, no layout-shifting hover, ...)
+pnpm lint
 ```
 
 `test/i18n.test.js` fails when a UI string lacks an English or Portuguese translation, or when a translation is unused.
@@ -96,7 +96,7 @@ test/, e2e-ui/          logic tests and Playwright UI tests
 docs/                   SQL migrations and design notes
 ```
 
-Conventions: Spanish is the source language for UI text (`tr('Texto')`, translations in `lib/i18n/messages-*.js`); design rules are enforced by `npm run test:slop`.
+Conventions: Spanish is the source language for UI text (`tr('Texto')`, translations in `lib/i18n/messages-*.js`); design rules are enforced by `pnpm test:slop`.
 
 ## Development with Claude Code
 

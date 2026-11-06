@@ -1,4 +1,4 @@
-// UI tests for the critical journeys. Run: npm run test:ui  (uses the installed Google Chrome).
+// UI tests for the critical journeys. Run: pnpm test:ui  (uses the installed Google Chrome).
 const { defineConfig } = require('@playwright/test');
 
 const PORT = 3130;

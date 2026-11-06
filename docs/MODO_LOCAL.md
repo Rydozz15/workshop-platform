@@ -20,7 +20,7 @@ Instala Node.js (LTS) desde <https://nodejs.org> y haz doble clic en `iniciar.co
 
 ```bash
 ./scripts/run.sh            # modo desarrollo, o
-npm run local       # igual que Windows y macOS
+pnpm run local       # igual que Windows y macOS
 ```
 
 ## Cómo entran los participantes
