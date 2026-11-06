@@ -53,3 +53,10 @@ CLAUDE.local.md
 # Playwright
 /test-results/
 /playwright-report/
+
+# Internal working material (kept locally, not published)
+/DESIGN_NOTES.md
+/docs/entrevista/
+/scratch/
+/scripts/adversarial-m1-challenge.js
+/test/adversarial-*.js

@@ -39,6 +39,8 @@ npm install
 
 Open `http://localhost:3000/admin`. Outside production the local default password is `workshop2025`; set `ADMIN_PASSWORD` to use your own. In **production the admin stays locked until `ADMIN_PASSWORD` is set**.
 
+**Not a programmer, or on Windows?** Double-click `iniciar.bat` (Windows) or `iniciar.command` (macOS); both run `npm run local`. Step-by-step guide in Spanish: [`docs/MODO_LOCAL.md`](docs/MODO_LOCAL.md). The `.sh` scripts need a Unix shell (macOS, Linux, or WSL on Windows).
+
 For a booth or classroom demo with a public HTTPS link and a terminal QR code:
 
 ```bash
@@ -94,7 +96,7 @@ test/, e2e-ui/          logic tests and Playwright UI tests
 docs/                   SQL migrations and design notes
 ```
 
-Conventions: Spanish is the source language for UI text (`tr('Texto')`, translations in `lib/i18n/messages-*.js`); design rules are enforced by `npm run test:slop`. See `DESIGN_NOTES.md` for the design system.
+Conventions: Spanish is the source language for UI text (`tr('Texto')`, translations in `lib/i18n/messages-*.js`); design rules are enforced by `npm run test:slop`.
 
 ## Development with Claude Code
 
