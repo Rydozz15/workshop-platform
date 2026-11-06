@@ -72,3 +72,14 @@ Lo que faltó:
 ## Informe
 
 Resumir por tarea: tasa de éxito, tiempo mediano, problemas observados con severidad (0–4 de Nielsen), cambios propuestos y cuáles se aplicaron. Comparar con las críticas del documento de revisión del prototipo anterior.
+
+## Kit para ejecutarla
+
+```bash
+node scripts/usability-kit.js prepare     # crea la instancia desechable con el escenario del Momento 2
+node scripts/usability-kit.js analyze obs.csv sus.csv
+```
+
+- `obs.csv`: `participant,task,result,seconds,errors` (`result` = `si`, `ayuda` o `no`; `task` = 1.1, 2.3, …).
+- `sus.csv`: `participant,a1,…,a10` con las respuestas 1 a 5.
+- La salida entrega tasa de éxito sin ayuda, tiempo mediano por tarea, SUS promedio y si se cumplen los criterios de aceptación.
