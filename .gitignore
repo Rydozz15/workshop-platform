@@ -60,3 +60,6 @@ CLAUDE.local.md
 /scratch/
 /scripts/adversarial-m1-challenge.js
 /test/adversarial-*.js
+
+# Local MCP config (Supabase project id): keep on this machine
+.mcp.json
