@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import CadIcon from '@/components/ui/cad-icon';
 import { suggestionsForPage } from '@/lib/assistant-prompt';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * Floating assistant available on every admin page. Asks /api/admin/copilot (mode "assist"),
  * which answers with the configured AI provider or, with no key, from an offline knowledge base.
  */
 export default function AssistantWidget() {
+  const tr = useTr();
   const pathname = usePathname() || '';
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -48,10 +50,10 @@ export default function AssistantWidget() {
         body: JSON.stringify({ mode: 'assist', messages: next.map(({ role, content }) => ({ role, content })), page: pathname }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'No pude responder ahora.');
+      if (!res.ok) throw new Error(data.error || tr('No pude responder ahora.'));
       setMessages([...next, { role: 'assistant', content: data.reply, links: data.links || [] }]);
     } catch (e) {
-      setMessages([...next, { role: 'assistant', content: e.message || 'No pude responder ahora. Inténtalo de nuevo.', links: [] }]);
+      setMessages([...next, { role: 'assistant', content: e.message || tr('No pude responder ahora. Inténtalo de nuevo.'), links: [] }]);
     }
     setBusy(false);
   };
@@ -62,25 +64,25 @@ export default function AssistantWidget() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Abrir el asistente"
+          aria-label={tr('Abrir el asistente')}
           className="fixed bottom-4 right-4 z-40 min-h-[56px] px-4 bg-cobalt hover:bg-cobalt-hover text-paper border border-line-strong shadow-hard font-body text-sm font-semibold inline-flex items-center gap-2"
         >
           <CadIcon name="MessageCircle" size={20} />
-          <span className="hidden sm:inline">Asistente</span>
+          <span className="hidden sm:inline">{tr('Asistente')}</span>
         </button>
       )}
       {open && (
         <section
           role="dialog"
-          aria-label="Asistente"
+          aria-label={tr('Asistente')}
           className="fixed z-50 bottom-0 right-0 sm:bottom-4 sm:right-4 w-full sm:w-[24rem] h-[min(34rem,100dvh)] bg-paper border-2 border-line-strong shadow-hard-lg flex flex-col"
         >
           <header className="flex items-center justify-between gap-3 px-4 py-3 bg-paper-muted border-b-2 border-line-strong">
             <div>
-              <h2 className="ps-h3">Asistente</h2>
-              <p className="ps-meta m-0">Pregúntame sobre esta página o la plataforma.</p>
+              <h2 className="ps-h3">{tr('Asistente')}</h2>
+              <p className="ps-meta m-0">{tr('Pregúntame sobre esta página o la plataforma.')}</p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Cerrar el asistente" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper">
+            <button type="button" onClick={() => setOpen(false)} aria-label={tr('Cerrar el asistente')} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper">
               <CadIcon name="X" size={18} />
             </button>
           </header>
@@ -88,11 +90,11 @@ export default function AssistantWidget() {
           <div ref={listRef} className="flex-1 overflow-y-auto p-4 space-y-3" aria-live="polite">
             {messages.length === 0 && (
               <div className="space-y-3">
-                <p className="font-body text-sm text-ink m-0">Hola. ¿En qué te ayudo?</p>
+                <p className="font-body text-sm text-ink m-0">{tr('Hola. ¿En qué te ayudo?')}</p>
                 <div className="flex flex-wrap gap-2">
                   {suggestionsForPage(pathname).map((s) => (
                     <button key={s} type="button" onClick={() => ask(s)} className="min-h-[44px] px-3 py-2 border border-line-control bg-paper-subtle hover:bg-cobalt-tint font-body text-sm text-ink text-left">
-                      {s}
+                      {tr(s)}
                     </button>
                   ))}
                 </div>
@@ -114,20 +116,20 @@ export default function AssistantWidget() {
                 </div>
               </div>
             ))}
-            {busy && <p className="ps-meta m-0" role="status">Pensando…</p>}
+            {busy && <p className="ps-meta m-0" role="status">{tr('Pensando…')}</p>}
           </div>
 
           <form onSubmit={(e) => { e.preventDefault(); ask(input); }} className="p-3 border-t border-line-control flex gap-2">
-            <label htmlFor="assistant-input" className="sr-only">Tu pregunta</label>
+            <label htmlFor="assistant-input" className="sr-only">{tr('Tu pregunta')}</label>
             <input
               id="assistant-input"
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Escribe tu pregunta"
+              placeholder={tr('Escribe tu pregunta')}
               className="flex-1 min-w-0 min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3"
             />
-            <button type="submit" disabled={busy || !input.trim()} aria-label="Enviar" className="min-h-[44px] min-w-[44px] bg-cobalt hover:bg-cobalt-hover text-paper border border-line-strong inline-flex items-center justify-center disabled:opacity-50">
+            <button type="submit" disabled={busy || !input.trim()} aria-label={tr('Enviar')} className="min-h-[44px] min-w-[44px] bg-cobalt hover:bg-cobalt-hover text-paper border border-line-strong inline-flex items-center justify-center disabled:opacity-50">
               <CadIcon name="Send" size={18} />
             </button>
           </form>

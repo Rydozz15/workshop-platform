@@ -15,7 +15,7 @@ import {
   Logo,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useLanguage } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 
 function stripThinkingTags(text) {
   if (!text) return '';
@@ -26,6 +26,7 @@ function stripThinkingTags(text) {
 }
 
 export default function SessionPage({ params }) {
+  const tr = useTr();
   const { code } = use(params);
   const { t } = useLanguage();
 
@@ -139,7 +140,7 @@ export default function SessionPage({ params }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'No se pudo iniciar la sesión.');
+        setError(data.error || tr('No se pudo iniciar la sesión.'));
         setJoining(false);
         return;
       }
@@ -159,7 +160,7 @@ export default function SessionPage({ params }) {
       setJoining(false);
       setPhase('chat');
     } catch {
-      setError('Error de conexión con el servidor.');
+      setError(tr('Error de conexión con el servidor.'));
       setJoining(false);
     }
   };
@@ -290,7 +291,7 @@ export default function SessionPage({ params }) {
           ...prev,
           {
             role: 'assistant',
-            content: 'Aviso del sistema: no se pudo obtener respuesta en este turno. Intenta nuevamente.',
+            content: tr('Aviso del sistema: no se pudo obtener respuesta en este turno. Intenta nuevamente.'),
           },
         ]);
         setStreaming(false);
@@ -351,7 +352,7 @@ export default function SessionPage({ params }) {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Error de red: conexión interrumpida.' },
+        { role: 'assistant', content: tr('Error de red: conexión interrumpida.') },
       ]);
     }
 
@@ -413,19 +414,19 @@ export default function SessionPage({ params }) {
       if (res.ok) {
         await finalizeSession(data.next_share_code);
       } else {
-        setSurveyError(data.error || 'No se pudo guardar la encuesta.');
+        setSurveyError(data.error || tr('No se pudo guardar la encuesta.'));
         setSubmittingSurvey(false);
       }
     } catch {
-      setSurveyError('Error de conexión al enviar tus respuestas.');
+      setSurveyError(tr('Error de conexión al enviar tus respuestas.'));
       setSubmittingSurvey(false);
     }
   };
 
   const phases = [
-    { id: 'chat', label: 'Conversación' },
-    ...(surveyConfig.length > 0 ? [{ id: 'survey', label: 'Preguntas finales' }] : []),
-    { id: 'done', label: 'Listo' },
+    { id: 'chat', label: tr('Conversación') },
+    ...(surveyConfig.length > 0 ? [{ id: 'survey', label: tr('Preguntas finales') }] : []),
+    { id: 'done', label: tr('Listo') },
   ];
   const phaseIndex = Math.max(0, phases.findIndex((p) => p.id === phase));
 
@@ -465,11 +466,11 @@ export default function SessionPage({ params }) {
           <Logo />
           <LanguageSelector compact={true} />
         </div>
-        <Stepper steps={phases} current={phaseIndex} label="Progreso de la actividad" />
+        <Stepper steps={phases} current={phaseIndex} label={tr('Progreso de la actividad')} />
 
         <BlueprintPanel
-          title="Cuéntanos cómo te fue"
-          subtitle={`${workshopName || 'Actividad'} · Las preguntas marcadas con * son obligatorias.`}
+          title={tr('Cuéntanos cómo te fue')}
+          subtitle={`${workshopName || tr('Actividad')} · ${tr('Las preguntas marcadas con * son obligatorias.')}`}
           headingLevel={2}
         >
           {surveyError && (
@@ -492,17 +493,17 @@ export default function SessionPage({ params }) {
                     {isRequired ? (
                       <span className="text-vermilion-ink ml-1" aria-hidden="true">*</span>
                     ) : (
-                      <span className="ml-2 font-normal text-ink-2 text-sm">(opcional)</span>
+                      <span className="ml-2 font-normal text-ink-2 text-sm">{tr('(opcional)')}</span>
                     )}
-                    {isRequired && <span className="sr-only"> (obligatoria)</span>}
+                    {isRequired && <span className="sr-only">{' '}{tr('(obligatoria)')}</span>}
                   </legend>
                   <div className="clear-both" />
 
                   {qType === 'likert' && (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-3 font-body text-sm text-ink-2">
-                        <span>{q.minLabel || '1 · Nada de acuerdo'}</span>
-                        <span className="text-right">{q.maxLabel || `${scaleValues[scaleValues.length - 1]} · Totalmente de acuerdo`}</span>
+                        <span>{q.minLabel || tr('1 · Nada de acuerdo')}</span>
+                        <span className="text-right">{q.maxLabel || `${scaleValues[scaleValues.length - 1]} · ${tr('Totalmente de acuerdo')}`}</span>
                       </div>
                       <div className="grid grid-cols-5 gap-2">
                         {scaleValues.map((num) => {
@@ -574,7 +575,7 @@ export default function SessionPage({ params }) {
                       aria-label={q.text}
                       value={surveyAnswers[q.id] || ''}
                       onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })}
-                      placeholder="Escribe aquí tu respuesta"
+                      placeholder={tr('Escribe aquí tu respuesta')}
                       className="w-full p-3 bg-paper border border-line-control font-body text-base text-ink"
                     />
                   )}
@@ -589,17 +590,14 @@ export default function SessionPage({ params }) {
                 className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2"
               >
                 <CadIcon name="ArrowLeft" size={14} />
-                <span>Volver a la conversación</span>
+                <span>{tr('Volver a la conversación')}</span>
               </button>
               <div className="flex flex-col items-end gap-1">
                 {unanswered.length > 0 && (
-                  <span className="font-body text-sm text-ink-2">
-                    Faltan {unanswered.length} {unanswered.length === 1 ? 'pregunta obligatoria' : 'preguntas obligatorias'}
+                  <span className="font-body text-sm text-ink-2">{tr('Faltan {n} pregunta(s) obligatoria(s)', { n: unanswered.length })}
                   </span>
                 )}
-                <SplitButton type="submit" variant="primary" iconBox="Check" loading={submittingSurvey} disabled={unanswered.length > 0}>
-                  Enviar y terminar
-                </SplitButton>
+                <SplitButton type="submit" variant="primary" iconBox="Check" loading={submittingSurvey} disabled={unanswered.length > 0}>{tr('Enviar y terminar')}</SplitButton>
               </div>
             </div>
           </form>
@@ -627,33 +625,31 @@ export default function SessionPage({ params }) {
         <div className="flex items-center gap-4 min-w-0">
           <Logo withWordmark={false} size={30} />
           <div className="min-w-0">
-            <h1 className="ps-h3 truncate">{workshopName || 'Actividad'}</h1>
+            <h1 className="ps-h3 truncate">{workshopName || tr('Actividad')}</h1>
             <p className="ps-meta m-0">
-              {name || 'Participante'}
-              {stepCount > 1 ? ` · Parte ${chainOrder} de ${stepCount}` : ''}
+              {name || tr('Participante')}
+              {stepCount > 1 ? ` · ${tr('Parte {n} de {total}', { n: chainOrder, total: stepCount })}` : ''}
             </p>
           </div>
         </div>
         <LanguageSelector compact={true} />
       </header>
 
-      <Stepper steps={phases} current={phaseIndex} label="Progreso de la actividad" />
+      <Stepper steps={phases} current={phaseIndex} label={tr('Progreso de la actividad')} />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <div className="lg:col-span-8">
-          <BlueprintPanel title="Conversación" subtitle="Escribe con tus palabras. El asistente te responderá." headingLevel={2}>
+          <BlueprintPanel title={tr('Conversación')} subtitle={tr('Escribe con tus palabras. El asistente te responderá.')} headingLevel={2}>
             <div
               role="log"
               aria-live="polite"
-              aria-label="Mensajes de la conversación"
+              aria-label={tr('Mensajes de la conversación')}
               className="min-h-[340px] max-h-[540px] overflow-y-auto p-3 sm:p-4 bg-paper-subtle border border-line-control space-y-4 mb-4"
             >
               {messages.length === 0 && (
                 <div className="p-6 bg-paper border border-dashed border-line-control text-center space-y-2">
-                  <h3 className="ps-h3">Empieza cuando quieras</h3>
-                  <p className="font-body text-sm text-ink-2 max-w-md mx-auto m-0">
-                    Lee el caso y escribe tu primer mensaje abajo.
-                  </p>
+                  <h3 className="ps-h3">{tr('Empieza cuando quieras')}</h3>
+                  <p className="font-body text-sm text-ink-2 max-w-md mx-auto m-0">{tr('Lee el caso y escribe tu primer mensaje abajo.')}</p>
                 </div>
               )}
 
@@ -666,13 +662,13 @@ export default function SessionPage({ params }) {
                   >
                     <p className="font-body text-sm font-semibold text-ink m-0 mb-1.5 flex items-center gap-1.5">
                       <CadIcon name={isUser ? 'User' : 'MessageCircle'} size={14} />
-                      {isUser ? 'Tú' : 'Asistente'}
+                      {isUser ? tr('Tú') : tr('Asistente')}
                     </p>
                     <div className="font-body text-base text-ink leading-relaxed prose max-w-none">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripThinkingTags(msg.content)}</ReactMarkdown>
                     </div>
                     {streaming && idx === messages.length - 1 && !isUser && (
-                      <p className="ps-meta m-0 mt-2" role="status">Escribiendo…</p>
+                      <p className="ps-meta m-0 mt-2" role="status">{tr('Escribiendo…')}</p>
                     )}
                   </article>
                 );
@@ -682,7 +678,7 @@ export default function SessionPage({ params }) {
 
             {previousFirstMessage && !suggestionDismissed && messages.length === 0 && (
               <div className="mb-4 p-3.5 bg-cobalt-tint border border-cobalt space-y-2.5">
-                <p className="font-body text-sm font-semibold text-cobalt m-0">Tu primer mensaje en la parte anterior fue:</p>
+                <p className="font-body text-sm font-semibold text-cobalt m-0">{tr('Tu primer mensaje en la parte anterior fue:')}</p>
                 <blockquote className="p-2.5 bg-paper border-l-2 border-cobalt font-body text-sm text-ink italic m-0">“{previousFirstMessage}”</blockquote>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -694,9 +690,7 @@ export default function SessionPage({ params }) {
                       setTimeout(() => inputRef.current?.focus(), 50);
                     }}
                     className="min-h-[44px] px-3 py-1.5 bg-cobalt text-paper border border-cobalt font-body text-sm font-medium"
-                  >
-                    Usar el mismo mensaje
-                  </button>
+                  >{tr('Usar el mismo mensaje')}</button>
                   <button
                     type="button"
                     onClick={() => {
@@ -704,16 +698,13 @@ export default function SessionPage({ params }) {
                       setTimeout(() => inputRef.current?.focus(), 50);
                     }}
                     className="min-h-[44px] px-3 py-1.5 bg-paper text-ink border border-line-control font-body text-sm"
-                  >
-                    Escribir uno nuevo
-                  </button>
+                  >{tr('Escribir uno nuevo')}</button>
                 </div>
               </div>
             )}
 
             <div className="space-y-2">
-              <label htmlFor="session-chat-input" className="font-body text-sm font-semibold text-ink block">
-                Tu mensaje <span className="font-normal text-ink-2">(Enter envía · Shift + Enter salto de línea)</span>
+              <label htmlFor="session-chat-input" className="font-body text-sm font-semibold text-ink block">{tr('Tu mensaje')}{' '}<span className="font-normal text-ink-2">{tr('(Enter envía · Shift + Enter salto de línea)')}</span>
               </label>
               <div className="flex flex-col sm:flex-row gap-2 items-stretch">
                 <textarea
@@ -723,50 +714,46 @@ export default function SessionPage({ params }) {
                   value={input}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Escribe aquí…"
+                  placeholder={tr('Escribe aquí…')}
                   disabled={streaming}
                   className="flex-1 p-3 bg-paper border border-line-control font-body text-base text-ink min-h-[56px]"
                 />
-                <SplitButton variant="primary" iconBox="Send" onClick={sendMessage} disabled={!input.trim() || streaming} loading={streaming} aria-label="Enviar mensaje">
-                  Enviar
-                </SplitButton>
+                <SplitButton variant="primary" iconBox="Send" onClick={sendMessage} disabled={!input.trim() || streaming} loading={streaming} aria-label={tr('Enviar mensaje')}>{tr('Enviar')}</SplitButton>
               </div>
             </div>
 
             <div className="mt-5 pt-4 border-t-2 border-line-strong flex flex-wrap items-center justify-between gap-3">
               <p className="font-body text-sm text-ink-2 m-0 max-w-md">
                 {studentTurnCount === 0
-                  ? 'Cuando termines de conversar, podrás pasar al siguiente paso.'
+                  ? tr('Cuando termines de conversar, podrás pasar al siguiente paso.')
                   : hasSurvey
-                  ? 'Cuando hayas terminado de conversar, pasa a las preguntas finales.'
-                  : 'Cuando hayas terminado de conversar, finaliza la actividad.'}
+                  ? tr('Cuando hayas terminado de conversar, pasa a las preguntas finales.')
+                  : tr('Cuando hayas terminado de conversar, finaliza la actividad.')}
               </p>
               <SplitButton
                 variant={studentTurnCount > 0 ? 'primary' : 'secondary'}
                 iconBox="ArrowRight"
                 onClick={() => setConfirmCompleteOpen(true)}
                 disabled={streaming}
-              >
-                Terminar conversación
-              </SplitButton>
+              >{tr('Terminar conversación')}</SplitButton>
             </div>
           </BlueprintPanel>
         </div>
 
-        <aside aria-label="Tu caso" className="hidden lg:block lg:col-span-4">
-          <BlueprintPanel title={version?.title || 'Tu caso'} subtitle="Puedes volver a leerlo cuando quieras." headingLevel={2}>
+        <aside aria-label={tr('Tu caso')} className="hidden lg:block lg:col-span-4">
+          <BlueprintPanel title={version?.title || tr('Tu caso')} subtitle={tr('Puedes volver a leerlo cuando quieras.')} headingLevel={2}>
             <div className="font-body text-sm text-ink leading-relaxed prose max-w-none max-h-[480px] overflow-y-auto pr-1">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || 'Conversación abierta.'}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || tr('Conversación abierta.')}</ReactMarkdown>
             </div>
           </BlueprintPanel>
         </aside>
       </div>
 
       <div className="lg:hidden">
-        <DrawerHandle onClick={() => setCaseOpenMobile(true)} label="Ver caso" icon="FileText" />
-        <Drawer open={caseOpenMobile} onClose={() => setCaseOpenMobile(false)} title={version?.title || 'Tu caso'} closeLabel="Cerrar caso">
+        <DrawerHandle onClick={() => setCaseOpenMobile(true)} label={tr('Ver caso')} icon="FileText" />
+        <Drawer open={caseOpenMobile} onClose={() => setCaseOpenMobile(false)} title={version?.title || tr('Tu caso')} closeLabel={tr('Cerrar caso')}>
           <div className="font-body text-base text-ink leading-relaxed prose max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || 'Conversación abierta.'}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || tr('Conversación abierta.')}</ReactMarkdown>
           </div>
         </Drawer>
       </div>
@@ -774,18 +761,13 @@ export default function SessionPage({ params }) {
       {confirmCompleteOpen && (
         <div className="fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-complete-title">
           <div className="max-w-md w-full">
-            <BlueprintPanel title="¿Terminar la conversación?" headingLevel={2}>
+            <BlueprintPanel title={tr('¿Terminar la conversación?')} headingLevel={2}>
               <p id="confirm-complete-title" className="font-body text-base text-ink leading-relaxed mb-4">
-                {hasSurvey ? 'Pasarás a unas preguntas finales' : 'Se cerrará la actividad'} y ya no podrás enviar más mensajes en esta parte.
-                {studentTurnCount > 0 ? ` Enviaste ${studentTurnCount} ${studentTurnCount === 1 ? 'mensaje' : 'mensajes'}.` : ' Todavía no has enviado ningún mensaje.'}
+                {hasSurvey ? tr('Pasarás a unas preguntas finales y ya no podrás enviar más mensajes en esta parte.') : tr('Se cerrará la actividad y ya no podrás enviar más mensajes en esta parte.')}{' '}{studentTurnCount > 0 ? tr('Enviaste {n} mensaje(s).', { n: studentTurnCount }) : tr('Todavía no has enviado ningún mensaje.')}
               </p>
               <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-line-control">
-                <button type="button" onClick={() => setConfirmCompleteOpen(false)} className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink">
-                  Seguir conversando
-                </button>
-                <SplitButton variant="primary" iconBox="Check" onClick={confirmAndAdvance}>
-                  Sí, terminar
-                </SplitButton>
+                <button type="button" onClick={() => setConfirmCompleteOpen(false)} className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink">{tr('Seguir conversando')}</button>
+                <SplitButton variant="primary" iconBox="Check" onClick={confirmAndAdvance}>{tr('Sí, terminar')}</SplitButton>
               </div>
             </BlueprintPanel>
           </div>

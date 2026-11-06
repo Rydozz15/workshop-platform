@@ -9,6 +9,7 @@ import {
   LanguageSelector,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 const GLOSSARY_ENTRIES = [
   {
@@ -157,6 +158,7 @@ const GLOSSARY_ENTRIES = [
 ];
 
 export default function GlosarioPage() {
+  const tr = useTr();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
@@ -191,27 +193,27 @@ export default function GlosarioPage() {
             className="min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2"
           >
             <CadIcon name="ArrowLeft" size={16} />
-            <span>Volver</span>
+            <span>{tr('Volver')}</span>
           </button>
           <LanguageSelector compact={true} />
         </div>
         <div>
-          <h1 className="ps-h1">Glosario</h1>
-          <p className="ps-lead mt-1">Qué significa cada término que ves en los resultados, en palabras simples.</p>
+          <h1 className="ps-h1">{tr('Glosario')}</h1>
+          <p className="ps-lead mt-1">{tr('Qué significa cada término que ves en los resultados, en palabras simples.')}</p>
         </div>
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_16rem] gap-4">
-        <Field label="Buscar un término" className="mb-0">
+        <Field label={tr('Buscar un término')} className="mb-0">
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ej.: valor p, tamaño del efecto, Holm"
+            placeholder={tr('Ej.: valor p, tamaño del efecto, Holm')}
             className="ps-field__control w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2"
           />
         </Field>
-        <Field label="Tema" className="mb-0">
+        <Field label={tr('Tema')} className="mb-0">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -224,7 +226,7 @@ export default function GlosarioPage() {
         </Field>
       </div>
 
-      {filtered.length === 0 && <p className="ps-lead" role="status">No encontramos ese término. Prueba con otra palabra.</p>}
+      {filtered.length === 0 && <p className="ps-lead" role="status">{tr('No encontramos ese término. Prueba con otra palabra.')}</p>}
 
       <div className="space-y-4">
         {filtered.map((item) => (
@@ -232,17 +234,17 @@ export default function GlosarioPage() {
             <BlueprintPanel title={item.title} subtitle={item.category} headingLevel={2}>
               <p className="font-body text-base text-ink leading-relaxed m-0">{item.plain}</p>
               <div className="mt-4">
-                <Disclosure title="Fórmula, criterios y referencia" summary={item.symbol}>
+                <Disclosure title={tr('Fórmula, criterios y referencia')} summary={item.symbol}>
                   <div className="space-y-3">
                     <div>
-                      <p className="ps-meta m-0 mb-1">Fórmula</p>
+                      <p className="ps-meta m-0 mb-1">{tr('Fórmula')}</p>
                       <code className="font-stat text-sm font-semibold text-ink break-words">{item.formula}</code>
                     </div>
                     <div>
-                      <p className="ps-meta m-0 mb-1">Cómo interpretarlo</p>
+                      <p className="ps-meta m-0 mb-1">{tr('Cómo interpretarlo')}</p>
                       <p className="font-body text-sm text-ink m-0">{item.thresholds}</p>
                     </div>
-                    <p className="ps-meta m-0">Referencia: {item.citation}</p>
+                    <p className="ps-meta m-0">{tr('Referencia:')}{' '}{item.citation}</p>
                   </div>
                 </Disclosure>
               </div>

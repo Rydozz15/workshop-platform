@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 const INPUT = 'w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
@@ -87,6 +88,7 @@ function move(list, from, to) {
 }
 
 export default function CampaignEditor({ campaignId = null }) {
+  const tr = useTr();
   const router = useRouter();
   const [loading, setLoading] = useState(Boolean(campaignId));
   const [meta, setMeta] = useState({ name: '', description: '', consent_required: false, consent_url: '' });
@@ -101,7 +103,7 @@ export default function CampaignEditor({ campaignId = null }) {
     if (!campaignId) return;
     let cancelled = false;
     fetch(`/api/admin/campaigns/${encodeURIComponent(campaignId)}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('No encontramos esta campaña.'))))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(tr('No encontramos esta campaña.')))))
       .then((detail) => {
         if (cancelled) return;
         const loaded = fromDetail(detail);
@@ -160,7 +162,7 @@ export default function CampaignEditor({ campaignId = null }) {
         body: JSON.stringify(toPayload(meta, steps)),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'No se pudo guardar la campaña.');
+      if (!res.ok) throw new Error(data.error || tr('No se pudo guardar la campaña.'));
       router.push('/admin/campaigns');
     } catch (e) {
       setError(e.message);
@@ -170,7 +172,7 @@ export default function CampaignEditor({ campaignId = null }) {
   };
 
   if (loading) {
-    return <p className="ps-lead" role="status">Cargando campaña…</p>;
+    return <p className="ps-lead" role="status">{tr('Cargando campaña…')}</p>;
   }
 
   return (
@@ -178,23 +180,21 @@ export default function CampaignEditor({ campaignId = null }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link href="/admin/campaigns" className="ps-meta inline-flex items-center gap-1 hover:text-cobalt">
-            <CadIcon name="ArrowLeft" size={14} /> Volver a campañas
-          </Link>
-          <h1 className="ps-h1 mt-1">{campaignId ? 'Editar campaña' : 'Crear campaña'}</h1>
+            <CadIcon name="ArrowLeft" size={14} />{' '}{tr('Volver a campañas')}</Link>
+          <h1 className="ps-h1 mt-1">{campaignId ? tr('Editar campaña') : tr('Crear campaña')}</h1>
           <p className="ps-lead mt-1">
             {campaignId
-              ? 'Cambia lo que necesites; los participantes que ya empezaron no se ven afectados.'
-              : 'Empieza con el nombre y arma los pasos que vivirán tus participantes.'}
+              ? tr('Cambia lo que necesites; los participantes que ya empezaron no se ven afectados.')
+              : tr('Empieza con el nombre y arma los pasos que vivirán tus participantes.')}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           {shareCode && (
             <a href={`/session/${shareCode}`} target="_blank" rel="noopener noreferrer" className={BTN}>
-              <CadIcon name="ExternalLink" size={16} /> Ver como participante
-            </a>
+              <CadIcon name="ExternalLink" size={16} />{' '}{tr('Ver como participante')}</a>
           )}
           <button type="button" onClick={save} disabled={saving} className={BTN_PRIMARY}>
-            <CadIcon name="Save" size={16} /> {saving ? 'Guardando…' : 'Guardar campaña'}
+            <CadIcon name="Save" size={16} /> {saving ? tr('Guardando…') : tr('Guardar campaña')}
           </button>
         </div>
       </div>
@@ -205,16 +205,16 @@ export default function CampaignEditor({ campaignId = null }) {
         </div>
       )}
 
-      <BlueprintPanel title="1. Datos de la campaña" subtitle="Lo básico para identificarla.">
-        <Field label="Nombre de la campaña" required>
+      <BlueprintPanel title={tr('1. Datos de la campaña')} subtitle={tr('Lo básico para identificarla.')}>
+        <Field label={tr('Nombre de la campaña')} required>
           <input
             className={INPUT}
             value={meta.name}
             onChange={(e) => setMeta({ ...meta, name: e.target.value })}
-            placeholder="Ej.: Tutoría con IA, primer semestre"
+            placeholder={tr('Ej.: Tutoría con IA, primer semestre')}
           />
         </Field>
-        <Field label="Descripción" help="Opcional. Solo la verás tú.">
+        <Field label={tr('Descripción')} help={tr('Opcional. Solo la verás tú.')}>
           <textarea
             className={INPUT}
             rows={2}
@@ -222,24 +222,22 @@ export default function CampaignEditor({ campaignId = null }) {
             onChange={(e) => setMeta({ ...meta, description: e.target.value })}
           />
         </Field>
-        <Disclosure title="Consentimiento informado" summary={meta.consent_required ? 'Se pedirá antes de comenzar' : 'No se pide'}>
+        <Disclosure title={tr('Consentimiento informado')} summary={meta.consent_required ? tr('Se pedirá antes de comenzar') : tr('No se pide')}>
           <label className="flex items-center gap-2 font-body text-sm text-ink min-h-[44px]">
             <input
               type="checkbox"
               checked={meta.consent_required}
               onChange={(e) => setMeta({ ...meta, consent_required: e.target.checked })}
               className="w-5 h-5"
-            />
-            Pedir que los participantes acepten antes de comenzar
-          </label>
+            />{tr('Pedir que los participantes acepten antes de comenzar')}</label>
           {meta.consent_required && (
-            <Field label="Enlace al documento de consentimiento" help="Los participantes podrán abrirlo desde la casilla de aceptación.">
+            <Field label={tr('Enlace al documento de consentimiento')} help={tr('Los participantes podrán abrirlo desde la casilla de aceptación.')}>
               <input
                 className={INPUT}
                 type="url"
                 value={meta.consent_url}
                 onChange={(e) => setMeta({ ...meta, consent_url: e.target.value })}
-                placeholder="https://…"
+                placeholder={tr('https://…')}
               />
             </Field>
           )}
@@ -247,9 +245,9 @@ export default function CampaignEditor({ campaignId = null }) {
       </BlueprintPanel>
 
       <BlueprintPanel
-        title="2. Pasos de la campaña"
-        subtitle="Los participantes los recorren en este orden."
-        headerSlot={<span className="ps-meta">{steps.length} {steps.length === 1 ? 'paso' : 'pasos'}</span>}
+        title={tr('2. Pasos de la campaña')}
+        subtitle={tr('Los participantes los recorren en este orden.')}
+        headerSlot={<span className="ps-meta">{tr('{n} paso(s)', { n: steps.length })}</span>}
       >
         <ol className="list-none m-0 p-0 space-y-3">
           {steps.map((step, index) => {
@@ -266,36 +264,31 @@ export default function CampaignEditor({ campaignId = null }) {
                   >
                     <span className="ps-step__dot">{index + 1}</span>
                     <span className="min-w-0">
-                      <span className="ps-h3 block truncate">{step.name || `Paso ${index + 1}`}</span>
+                      <span className="ps-h3 block truncate">{step.name || tr('Paso {n}', { n: index + 1 })}</span>
                       <span className="ps-meta block">
-                        {step.conditions.length} {step.conditions.length === 1 ? 'condición' : 'condiciones'} · {questionCount}{' '}
-                        {questionCount === 1 ? 'pregunta' : 'preguntas'}
+                        {tr('{c} condición(es) · {q} pregunta(s)', { c: step.conditions.length, q: questionCount })}
                       </span>
                     </span>
                     <CadIcon name={open ? 'ChevronUp' : 'ChevronDown'} size={18} className="ml-auto shrink-0" />
                   </button>
                   <div className="flex items-center">
-                    <button type="button" aria-label="Subir paso" disabled={index === 0} onClick={() => setSteps((l) => move(l, index, index - 1))} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper-muted disabled:opacity-40">
+                    <button type="button" aria-label={tr('Subir paso')} disabled={index === 0} onClick={() => setSteps((l) => move(l, index, index - 1))} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper-muted disabled:opacity-40">
                       <CadIcon name="ArrowUp" size={16} />
                     </button>
-                    <button type="button" aria-label="Bajar paso" disabled={index === steps.length - 1} onClick={() => setSteps((l) => move(l, index, index + 1))} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper-muted disabled:opacity-40">
+                    <button type="button" aria-label={tr('Bajar paso')} disabled={index === steps.length - 1} onClick={() => setSteps((l) => move(l, index, index + 1))} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper-muted disabled:opacity-40">
                       <CadIcon name="ArrowDown" size={16} />
                     </button>
-                    <button type="button" aria-label="Duplicar paso" onClick={() => duplicateStep(index)} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper-muted">
+                    <button type="button" aria-label={tr('Duplicar paso')} onClick={() => duplicateStep(index)} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center hover:bg-paper-muted">
                       <CadIcon name="Copy" size={16} />
                     </button>
                     {steps.length > 1 &&
                       (confirmDeleteKey === step.key ? (
                         <span className="inline-flex items-center gap-1">
-                          <button type="button" onClick={() => removeStep(step.key)} className="min-h-[44px] px-2 bg-vermilion-tint border border-vermilion-ink text-vermilion-ink font-body text-sm font-semibold">
-                            Sí, eliminar
-                          </button>
-                          <button type="button" onClick={() => setConfirmDeleteKey(null)} className="min-h-[44px] px-2 font-body text-sm hover:bg-paper-muted">
-                            Cancelar
-                          </button>
+                          <button type="button" onClick={() => removeStep(step.key)} className="min-h-[44px] px-2 bg-vermilion-tint border border-vermilion-ink text-vermilion-ink font-body text-sm font-semibold">{tr('Sí, eliminar')}</button>
+                          <button type="button" onClick={() => setConfirmDeleteKey(null)} className="min-h-[44px] px-2 font-body text-sm hover:bg-paper-muted">{tr('Cancelar')}</button>
                         </span>
                       ) : (
-                        <button type="button" aria-label="Eliminar paso" onClick={() => setConfirmDeleteKey(step.key)} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-vermilion-ink hover:bg-paper-muted">
+                        <button type="button" aria-label={tr('Eliminar paso')} onClick={() => setConfirmDeleteKey(step.key)} className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-vermilion-ink hover:bg-paper-muted">
                           <CadIcon name="Trash2" size={16} />
                         </button>
                       ))}
@@ -304,95 +297,86 @@ export default function CampaignEditor({ campaignId = null }) {
 
                 {open && (
                   <div className="p-4 space-y-5">
-                    <Field label="Nombre del paso" required>
+                    <Field label={tr('Nombre del paso')} required>
                       <input className={INPUT} value={step.name} onChange={(e) => patchStep(step.key, { name: e.target.value })} />
                     </Field>
-                    <Field label="Mensaje de bienvenida" help="Opcional. Se muestra antes de empezar este paso.">
+                    <Field label={tr('Mensaje de bienvenida')} help={tr('Opcional. Se muestra antes de empezar este paso.')}>
                       <textarea className={INPUT} rows={2} value={step.onboarding_instructions} onChange={(e) => patchStep(step.key, { onboarding_instructions: e.target.value })} />
                     </Field>
 
-                    <section aria-label="Condiciones" className="space-y-3">
+                    <section aria-label={tr('Condiciones')} className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <h3 className="ps-h3">Condiciones</h3>
-                        <InfoTip label="Qué es una condición">
-                          Una condición es una versión de la experiencia: un caso y, si quieres, instrucciones propias para el asistente. Con dos o más, cada participante recibe una al azar y se reparten de forma equilibrada.
-                        </InfoTip>
+                        <h3 className="ps-h3">{tr('Condiciones')}</h3>
+                        <InfoTip label={tr('Qué es una condición')}>{tr('Una condición es una versión de la experiencia: un caso y, si quieres, instrucciones propias para el asistente. Con dos o más, cada participante recibe una al azar y se reparten de forma equilibrada.')}</InfoTip>
                       </div>
                       {step.conditions.length > 1 && (
-                        <p className="ps-lead">Cada participante verá solo una de estas condiciones, asignada al azar y equilibrada.</p>
+                        <p className="ps-lead">{tr('Cada participante verá solo una de estas condiciones, asignada al azar y equilibrada.')}</p>
                       )}
                       {step.conditions.map((cond, ci) => (
                         <div key={cond.key} className={`border border-line-control border-l-4 p-3 space-y-3 ps-cond-${(ci % 6) + 1}`} style={{ borderLeftColor: 'var(--cond)' }}>
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1">
-                              <Field label={`Condición ${ci + 1}`} required>
-                                <input className={INPUT} value={cond.title} placeholder="Ej.: Asistente socrático" onChange={(e) => patchCondition(step.key, cond.key, { title: e.target.value })} />
+                              <Field label={tr('Condición {n}', { n: ci + 1 })} required>
+                                <input className={INPUT} value={cond.title} placeholder={tr('Ej.: Asistente socrático')} onChange={(e) => patchCondition(step.key, cond.key, { title: e.target.value })} />
                               </Field>
                             </div>
                             {step.conditions.length > 1 && (
-                              <button type="button" aria-label={`Quitar condición ${ci + 1}`} onClick={() => patchStep(step.key, { conditions: step.conditions.filter((c) => c.key !== cond.key) })} className="min-h-[44px] min-w-[44px] mt-6 inline-flex items-center justify-center text-vermilion-ink hover:bg-paper-subtle">
+                              <button type="button" aria-label={tr('Quitar condición {n}', { n: ci + 1 })} onClick={() => patchStep(step.key, { conditions: step.conditions.filter((c) => c.key !== cond.key) })} className="min-h-[44px] min-w-[44px] mt-6 inline-flex items-center justify-center text-vermilion-ink hover:bg-paper-subtle">
                                 <CadIcon name="Trash2" size={16} />
                               </button>
                             )}
                           </div>
-                          <Field label="Caso o escenario que verá el participante" required help="Admite formato Markdown.">
+                          <Field label={tr('Caso o escenario que verá el participante')} required help={tr('Admite formato Markdown.')}>
                             <textarea className={INPUT} rows={5} value={cond.case_content} onChange={(e) => patchCondition(step.key, cond.key, { case_content: e.target.value })} />
                           </Field>
-                          <Disclosure title="Instrucciones propias del asistente" summary={cond.system_prompt.trim() ? 'Definidas' : 'Opcional: si no las defines se usan las del paso'}>
-                            <textarea className={INPUT} rows={6} value={cond.system_prompt} placeholder="Cómo debe comportarse el asistente en esta condición" onChange={(e) => patchCondition(step.key, cond.key, { system_prompt: e.target.value })} />
+                          <Disclosure title={tr('Instrucciones propias del asistente')} summary={cond.system_prompt.trim() ? tr('Definidas') : tr('Opcional: si no las defines se usan las del paso')}>
+                            <textarea className={INPUT} rows={6} value={cond.system_prompt} placeholder={tr('Cómo debe comportarse el asistente en esta condición')} onChange={(e) => patchCondition(step.key, cond.key, { system_prompt: e.target.value })} />
                           </Disclosure>
                         </div>
                       ))}
                       <button type="button" onClick={() => patchStep(step.key, { conditions: [...step.conditions, newCondition()] })} className={BTN}>
-                        <CadIcon name="Plus" size={16} /> Agregar condición
-                      </button>
+                        <CadIcon name="Plus" size={16} />{' '}{tr('Agregar condición')}</button>
                     </section>
 
-                    <Disclosure title="Instrucciones del asistente para todo el paso" summary="Se usan en las condiciones que no tienen instrucciones propias">
+                    <Disclosure title={tr('Instrucciones del asistente para todo el paso')} summary={tr('Se usan en las condiciones que no tienen instrucciones propias')}>
                       <textarea className={INPUT} rows={6} value={step.system_prompt} onChange={(e) => patchStep(step.key, { system_prompt: e.target.value })} />
                     </Disclosure>
 
-                    <Disclosure title="Preguntas al terminar" summary={questionCount ? `${questionCount} ${questionCount === 1 ? 'pregunta' : 'preguntas'}` : 'Sin preguntas'}>
+                    <Disclosure title={tr('Preguntas al terminar')} summary={questionCount ? tr('{q} pregunta(s)', { q: questionCount }) : tr('Sin preguntas')}>
                       <div className="space-y-3">
                         {step.questions.map((q, qi) => (
                           <div key={q.key} className="border border-line-control p-3 space-y-2">
-                            <Field label={`Pregunta ${qi + 1}`}>
+                            <Field label={tr('Pregunta {n}', { n: qi + 1 })}>
                               <input className={INPUT} value={q.text} onChange={(e) => patchQuestion(step.key, q.key, { text: e.target.value })} />
                             </Field>
                             <div className="flex flex-wrap items-center gap-4">
-                              <label className="flex items-center gap-2 font-body text-sm">
-                                Tipo
-                                <select className={INPUT + ' w-auto'} value={q.type} onChange={(e) => patchQuestion(step.key, q.key, { type: e.target.value })}>
-                                  <option value="likert">Escala de 1 a 5</option>
-                                  <option value="text">Respuesta abierta</option>
+                              <label className="flex items-center gap-2 font-body text-sm">{tr('Tipo')}<select className={INPUT + ' w-auto'} value={q.type} onChange={(e) => patchQuestion(step.key, q.key, { type: e.target.value })}>
+                                  <option value="likert">{tr('Escala de 1 a 5')}</option>
+                                  <option value="text">{tr('Respuesta abierta')}</option>
                                 </select>
                               </label>
                               <label className="flex items-center gap-2 font-body text-sm min-h-[44px]">
-                                <input type="checkbox" className="w-5 h-5" checked={q.required} onChange={(e) => patchQuestion(step.key, q.key, { required: e.target.checked })} />
-                                Obligatoria
-                              </label>
+                                <input type="checkbox" className="w-5 h-5" checked={q.required} onChange={(e) => patchQuestion(step.key, q.key, { required: e.target.checked })} />{tr('Obligatoria')}</label>
                               <button type="button" onClick={() => patchStep(step.key, { questions: step.questions.filter((x) => x.key !== q.key) })} className={BTN + ' text-vermilion-ink ml-auto'}>
-                                <CadIcon name="Trash2" size={16} /> Quitar
-                              </button>
+                                <CadIcon name="Trash2" size={16} />{' '}{tr('Quitar')}</button>
                             </div>
                           </div>
                         ))}
                         <button type="button" onClick={() => patchStep(step.key, { questions: [...step.questions, newQuestion()] })} className={BTN}>
-                          <CadIcon name="Plus" size={16} /> Agregar pregunta
-                        </button>
+                          <CadIcon name="Plus" size={16} />{' '}{tr('Agregar pregunta')}</button>
                       </div>
                     </Disclosure>
 
-                    <Disclosure title="Modelo de IA" summary={`${step.ai_provider}${step.openrouter_model ? ` · ${step.openrouter_model}` : ' · modelo por defecto'}`}>
+                    <Disclosure title={tr('Modelo de IA')} summary={`${step.ai_provider} · ${step.openrouter_model || tr('modelo por defecto')}`}>
                       <div className="grid sm:grid-cols-2 gap-3">
-                        <Field label="Proveedor">
+                        <Field label={tr('Proveedor')}>
                           <select className={INPUT} value={step.ai_provider} onChange={(e) => patchStep(step.key, { ai_provider: e.target.value })}>
                             {PROVIDERS.map((p) => (
                               <option key={p} value={p}>{p}</option>
                             ))}
                           </select>
                         </Field>
-                        <Field label="Modelo" help="Vacío = el modelo por defecto de Ajustes.">
+                        <Field label={tr('Modelo')} help={tr('Vacío = el modelo por defecto de Ajustes.')}>
                           <input className={INPUT} value={step.openrouter_model} onChange={(e) => patchStep(step.key, { openrouter_model: e.target.value })} />
                         </Field>
                       </div>
@@ -401,7 +385,7 @@ export default function CampaignEditor({ campaignId = null }) {
                     {index > 0 && step.conditions.length > 1 && (
                       <label className="flex items-start gap-2 font-body text-sm text-ink min-h-[44px]">
                         <input type="checkbox" className="w-5 h-5 mt-0.5" checked={step.maintain_version} onChange={(e) => patchStep(step.key, { maintain_version: e.target.checked })} />
-                        <span>Mantener la condición que cada participante tuvo en el paso anterior, cuando exista en este paso</span>
+                        <span>{tr('Mantener la condición que cada participante tuvo en el paso anterior, cuando exista en este paso')}</span>
                       </label>
                     )}
                   </div>
@@ -412,15 +396,14 @@ export default function CampaignEditor({ campaignId = null }) {
         </ol>
         <div className="mt-4">
           <button type="button" onClick={addStep} className={BTN}>
-            <CadIcon name="Plus" size={16} /> Agregar paso
-          </button>
+            <CadIcon name="Plus" size={16} />{' '}{tr('Agregar paso')}</button>
         </div>
       </BlueprintPanel>
 
       <div className="flex flex-wrap justify-end gap-2">
-        <Link href="/admin/campaigns" className={BTN}>Cancelar</Link>
+        <Link href="/admin/campaigns" className={BTN}>{tr('Cancelar')}</Link>
         <button type="button" onClick={save} disabled={saving} className={BTN_PRIMARY}>
-          <CadIcon name="Save" size={16} /> {saving ? 'Guardando…' : 'Guardar campaña'}
+          <CadIcon name="Save" size={16} /> {saving ? tr('Guardando…') : tr('Guardar campaña')}
         </button>
       </div>
     </div>

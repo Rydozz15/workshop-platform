@@ -8,6 +8,7 @@ import Stepper from './stepper';
 import LanguageSelector from './language-selector';
 import Logo from '../brand';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 const PHASES = [
   { id: 'start', label: 'Antes de empezar' },
@@ -37,6 +38,7 @@ export function OnboardingStepper({
   error = '',
   onStartSession,
 }) {
+  const tr = useTr();
   const consentKey = `ps_consent:${consentUrl || 'default'}`;
   const [phase, setPhase] = useState(0);
   const [participantName, setParticipantName] = useState(initialName || '');
@@ -54,11 +56,11 @@ export function OnboardingStepper({
   const goNext = () => {
     let ok = true;
     if (!participantName.trim()) {
-      setNameError('Escribe tu nombre o un seudónimo para continuar.');
+      setNameError(tr('Escribe tu nombre o un seudónimo para continuar.'));
       ok = false;
     }
     if (consentRequired && !consented) {
-      setConsentError('Para participar necesitas aceptar el consentimiento.');
+      setConsentError(tr('Para participar necesitas aceptar el consentimiento.'));
       ok = false;
     }
     if (ok) setPhase(1);
@@ -83,7 +85,7 @@ export function OnboardingStepper({
     });
   };
 
-  const title = workshopName || `Actividad ${code}`;
+  const title = workshopName || tr('Actividad {code}', { code });
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 md:py-10">
@@ -94,10 +96,10 @@ export function OnboardingStepper({
 
       <BlueprintPanel
         title={title}
-        subtitle={stepCount > 1 ? `Parte ${chainOrder} de ${stepCount}` : 'Te tomará unos minutos.'}
+        subtitle={stepCount > 1 ? tr('Parte {n} de {total}', { n: chainOrder, total: stepCount }) : tr('Te tomará unos minutos.')}
         headingLevel={2}
       >
-        <Stepper steps={PHASES} current={phase} label="Pasos para comenzar" className="mb-6" />
+        <Stepper steps={PHASES.map((p) => ({ ...p, label: tr(p.label) }))} current={phase} label={tr('Pasos para comenzar')} className="mb-6" />
 
         {error && (
           <div role="alert" className="mb-5 p-3 border-2 border-vermilion-ink bg-vermilion-tint font-body text-sm text-vermilion-ink flex items-center gap-2">
@@ -115,10 +117,10 @@ export function OnboardingStepper({
             )}
 
             <Field
-              label="Tu nombre o seudónimo"
+              label={tr('Tu nombre o seudónimo')}
               required={true}
               error={nameError}
-              help="Puedes usar un seudónimo. Lo usamos para unir tus respuestas si la actividad tiene más de una parte."
+              help={tr('Puedes usar un seudónimo. Lo usamos para unir tus respuestas si la actividad tiene más de una parte.')}
             >
               <input
                 type="text"
@@ -145,14 +147,10 @@ export function OnboardingStepper({
                     }}
                     className="w-5 h-5 mt-0.5 accent-cobalt shrink-0"
                   />
-                  <span>
-                    He leído y acepto el consentimiento informado
-                    {consentUrl && (
+                  <span>{tr('He leído y acepto el consentimiento informado')}{consentUrl && (
                       <>
                         {' ('}
-                        <a href={consentUrl} target="_blank" rel="noopener noreferrer" className="text-cobalt font-semibold underline">
-                          leer documento
-                        </a>
+                        <a href={consentUrl} target="_blank" rel="noopener noreferrer" className="text-cobalt font-semibold underline">{tr('leer documento')}</a>
                         {')'}
                       </>
                     )}
@@ -164,9 +162,7 @@ export function OnboardingStepper({
             )}
 
             <div className="flex justify-end pt-2 border-t border-line-control">
-              <SplitButton variant="primary" iconBox="ArrowRight" onClick={goNext} type="button">
-                Continuar
-              </SplitButton>
+              <SplitButton variant="primary" iconBox="ArrowRight" onClick={goNext} type="button">{tr('Continuar')}</SplitButton>
             </div>
           </div>
         )}
@@ -182,15 +178,15 @@ export function OnboardingStepper({
                 <li key={head} className="flex gap-3 p-3 bg-paper-subtle border border-line-control">
                   <span className="ps-step__dot shrink-0">{i + 1}</span>
                   <div>
-                    <p className="font-body text-base font-semibold text-ink m-0 flex items-center gap-2"><CadIcon name={icon} size={16} />{head}</p>
-                    <p className="font-body text-sm text-ink-2 m-0 mt-0.5">{body}</p>
+                    <p className="font-body text-base font-semibold text-ink m-0 flex items-center gap-2"><CadIcon name={icon} size={16} />{tr(head)}</p>
+                    <p className="font-body text-sm text-ink-2 m-0 mt-0.5">{tr(body)}</p>
                   </div>
                 </li>
               ))}
             </ol>
 
             <fieldset className="m-0 p-0 border-0">
-              <legend className="font-body text-sm font-semibold text-ink mb-2">¿Cuánto has usado asistentes de IA antes? (opcional)</legend>
+              <legend className="font-body text-sm font-semibold text-ink mb-2">{tr('¿Cuánto has usado asistentes de IA antes? (opcional)')}</legend>
               <div className="grid grid-cols-3 gap-2">
                 {EXPERIENCE.map((opt) => (
                   <label
@@ -200,15 +196,13 @@ export function OnboardingStepper({
                     }`}
                   >
                     <input type="radio" name="prior_experience" value={opt.id} checked={experience === opt.id} onChange={(e) => setExperience(e.target.value)} className="sr-only" />
-                    {opt.label}
+                    {tr(opt.label)}
                   </label>
                 ))}
               </div>
             </fieldset>
 
-            <p className="font-body text-sm text-ink-2 m-0 border-l-2 border-cobalt pl-3">
-              Guardamos el texto de la conversación, los tiempos y tus respuestas. No escribas datos personales de otras personas.
-            </p>
+            <p className="font-body text-sm text-ink-2 m-0 border-l-2 border-cobalt pl-3">{tr('Guardamos el texto de la conversación, los tiempos y tus respuestas. No escribas datos personales de otras personas.')}</p>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-line-control">
               <button
@@ -217,11 +211,9 @@ export function OnboardingStepper({
                 className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2"
               >
                 <CadIcon name="ArrowLeft" size={14} />
-                <span>Volver</span>
+                <span>{tr('Volver')}</span>
               </button>
-              <SplitButton type="submit" variant="primary" iconBox="Play" loading={joining}>
-                Comenzar
-              </SplitButton>
+              <SplitButton type="submit" variant="primary" iconBox="Play" loading={joining}>{tr('Comenzar')}</SplitButton>
             </div>
           </form>
         )}

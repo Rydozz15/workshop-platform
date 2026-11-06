@@ -2,13 +2,15 @@
 
 import React, { useState, useRef, useEffect, useId } from 'react';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * InfoTip - small "i" button that explains a term or metric in plain words.
  * Opens on hover, keyboard focus or tap; Escape closes it. Keep `children` to 1-2 sentences:
  * what it is and why the user should care.
  */
-export function InfoTip({ children, label = 'Más información', side = 'bottom', className = '' }) {
+export function InfoTip({ children, label, side = 'bottom', className = '' }) {
+  const tr = useTr();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const tipId = useId();
@@ -38,7 +40,7 @@ export function InfoTip({ children, label = 'Más información', side = 'bottom'
     >
       <button
         type="button"
-        aria-label={label}
+        aria-label={label || tr('Más información')}
         aria-expanded={open}
         aria-describedby={open ? tipId : undefined}
         onClick={() => setOpen((v) => !v)}

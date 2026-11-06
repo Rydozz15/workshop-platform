@@ -1,19 +1,20 @@
 'use client';
 
 import React from 'react';
-import { useLanguage } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 import CadIcon from '@/components/ui/cad-icon';
 
 export default function LanguageSelector({ className = '', compact = false }) {
+  const tr = useTr();
   const { locale, setLocale, locales } = useLanguage();
 
   return (
     <div
       role="group"
-      aria-label="Seleccionar idioma de la plataforma / Select platform language"
+      aria-label={tr('Seleccionar idioma de la plataforma / Select platform language')}
       className={`inline-flex items-center border border-line-control bg-paper-subtle p-0.5 ${className}`}
     >
-      <span className="sr-only">Idioma / Language:</span>
+      <span className="sr-only">{tr('Idioma / Language:')}</span>
       <span className="hidden sm:inline-flex items-center pl-2 pr-1 text-ink-2" aria-hidden="true">
         <CadIcon name="Globe" size={13} />
       </span>

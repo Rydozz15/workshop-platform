@@ -2,13 +2,15 @@
 
 import React, { useEffect, useRef, useId } from 'react';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * Drawer - panel that slides over the page from the right (or left). Closes with Escape, the close
  * button or a click on the backdrop; focus moves in on open and returns to the opener on close.
  * DrawerHandle is the edge tab that opens it (useful on phones, e.g. "Ver caso").
  */
-export function Drawer({ open, onClose, title, side = 'right', children, closeLabel = 'Cerrar' }) {
+export function Drawer({ open, onClose, title, side = 'right', children, closeLabel }) {
+  const tr = useTr();
   const panelRef = useRef(null);
   const openerRef = useRef(null);
   const titleId = useId();
@@ -52,7 +54,7 @@ export function Drawer({ open, onClose, title, side = 'right', children, closeLa
           <button
             type="button"
             onClick={onClose}
-            aria-label={closeLabel}
+            aria-label={closeLabel || tr('Cerrar')}
             className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-ink hover:bg-paper"
           >
             <CadIcon name="X" size={18} />

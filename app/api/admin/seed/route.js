@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import * as db from '@/lib/db';
-import { seedBenchmarkData, getBenchmarkSummary } from '@/lib/seeds/isdde-benchmark';
+import { seedBenchmarkData, getBenchmarkSummary, isBenchmarkLoaded, removeBenchmarkData } from '@/lib/seeds/isdde-benchmark';
 
 export async function GET() {
   try {
     const summary = getBenchmarkSummary();
     return NextResponse.json({
       provider: process.env.DB_PROVIDER || 'memory',
+      loaded: await isBenchmarkLoaded(db),
       summary,
     });
   } catch (error) {
@@ -44,6 +45,28 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Seed benchmark error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+/** Leaves demo mode: removes only the sample data. */
+export async function DELETE(request) {
+  try {
+    let body = {};
+    try {
+      body = await request.json();
+    } catch {
+      body = {};
+    }
+    if (process.env.DB_PROVIDER === 'supabase' && !body.confirmRemoteWrite) {
+      return NextResponse.json(
+        { error: 'Por seguridad, el modo demo no modifica una base de datos remota. Usa el modo local (DB_PROVIDER=memory).' },
+        { status: 403 }
+      );
+    }
+    const removed = await removeBenchmarkData(db);
+    return NextResponse.json({ success: true, removed });
+  } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

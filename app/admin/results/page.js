@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { extractMeasures, analyzeMeasure } from '@/lib/quick-analysis';
-import { useLanguage } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 
 const SELECT = 'w-full min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
@@ -32,6 +32,7 @@ function download(content, filename, type) {
 const fmt = (n, d = 2) => (Number.isFinite(n) ? n.toFixed(d).replace('.', ',') : '–');
 
 function ResultsInner() {
+  const tr = useTr();
   const { t } = useLanguage();
   const params = useSearchParams();
   const [campaigns, setCampaigns] = useState(null);
@@ -89,7 +90,7 @@ function ResultsInner() {
       const q = new URLSearchParams({ campaignId, format: 'csv', level: dataset });
       if (stepId) q.set('workshopId', stepId);
       const res = await fetch(`/api/admin/export?${q}`);
-      if (!res.ok) throw new Error('No pudimos preparar el archivo.');
+      if (!res.ok) throw new Error(tr('No pudimos preparar el archivo.'));
       const stamp = new Date().toISOString().slice(0, 10);
       const name = (detail?.name || 'campana').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       download(await res.text(), `${name}_${ds.file}_${stamp}.csv`, 'text/csv;charset=utf-8');
@@ -97,7 +98,7 @@ function ResultsInner() {
         const dict = await fetch('/api/admin/export?format=codebook');
         if (dict.ok) download(await dict.text(), `${name}_diccionario-de-variables.md`, 'text/markdown;charset=utf-8');
       }
-      setNotice({ ok: true, text: withDictionary ? 'Listo: descargamos los datos y el diccionario de variables.' : 'Listo: descargamos los datos.' });
+      setNotice({ ok: true, text: withDictionary ? tr('Listo: descargamos los datos y el diccionario de variables.') : tr('Listo: descargamos los datos.') });
     } catch (e) {
       setNotice({ ok: false, text: e.message });
     }
@@ -106,8 +107,8 @@ function ResultsInner() {
 
   if (campaigns && campaigns.length === 0) {
     return (
-      <BlueprintPanel title="Aún no hay resultados" subtitle="Cuando tengas una campaña con participantes, sus datos aparecerán aquí.">
-        <Link href="/admin/campaigns/new" className={BTN_PRIMARY}><CadIcon name="Plus" size={16} /> Crear campaña</Link>
+      <BlueprintPanel title={tr('Aún no hay resultados')} subtitle={tr('Cuando tengas una campaña con participantes, sus datos aparecerán aquí.')}>
+        <Link href="/admin/campaigns/new" className={BTN_PRIMARY}><CadIcon name="Plus" size={16} />{' '}{tr('Crear campaña')}</Link>
       </BlueprintPanel>
     );
   }
@@ -117,11 +118,11 @@ function ResultsInner() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="ps-h1">{t('results.title', 'Resultados')}</h1>
-          <p className="ps-lead mt-1">Descarga los datos, revisa qué pasó y mira una primera lectura.</p>
+          <p className="ps-lead mt-1">{tr('Descarga los datos, revisa qué pasó y mira una primera lectura.')}</p>
         </div>
         {campaigns && campaigns.length > 1 && (
           <label className="flex items-center gap-2 font-body text-sm text-ink">
-            <span>Campaña</span>
+            <span>{tr('Campaña')}</span>
             <select value={campaignId} onChange={(e) => setCampaignId(e.target.value)} className={SELECT + ' w-auto max-w-[18rem]'}>
               {campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -129,46 +130,44 @@ function ResultsInner() {
         )}
       </div>
 
-      <BlueprintPanel title="Descargar datos" subtitle="Archivos CSV que se abren en Excel, R, Python o SPSS.">
+      <BlueprintPanel title={tr('Descargar datos')} subtitle={tr('Archivos CSV que se abren en Excel, R, Python o SPSS.')}>
         <div className="grid md:grid-cols-2 gap-x-6">
-          <Field label="¿Qué quieres descargar?" help={DATASETS.find((d) => d.id === dataset).hint}>
+          <Field label={tr('¿Qué quieres descargar?')} help={tr(DATASETS.find((d) => d.id === dataset).hint)}>
             <select className={SELECT} value={dataset} onChange={(e) => setDataset(e.target.value)}>
-              {DATASETS.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}
+              {DATASETS.map((d) => <option key={d.id} value={d.id}>{tr(d.label)}</option>)}
             </select>
           </Field>
-          <Field label="¿De qué parte?">
+          <Field label={tr('¿De qué parte?')}>
             <select className={SELECT} value={stepId} onChange={(e) => setStepId(e.target.value)} disabled={!detail}>
-              <option value="">Toda la campaña</option>
-              {detail?.steps.map((s) => <option key={s.id} value={s.id}>Solo “{s.name}”</option>)}
+              <option value="">{tr('Toda la campaña')}</option>
+              {detail?.steps.map((s) => <option key={s.id} value={s.id}>{tr('Solo “{name}”', { name: s.name })}</option>)}
             </select>
           </Field>
         </div>
         <label className="flex items-center gap-2 font-body text-sm text-ink min-h-[44px]">
-          <input type="checkbox" className="w-5 h-5" checked={withDictionary} onChange={(e) => setWithDictionary(e.target.checked)} />
-          Incluir el diccionario de variables
-          <InfoTip label="Qué es el diccionario de variables">Un documento que explica qué significa cada columna del archivo y qué valores puede tener.</InfoTip>
+          <input type="checkbox" className="w-5 h-5" checked={withDictionary} onChange={(e) => setWithDictionary(e.target.checked)} />{tr('Incluir el diccionario de variables')}<InfoTip label={tr('Qué es el diccionario de variables')}>{tr('Un documento que explica qué significa cada columna del archivo y qué valores puede tener.')}</InfoTip>
         </label>
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <button type="button" onClick={runDownload} disabled={busy || !campaignId || sessionCount === 0} className={BTN_PRIMARY}>
             <CadIcon name="Download" size={16} /> {busy ? 'Preparando…' : 'Descargar'}
           </button>
-          {analytics && sessionCount === 0 && <span className="ps-meta">Todavía no hay sesiones para descargar.</span>}
+          {analytics && sessionCount === 0 && <span className="ps-meta">{tr('Todavía no hay sesiones para descargar.')}</span>}
           {notice && <span role="status" className={`font-body text-sm ${notice.ok ? 'text-emerald' : 'text-vermilion-ink'}`}>{notice.text}</span>}
         </div>
       </BlueprintPanel>
 
       <BlueprintPanel
-        title="Primera lectura"
-        subtitle="Compara las condiciones en una medida a la vez."
-        headerSlot={<Link href="/admin/analytics" className="font-body text-sm font-semibold text-cobalt underline">Abrir análisis completo</Link>}
+        title={tr('Primera lectura')}
+        subtitle={tr('Compara las condiciones en una medida a la vez.')}
+        headerSlot={<Link href="/admin/analytics" className="font-body text-sm font-semibold text-cobalt underline">{tr('Abrir análisis completo')}</Link>}
       >
-        {!analytics && <p className="ps-lead" role="status">Cargando…</p>}
-        {analytics && measures.length === 0 && <p className="ps-lead">Cuando haya respuestas de la encuesta o conversaciones, podrás compararlas aquí.</p>}
+        {!analytics && <p className="ps-lead" role="status">{tr('Cargando…')}</p>}
+        {analytics && measures.length === 0 && <p className="ps-lead">{tr('Cuando haya respuestas de la encuesta o conversaciones, podrás compararlas aquí.')}</p>}
         {measure && result && (
           <div className="space-y-4">
-            <Field label="¿Qué quieres comparar?">
+            <Field label={tr('¿Qué quieres comparar?')}>
               <select className={SELECT} value={measure.id} onChange={(e) => setMeasureId(e.target.value)}>
-                {measures.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+                {measures.map((m) => <option key={m.id} value={m.id}>{m.id === 'messages' ? tr(m.label) : m.label}</option>)}
               </select>
             </Field>
 
@@ -180,11 +179,11 @@ function ResultsInner() {
               <table className="w-full font-body text-sm text-left">
                 <thead>
                   <tr className="text-ink-2 border-b border-line-control">
-                    <th className="py-2 pr-4 font-semibold">Condición</th>
-                    <th className="py-2 pr-4 font-semibold text-right">Personas</th>
-                    <th className="py-2 pr-4 font-semibold text-right">Promedio</th>
-                    <th className="py-2 pr-4 font-semibold text-right">Mediana</th>
-                    <th className="py-2 font-semibold text-right">Variación</th>
+                    <th className="py-2 pr-4 font-semibold">{tr('Condición')}</th>
+                    <th className="py-2 pr-4 font-semibold text-right">{tr('Personas')}</th>
+                    <th className="py-2 pr-4 font-semibold text-right">{tr('Promedio')}</th>
+                    <th className="py-2 pr-4 font-semibold text-right">{tr('Mediana')}</th>
+                    <th className="py-2 font-semibold text-right">{tr('Variación')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -202,24 +201,24 @@ function ResultsInner() {
             </div>
 
             {result.status === 'ok' && (
-              <Disclosure title="Ver detalle estadístico" summary={`${result.testLabel} · p = ${fmt(result.pValue, 3)}`}>
+              <Disclosure title={tr('Ver detalle estadístico')} summary={`${result.testLabel} · p = ${fmt(result.pValue, 3)}`}>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 font-body text-sm m-0">
-                  <dt className="text-ink-2">Prueba usada</dt>
+                  <dt className="text-ink-2">{tr('Prueba usada')}</dt>
                   <dd className="m-0 text-ink">{result.testLabel}</dd>
-                  <dt className="text-ink-2">Valor p <InfoTip label="Qué es el valor p">Qué tan sorprendente sería ver esta diferencia si en realidad no la hubiera. Cuanto más bajo, menos probable que sea azar.</InfoTip></dt>
+                  <dt className="text-ink-2">{tr('Valor p')}{' '}<InfoTip label={tr('Qué es el valor p')}>{tr('Qué tan sorprendente sería ver esta diferencia si en realidad no la hubiera. Cuanto más bajo, menos probable que sea azar.')}</InfoTip></dt>
                   <dd className="m-0 text-ink font-stat">{fmt(result.pValue, 4)}</dd>
-                  <dt className="text-ink-2">Tamaño del efecto <InfoTip label="Qué es el tamaño del efecto">Cuánta diferencia hay, no solo si existe. Un efecto grande importa más que uno diminuto aunque ambos sean “significativos”.</InfoTip></dt>
+                  <dt className="text-ink-2">{tr('Tamaño del efecto')}{' '}<InfoTip label={tr('Qué es el tamaño del efecto')}>{tr('Cuánta diferencia hay, no solo si existe. Un efecto grande importa más que uno diminuto aunque ambos sean “significativos”.')}</InfoTip></dt>
                   <dd className="m-0 text-ink"><span className="font-stat">{fmt(result.effectValue)}</span> ({result.effectLabel})</dd>
                 </dl>
                 {result.posthoc?.length > 0 && (
                   <div className="mt-4 overflow-x-auto">
-                    <p className="font-body text-sm font-semibold text-ink">Comparaciones por pares (ajustadas con Holm)</p>
+                    <p className="font-body text-sm font-semibold text-ink">{tr('Comparaciones por pares (ajustadas con Holm)')}</p>
                     <table className="w-full font-body text-sm text-left">
                       <tbody>
                         {result.posthoc.map((p) => (
                           <tr key={`${p.a}-${p.b}`} className="border-b border-dotted border-rule">
-                            <td className="py-2 pr-4 text-ink">{p.a} vs {p.b}</td>
-                            <td className="py-2 pr-4 font-stat">p ajustado = {fmt(p.adjustedP, 3)}</td>
+                            <td className="py-2 pr-4 text-ink">{tr('{a} vs {b}', { a: p.a, b: p.b })}</td>
+                            <td className="py-2 pr-4 font-stat">{tr('p ajustado = {p}', { p: fmt(p.adjustedP, 3) })}</td>
                             <td className={`py-2 font-semibold ${p.significant ? 'text-emerald' : 'text-ink-2'}`}>{p.significant ? 'Se distinguen' : 'No se distinguen'}</td>
                           </tr>
                         ))}
@@ -227,23 +226,24 @@ function ResultsInner() {
                     </table>
                   </div>
                 )}
-                <p className="mt-4 mb-0"><Link href={`/glosario#${result.glossary || 'p'}`} className="font-body text-sm font-semibold text-cobalt underline">¿Qué significan estos términos?</Link></p>
+                <p className="mt-4 mb-0"><Link href={`/glosario#${result.glossary || 'p'}`} className="font-body text-sm font-semibold text-cobalt underline">{tr('¿Qué significan estos términos?')}</Link></p>
               </Disclosure>
             )}
           </div>
         )}
       </BlueprintPanel>
 
-      <BlueprintPanel title="Revisar las conversaciones" subtitle="Lee cada sesión mensaje a mensaje y corrige lo que haga falta.">
-        <Link href="/admin/sessions" className={BTN}><CadIcon name="MessageSquare" size={16} /> Ver sesiones {analytics ? `(${sessionCount})` : ''}</Link>
+      <BlueprintPanel title={tr('Revisar las conversaciones')} subtitle={tr('Lee cada sesión mensaje a mensaje y corrige lo que haga falta.')}>
+        <Link href="/admin/sessions" className={BTN}><CadIcon name="MessageSquare" size={16} />{' '}{tr('Ver sesiones')}{analytics ? ` (${sessionCount})` : ''}</Link>
       </BlueprintPanel>
     </div>
   );
 }
 
 export default function ResultsPage() {
+  const tr = useTr();
   return (
-    <Suspense fallback={<p className="ps-lead" role="status">Cargando…</p>}>
+    <Suspense fallback={<p className="ps-lead" role="status">{tr('Cargando…')}</p>}>
       <ResultsInner />
     </Suspense>
   );

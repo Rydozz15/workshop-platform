@@ -2,6 +2,7 @@
 
 import React from 'react';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * Stepper - progress through the phases of a flow.
@@ -9,12 +10,13 @@ import CadIcon from '../cad-icon';
  * Completed steps show a check, the active one pulses, pending ones stay neutral.
  * On narrow screens only the active label is shown, plus "Paso X de N".
  */
-export function Stepper({ steps = [], current = 0, label = 'Progreso', stepWord = 'Paso', ofWord = 'de', className = '' }) {
+export function Stepper({ steps = [], current = 0, label, className = '' }) {
+  const tr = useTr();
   if (!steps.length) return null;
   return (
-    <nav aria-label={label} className={className}>
+    <nav aria-label={label || tr('Progreso')} className={className}>
       <p className="ps-meta m-0 mb-2 sm:hidden">
-        {stepWord} {Math.min(current + 1, steps.length)} {ofWord} {steps.length}: {steps[Math.min(current, steps.length - 1)].label}
+        {tr('Paso {n} de {total}', { n: Math.min(current + 1, steps.length), total: steps.length })}: {steps[Math.min(current, steps.length - 1)].label}
       </p>
       <ol className="flex items-center m-0 p-0 list-none">
         {steps.map((step, i) => {
@@ -36,7 +38,7 @@ export function Stepper({ steps = [], current = 0, label = 'Progreso', stepWord 
                 >
                   {step.label}
                   <span className="sr-only">
-                    {state === 'done' ? ' (completado)' : state === 'current' ? ' (paso actual)' : ' (pendiente)'}
+                    {state === 'done' ? tr(' (completado)') : state === 'current' ? tr(' (paso actual)') : tr(' (pendiente)')}
                   </span>
                 </span>
               </span>

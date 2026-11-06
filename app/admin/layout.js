@@ -11,10 +11,12 @@ import {
   Logo,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useLanguage } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 import AssistantWidget from '@/components/admin/assistant-widget';
+import DemoBanner from '@/components/admin/demo-banner';
 
 export default function AdminLayout({ children }) {
+  const tr = useTr();
   const { t } = useLanguage();
   const pathname = usePathname();
 
@@ -99,7 +101,7 @@ export default function AdminLayout({ children }) {
   if (loading) {
     return (
       <div className="max-w-md mx-auto px-4 py-16">
-        <p className="ps-lead" role="status">Cargando…</p>
+        <p className="ps-lead" role="status">{tr('Cargando…')}</p>
       </div>
     );
   }
@@ -114,14 +116,14 @@ export default function AdminLayout({ children }) {
             className="min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-1.5"
           >
             <CadIcon name="ArrowLeft" size={14} />
-            <span>Volver al inicio</span>
+            <span>{tr('Volver al inicio')}</span>
           </Link>
         </div>
 
         <BlueprintPanel
           codeTag="AUTH"
-          title="Ingresa la contraseña de administración"
-          subtitle="Así podrás crear campañas, ver resultados y descargar los datos."
+          title={tr('Ingresa la contraseña de administración')}
+          subtitle={tr('Así podrás crear campañas, ver resultados y descargar los datos.')}
           headingLevel={2}
         >
           <form onSubmit={handleLogin} className="space-y-4">
@@ -135,7 +137,7 @@ export default function AdminLayout({ children }) {
               tabIndex={-1}
               aria-hidden="true"
             />
-            <Field label="Contraseña" required={true} error={error}>
+            <Field label={tr('Contraseña')} required={true} error={error}>
               <input
                 type="password"
                 name="password"
@@ -147,9 +149,7 @@ export default function AdminLayout({ children }) {
             </Field>
 
             <div className="flex justify-center pt-2">
-              <SplitButton type="submit" variant="primary" iconBox="Lock" loading={submitting}>
-                Entrar
-              </SplitButton>
+              <SplitButton type="submit" variant="primary" iconBox="Lock" loading={submitting}>{tr('Entrar')}</SplitButton>
             </div>
 
             <div className="text-center">
@@ -158,13 +158,11 @@ export default function AdminLayout({ children }) {
                 onClick={() => setHelpOpen((v) => !v)}
                 aria-expanded={helpOpen}
                 className="min-h-[44px] font-body text-sm text-ink-2 underline underline-offset-4 hover:text-cobalt"
-              >
-                ¿No sabes la contraseña?
-              </button>
+              >{tr('¿No sabes la contraseña?')}</button>
               {helpOpen && (
                 <div className="mt-2 p-3 border border-line-control bg-paper-subtle text-left font-body text-sm text-ink space-y-2">
-                  <p className="m-0">Es la contraseña que definió quien instaló esta plataforma, en la variable <code className="font-stat">ADMIN_PASSWORD</code> del servidor.</p>
-                  <p className="m-0">Si la instalaste tú, búscala en la configuración del servidor (por ejemplo, en el panel de Vercel o en el archivo <code className="font-stat">.env.local</code>). Si no la configuraste, pídesela a quien administra la plataforma.</p>
+                  <p className="m-0">{tr('Es la contraseña que definió quien instaló esta plataforma (variable ADMIN_PASSWORD del servidor).')}</p>
+                  <p className="m-0">{tr('Si la instalaste tú, búscala en la configuración del servidor, por ejemplo en el panel de Vercel o en el archivo .env.local. Si no la configuraste, pídesela a quien administra la plataforma.')}</p>
                 </div>
               )}
             </div>
@@ -183,7 +181,7 @@ export default function AdminLayout({ children }) {
           <div className="flex items-center gap-3 shrink-0">
             <Link
               href="/admin"
-              aria-label="PromptSketch, ir a En vivo"
+              aria-label={tr('PromptSketch, ir a En vivo')}
               className="min-h-[44px] inline-flex items-center"
             >
               <Logo size={26} />
@@ -191,7 +189,7 @@ export default function AdminLayout({ children }) {
           </div>
 
           {/* Desktop Primary Navigation */}
-          <nav aria-label="Principal" className="hidden lg:flex items-center gap-1 flex-wrap">
+          <nav aria-label={tr('Principal')} className="hidden lg:flex items-center gap-1 flex-wrap">
             {navItems.map((item) => {
               const isActive = isActiveItem(item);
               return (
@@ -232,7 +230,7 @@ export default function AdminLayout({ children }) {
               type="button"
               onClick={toggleGrain}
               aria-pressed={!grainOff}
-              title="Alternar textura de papel"
+              title={tr('Alternar textura de papel')}
               className="hidden sm:inline-flex min-h-[44px] px-2.5 py-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink items-center gap-1.5"
             >
               <CadIcon name="Layers" size={13} />
@@ -253,7 +251,7 @@ export default function AdminLayout({ children }) {
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-expanded={mobileMenuOpen}
-              aria-label="Abrir menú de navegación"
+              aria-label={tr('Abrir menú de navegación')}
               className="lg:hidden min-h-[44px] min-w-[44px] px-2.5 border border-line-control bg-paper-subtle text-ink inline-flex items-center justify-center"
             >
               <CadIcon name={mobileMenuOpen ? 'X' : 'Menu'} size={18} />
@@ -264,7 +262,7 @@ export default function AdminLayout({ children }) {
         {/* Mobile Collapsible Navigation Sheet */}
         {mobileMenuOpen && (
           <nav
-            aria-label="Menú móvil de administración"
+            aria-label={tr('Menú móvil de administración')}
             className="lg:hidden border-t border-line-control bg-paper p-3 space-y-1.5"
           >
             {[...navItems, settingsItem].map((item) => {
@@ -304,6 +302,8 @@ export default function AdminLayout({ children }) {
           </nav>
         )}
       </header>
+
+      <DemoBanner />
 
       {/* Main Workspace Container (Note: RootLayout already provides <main id="main-content">) */}
       <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 md:py-8">
