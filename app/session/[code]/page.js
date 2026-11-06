@@ -6,11 +6,13 @@ import remarkGfm from 'remark-gfm';
 import {
   BlueprintPanel,
   SplitButton,
-  StatBadge,
   OnboardingStepper,
-  JourneyHub,
-  MarginNote,
+  CompletionScreen,
+  Stepper,
+  Drawer,
+  DrawerHandle,
   LanguageSelector,
+  Logo,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useLanguage } from '@/lib/i18n/context';
@@ -35,6 +37,9 @@ export default function SessionPage({ params }) {
   const [workshopName, setWorkshopName] = useState('');
   const [onboardingInstructions, setOnboardingInstructions] = useState(null);
   const [chainOrder, setChainOrder] = useState(1);
+  const [stepCount, setStepCount] = useState(1);
+  const [consentRequired, setConsentRequired] = useState(false);
+  const [consentUrl, setConsentUrl] = useState(null);
   const [surveyConfig, setSurveyConfig] = useState([]);
   const [surveyAnswers, setSurveyAnswers] = useState({});
   const [surveyError, setSurveyError] = useState('');
@@ -50,7 +55,6 @@ export default function SessionPage({ params }) {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [previousFirstMessage, setPreviousFirstMessage] = useState(null);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
-  const [pauseLiveTelemetry, setPauseLiveTelemetry] = useState(false);
 
   // Client-side Learning Analytics timing & tab-inactivity instrumentation
   const lastBotFinishTimeRef = useRef(null);
@@ -62,12 +66,6 @@ export default function SessionPage({ params }) {
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setPauseLiveTelemetry(localStorage.getItem('ps_pause_telemetry') === '1');
-    }
-  }, []);
 
   // Track browser tab visibility changes to flag inactivity outliers accurately
   useEffect(() => {
@@ -175,6 +173,9 @@ export default function SessionPage({ params }) {
           setWorkshopName(info.name || '');
           setOnboardingInstructions(info.onboarding_instructions || null);
           setChainOrder(info.chain_order || 1);
+          setStepCount(info.step_count || 1);
+          setConsentRequired(Boolean(info.consent_required));
+          setConsentUrl(info.consent_url || null);
         }
       })
       .catch(() => {});
@@ -421,6 +422,13 @@ export default function SessionPage({ params }) {
     }
   };
 
+  const phases = [
+    { id: 'chat', label: 'Conversación' },
+    ...(surveyConfig.length > 0 ? [{ id: 'survey', label: 'Preguntas finales' }] : []),
+    { id: 'done', label: 'Listo' },
+  ];
+  const phaseIndex = Math.max(0, phases.findIndex((p) => p.id === phase));
+
   // ============================================================
   // PHASE 1: INTEGRATED 3-STEP ONBOARDING STEPPER
   // ============================================================
@@ -430,6 +438,9 @@ export default function SessionPage({ params }) {
         code={code}
         workshopName={workshopName}
         chainOrder={chainOrder}
+        stepCount={stepCount}
+        consentRequired={consentRequired}
+        consentUrl={consentUrl}
         onboardingInstructions={onboardingInstructions}
         initialName={name}
         joining={joining}
@@ -443,26 +454,26 @@ export default function SessionPage({ params }) {
   // PHASE 3: POST-SESSION SCIENTIFIC SURVEY
   // ============================================================
   if (phase === 'survey') {
+    const unanswered = surveyConfig.filter((q) => {
+      if (q.required === false) return false;
+      const v = surveyAnswers[q.id];
+      return v === undefined || v === '' || (Array.isArray(v) && v.length === 0);
+    });
     return (
-      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
+      <div className="max-w-3xl mx-auto px-4 py-6 md:py-10 space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <Logo />
+          <LanguageSelector compact={true} />
+        </div>
+        <Stepper steps={phases} current={phaseIndex} label="Progreso de la actividad" />
+
         <BlueprintPanel
-          codeTag="MOD_EVAL // CUESTIONARIO"
-          title="Evaluación Posterior al Diálogo"
-          subtitle={`Sesión: ${workshopName || code} · Tus respuestas alimentan el análisis psicométrico y formativo.`}
+          title="Cuéntanos cómo te fue"
+          subtitle={`${workshopName || 'Actividad'} · Las preguntas marcadas con * son obligatorias.`}
           headingLevel={2}
-          titleBlock={{
-            sheetNumber: 'SRV-01',
-            status: 'EVALUACIÓN',
-            rev: `${surveyConfig.length} ÍTEMS`,
-            title: workshopName || 'Cuestionario Post-Sesión',
-            subtitle: 'Escalas ordinales y observación conductual',
-          }}
         >
           {surveyError && (
-            <div
-              role="alert"
-              className="mb-5 p-3 border-2 border-vermilion-ink bg-vermilion-tint font-ui-mono text-xs text-vermilion-ink flex items-center gap-2"
-            >
+            <div role="alert" className="mb-5 p-3 border-2 border-vermilion-ink bg-vermilion-tint font-body text-sm text-vermilion-ink flex items-center gap-2">
               <CadIcon name="AlertTriangle" size={16} />
               <span>{surveyError}</span>
             </div>
@@ -471,24 +482,27 @@ export default function SessionPage({ params }) {
           <form onSubmit={submitSurvey} className="space-y-5">
             {surveyConfig.map((q, idx) => {
               const qType = q.type || 'likert';
+              const isRequired = q.required !== false;
               const scaleValues = Array.isArray(q.scale) && q.scale.length > 0 ? q.scale : [1, 2, 3, 4, 5];
 
               return (
-                <fieldset
-                  key={q.id || idx}
-                  className="p-4 bg-paper-subtle border border-line-control m-0 space-y-3"
-                >
-                  <legend className="font-body text-sm font-semibold text-ink px-1 leading-snug">
-                    <span className="font-ui-mono text-xs text-cobalt mr-1.5">[{idx + 1}]</span>
+                <fieldset key={q.id || idx} className="p-4 bg-paper-subtle border border-line-control m-0 space-y-3 min-w-0">
+                  <legend className="w-full max-w-full float-left font-body text-base font-semibold text-ink leading-snug break-words mb-2">
                     {q.text}
+                    {isRequired ? (
+                      <span className="text-vermilion-ink ml-1" aria-hidden="true">*</span>
+                    ) : (
+                      <span className="ml-2 font-normal text-ink-2 text-sm">(opcional)</span>
+                    )}
+                    {isRequired && <span className="sr-only"> (obligatoria)</span>}
                   </legend>
+                  <div className="clear-both" />
 
-                  {/* Likert Ordinal Scale */}
                   {qType === 'likert' && (
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between font-ui-mono text-xs text-ink-2">
-                        <span>{q.minLabel || '1 · Totalmente en desacuerdo'}</span>
-                        <span>{q.maxLabel || `${scaleValues[scaleValues.length - 1]} · Totalmente de acuerdo`}</span>
+                      <div className="flex items-center justify-between gap-3 font-body text-sm text-ink-2">
+                        <span>{q.minLabel || '1 · Nada de acuerdo'}</span>
+                        <span className="text-right">{q.maxLabel || `${scaleValues[scaleValues.length - 1]} · Totalmente de acuerdo`}</span>
                       </div>
                       <div className="grid grid-cols-5 gap-2">
                         {scaleValues.map((num) => {
@@ -497,10 +511,8 @@ export default function SessionPage({ params }) {
                           return (
                             <label
                               key={strVal}
-                              className={`min-h-[48px] border flex flex-col items-center justify-center cursor-pointer font-stat text-sm font-semibold transition-colors ${
-                                isSelected
-                                  ? 'bg-cobalt text-paper border-cobalt'
-                                  : 'bg-paper text-ink border-line-control hover:bg-paper-subtle'
+                              className={`min-h-[52px] border-2 flex items-center justify-center cursor-pointer font-stat text-base font-semibold ${
+                                isSelected ? 'bg-cobalt text-paper border-cobalt' : 'bg-paper text-ink border-line-control hover:bg-cobalt-tint'
                               }`}
                             >
                               <input
@@ -508,10 +520,7 @@ export default function SessionPage({ params }) {
                                 name={`survey_${q.id}`}
                                 value={strVal}
                                 checked={isSelected}
-                                onChange={(e) =>
-                                  setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })
-                                }
-                                required
+                                onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })}
                                 className="sr-only"
                               />
                               <span>{num}</span>
@@ -522,31 +531,13 @@ export default function SessionPage({ params }) {
                     </div>
                   )}
 
-                  {/* Single-choice Multiple */}
                   {qType === 'multiple' && (
                     <div className="space-y-2">
                       {(q.options || []).map((opt) => {
                         const isSelected = surveyAnswers[q.id] === opt;
                         return (
-                          <label
-                            key={opt}
-                            className={`min-h-[44px] px-3 py-2 border flex items-center gap-2.5 cursor-pointer font-body text-sm ${
-                              isSelected
-                                ? 'bg-cobalt-tint border-cobalt text-cobalt font-medium'
-                                : 'bg-paper border-line-control text-ink'
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name={`survey_${q.id}`}
-                              value={opt}
-                              checked={isSelected}
-                              onChange={(e) =>
-                                setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })
-                              }
-                              required
-                              className="w-4 h-4 accent-cobalt"
-                            />
+                          <label key={opt} className={`min-h-[44px] px-3 py-2 border flex items-center gap-2.5 cursor-pointer font-body text-sm ${isSelected ? 'bg-cobalt-tint border-cobalt text-cobalt font-medium' : 'bg-paper border-line-control text-ink'}`}>
+                            <input type="radio" name={`survey_${q.id}`} value={opt} checked={isSelected} onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })} className="w-4 h-4 accent-cobalt" />
                             <span>{opt}</span>
                           </label>
                         );
@@ -554,28 +545,18 @@ export default function SessionPage({ params }) {
                     </div>
                   )}
 
-                  {/* Behavioral Checklist / Checkbox */}
                   {(qType === 'checklist' || qType === 'checkbox') && (
                     <div className="space-y-2">
                       {(q.options || []).map((opt) => {
                         const currentArr = Array.isArray(surveyAnswers[q.id]) ? surveyAnswers[q.id] : [];
                         const isChecked = currentArr.includes(opt);
                         return (
-                          <label
-                            key={opt}
-                            className={`min-h-[44px] px-3 py-2 border flex items-center gap-2.5 cursor-pointer font-body text-sm ${
-                              isChecked
-                                ? 'bg-cobalt-tint border-cobalt text-ink font-medium'
-                                : 'bg-paper border-line-control text-ink'
-                            }`}
-                          >
+                          <label key={opt} className={`min-h-[44px] px-3 py-2 border flex items-center gap-2.5 cursor-pointer font-body text-sm ${isChecked ? 'bg-cobalt-tint border-cobalt text-ink font-medium' : 'bg-paper border-line-control text-ink'}`}>
                             <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={(e) => {
-                                const next = e.target.checked
-                                  ? [...currentArr, opt]
-                                  : currentArr.filter((item) => item !== opt);
+                                const next = e.target.checked ? [...currentArr, opt] : currentArr.filter((item) => item !== opt);
                                 setSurveyAnswers({ ...surveyAnswers, [q.id]: next });
                               }}
                               className="w-4 h-4 accent-cobalt shrink-0"
@@ -587,20 +568,15 @@ export default function SessionPage({ params }) {
                     </div>
                   )}
 
-                  {/* Open-ended Qualitative Response */}
                   {(qType === 'text' || qType === 'open') && (
-                    <div>
-                      <textarea
-                        rows={3}
-                        value={surveyAnswers[q.id] || ''}
-                        onChange={(e) =>
-                          setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })
-                        }
-                        required
-                        placeholder="Describe brevemente tu apreciación y por qué..."
-                        className="w-full p-3 bg-paper border border-line-control font-body text-sm text-ink"
-                      />
-                    </div>
+                    <textarea
+                      rows={3}
+                      aria-label={q.text}
+                      value={surveyAnswers[q.id] || ''}
+                      onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })}
+                      placeholder="Escribe aquí tu respuesta"
+                      className="w-full p-3 bg-paper border border-line-control font-body text-base text-ink"
+                    />
                   )}
                 </fieldset>
               );
@@ -610,20 +586,21 @@ export default function SessionPage({ params }) {
               <button
                 type="button"
                 onClick={() => setPhase('chat')}
-                className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink inline-flex items-center gap-2"
+                className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2"
               >
                 <CadIcon name="ArrowLeft" size={14} />
-                <span>Volver al diálogo</span>
+                <span>Volver a la conversación</span>
               </button>
-
-              <SplitButton
-                type="submit"
-                variant="primary"
-                iconBox="Check"
-                loading={submittingSurvey}
-              >
-                Enviar evaluación y ver bitácora
-              </SplitButton>
+              <div className="flex flex-col items-end gap-1">
+                {unanswered.length > 0 && (
+                  <span className="font-body text-sm text-ink-2">
+                    Faltan {unanswered.length} {unanswered.length === 1 ? 'pregunta obligatoria' : 'preguntas obligatorias'}
+                  </span>
+                )}
+                <SplitButton type="submit" variant="primary" iconBox="Check" loading={submittingSurvey} disabled={unanswered.length > 0}>
+                  Enviar y terminar
+                </SplitButton>
+              </div>
             </div>
           </form>
         </BlueprintPanel>
@@ -635,157 +612,67 @@ export default function SessionPage({ params }) {
   // PHASE 4: FORMATIVE STUDENT JOURNEY HUB
   // ============================================================
   if (phase === 'completed') {
-    return <JourneyHub historyData={historyData} loading={loadingHistory} />;
+    return <CompletionScreen name={name} historyData={historyData} loading={loadingHistory} />;
   }
 
   // ============================================================
   // PHASE 2: ACTIVE DIALOGIC WORKSPACE (BLUEPRINT CAD SHEET)
   // ============================================================
   const studentTurnCount = messages.filter((m) => m.role === 'user').length;
+  const hasSurvey = surveyConfig.length > 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 md:py-6">
-      {/* Top Status Strip */}
-      <header className="mb-4 bg-paper border border-line-control shadow-hard px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="w-2 h-2 bg-emerald inline-block border border-ink"
-          />
-          <div>
-            <h1 className="font-ui-mono text-xs sm:text-sm uppercase tracking-wider font-semibold text-ink m-0">
-              {workshopName || `Sesión Experimental · ${code}`}
-            </h1>
-            <p className="font-ui-mono text-xs text-ink-2 m-0">
-              Participante: <span className="text-ink font-medium">{name || 'Anónimo'}</span> · Turnos enviados:{' '}
-              <span className="stat font-semibold text-ink">{studentTurnCount}</span>
-              {chainOrder > 1 ? ` · Etapa #${chainOrder}` : ''}
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 md:py-6 space-y-4">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-4 min-w-0">
+          <Logo withWordmark={false} size={30} />
+          <div className="min-w-0">
+            <h1 className="ps-h3 truncate">{workshopName || 'Actividad'}</h1>
+            <p className="ps-meta m-0">
+              {name || 'Participante'}
+              {stepCount > 1 ? ` · Parte ${chainOrder} de ${stepCount}` : ''}
             </p>
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <LanguageSelector compact={true} />
-          <button
-            type="button"
-            onClick={() => setCaseOpenMobile(!caseOpenMobile)}
-            aria-expanded={caseOpenMobile}
-            className={`lg:hidden min-h-[44px] px-3 py-2 border font-ui-mono text-xs inline-flex items-center gap-1.5 transition-colors ${
-              caseOpenMobile
-                ? 'bg-cobalt text-paper border-cobalt font-semibold'
-                : 'border-line-control bg-paper-subtle hover:bg-paper text-ink'
-            }`}
-          >
-            <CadIcon name="FileText" size={14} />
-            <span>{caseOpenMobile ? 'Ocultar caso' : 'Ver caso'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setConfirmCompleteOpen(true)}
-            disabled={streaming}
-            className="min-h-[44px] px-3.5 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink-2 hover:text-ink inline-flex items-center gap-1.5 transition-colors"
-          >
-            <CadIcon name="CheckSquare" size={14} />
-            <span>{studentTurnCount > 0 ? 'Concluir actividad' : 'Pasar a evaluación'}</span>
-          </button>
-        </div>
+        <LanguageSelector compact={true} />
       </header>
 
-      {/* Main 2-Column Blueprint Layout: Chat Log (Left 8 cols) + Case Sheet (Right 4 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Mobile Collapsible Case Sheet (Compact & Scrollable) */}
-        {caseOpenMobile && (
-          <div className="lg:hidden col-span-1 mb-2">
-            <div className="p-3.5 bg-paper border-2 border-cobalt shadow-hard space-y-2">
-              <div className="flex items-center justify-between border-b border-line-control pb-2">
-                <span className="font-ui-mono text-xs uppercase tracking-wider font-semibold text-cobalt flex items-center gap-1.5">
-                  <CadIcon name="FileText" size={14} />
-                  <span>{version?.title || 'Escenario de Caso'}</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setCaseOpenMobile(false)}
-                  aria-label="Cerrar hoja de caso"
-                  className="min-h-[36px] min-w-[36px] flex items-center justify-center border border-line-control bg-paper text-ink"
-                >
-                  <CadIcon name="X" size={14} />
-                </button>
-              </div>
-              <div className="font-body text-xs text-ink leading-relaxed prose max-w-none max-h-52 overflow-y-auto pr-1">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {version?.case_content || 'Sin descripción de escenario registrada.'}
-                </ReactMarkdown>
-              </div>
-            </div>
-          </div>
-        )}
+      <Stepper steps={phases} current={phaseIndex} label="Progreso de la actividad" />
 
-        {/* Dialogue Column */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <div className="lg:col-span-8">
-          <BlueprintPanel
-            codeTag="REG_DIALOGO"
-            title="Registro de Interacción Estudiante — Asistente"
-            subtitle="Plantea tu situación, responde preguntas de contexto y evalúa la pertinencia de las propuestas."
-            headingLevel={2}
-          >
-            {/* Accessible Live Transcript Region */}
+          <BlueprintPanel title="Conversación" subtitle="Escribe con tus palabras. El asistente te responderá." headingLevel={2}>
             <div
               role="log"
               aria-live="polite"
               aria-label="Mensajes de la conversación"
-              className="min-h-[380px] max-h-[540px] overflow-y-auto p-3 sm:p-4 bg-paper-subtle border border-line-control space-y-4 mb-4"
+              className="min-h-[340px] max-h-[540px] overflow-y-auto p-3 sm:p-4 bg-paper-subtle border border-line-control space-y-4 mb-4"
             >
               {messages.length === 0 && (
                 <div className="p-6 bg-paper border border-dashed border-line-control text-center space-y-2">
-                  <div className="inline-flex items-center justify-center w-10 h-10 border border-line-control bg-paper-subtle text-cobalt">
-                    <CadIcon name="MessageSquare" size={18} />
-                  </div>
-                  <h3 className="font-ui-mono text-xs uppercase tracking-wider font-semibold text-ink m-0">
-                    Inicia la conversación experimental
-                  </h3>
-                  <p className="font-body text-xs text-ink-2 max-w-md mx-auto leading-relaxed m-0">
-                    Revisa la Hoja de Caso a la derecha y escribe tu primer mensaje describiendo el problema o
-                    consulta con tus propias palabras.
+                  <h3 className="ps-h3">Empieza cuando quieras</h3>
+                  <p className="font-body text-sm text-ink-2 max-w-md mx-auto m-0">
+                    Lee el caso y escribe tu primer mensaje abajo.
                   </p>
                 </div>
               )}
 
               {messages.map((msg, idx) => {
                 const isUser = msg.role === 'user';
-                const wordCount = (msg.content || '').trim().split(/\s+/).filter(Boolean).length;
                 return (
                   <article
                     key={msg.id || idx}
-                    className={`p-3.5 border ${
-                      isUser
-                        ? 'bg-paper border-line-control ml-0 sm:ml-8'
-                        : 'bg-cobalt-tint border-cobalt mr-0 sm:mr-8'
-                    }`}
+                    className={`p-3.5 border ${isUser ? 'bg-paper border-line-control ml-0 sm:ml-8' : 'bg-cobalt-tint border-cobalt mr-0 sm:mr-8'}`}
                   >
-                    <header className="flex flex-wrap items-center justify-between gap-2 pb-1.5 mb-2 border-b border-dotted border-rule">
-                      <span className="font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink inline-flex items-center gap-1.5">
-                        <CadIcon name={isUser ? 'User' : 'Terminal'} size={13} />
-                        <span>{isUser ? 'ESTUDIANTE' : 'ASISTENTE'}</span>
-                      </span>
-                      <div className="flex items-center gap-2 font-ui-mono text-xs text-ink-2 stat">
-                        <span>{wordCount} pal.</span>
-                        {!pauseLiveTelemetry && !isUser && msg.telemetry?.ttft_ms !== undefined && (
-                          <span>· TTFT {msg.telemetry.ttft_ms} ms</span>
-                        )}
-                      </div>
-                    </header>
-
-                    <div className="font-body text-sm text-ink leading-relaxed prose max-w-none">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {stripThinkingTags(msg.content)}
-                      </ReactMarkdown>
+                    <p className="font-body text-sm font-semibold text-ink m-0 mb-1.5 flex items-center gap-1.5">
+                      <CadIcon name={isUser ? 'User' : 'MessageCircle'} size={14} />
+                      {isUser ? 'Tú' : 'Asistente'}
+                    </p>
+                    <div className="font-body text-base text-ink leading-relaxed prose max-w-none">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripThinkingTags(msg.content)}</ReactMarkdown>
                     </div>
-
                     {streaming && idx === messages.length - 1 && !isUser && (
-                      <div className="mt-2 font-ui-mono text-xs text-cobalt">
-                        [Generando respuesta…]
-                      </div>
+                      <p className="ps-meta m-0 mt-2" role="status">Escribiendo…</p>
                     )}
                   </article>
                 );
@@ -793,17 +680,10 @@ export default function SessionPage({ params }) {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Chained Step > 1 Previous Opening Prompt Reuse Card */}
             {previousFirstMessage && !suggestionDismissed && messages.length === 0 && (
               <div className="mb-4 p-3.5 bg-cobalt-tint border border-cobalt space-y-2.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-ui-mono text-xs font-semibold uppercase text-cobalt">
-                    Continuidad experimental · Tu primer mensaje en la Etapa anterior:
-                  </span>
-                </div>
-                <blockquote className="p-2.5 bg-paper border-l-2 border-cobalt font-body text-xs text-ink italic m-0">
-                  “{previousFirstMessage}”
-                </blockquote>
+                <p className="font-body text-sm font-semibold text-cobalt m-0">Tu primer mensaje en la parte anterior fue:</p>
+                <blockquote className="p-2.5 bg-paper border-l-2 border-cobalt font-body text-sm text-ink italic m-0">“{previousFirstMessage}”</blockquote>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -813,9 +693,9 @@ export default function SessionPage({ params }) {
                       setSuggestionDismissed(true);
                       setTimeout(() => inputRef.current?.focus(), 50);
                     }}
-                    className="min-h-[44px] px-3 py-1.5 bg-cobalt text-paper border border-cobalt font-ui-mono text-xs font-medium"
+                    className="min-h-[44px] px-3 py-1.5 bg-cobalt text-paper border border-cobalt font-body text-sm font-medium"
                   >
-                    Reutilizar el mismo mensaje inicial
+                    Usar el mismo mensaje
                   </button>
                   <button
                     type="button"
@@ -823,18 +703,17 @@ export default function SessionPage({ params }) {
                       setSuggestionDismissed(true);
                       setTimeout(() => inputRef.current?.focus(), 50);
                     }}
-                    className="min-h-[44px] px-3 py-1.5 bg-paper text-ink border border-line-control font-ui-mono text-xs"
+                    className="min-h-[44px] px-3 py-1.5 bg-paper text-ink border border-line-control font-body text-sm"
                   >
-                    Redactar uno nuevo
+                    Escribir uno nuevo
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Message Composer */}
             <div className="space-y-2">
-              <label htmlFor="session-chat-input" className="font-ui-mono text-xs uppercase font-semibold text-ink block">
-                Tu intervención (Enter para enviar · Shift+Enter para nueva línea)
+              <label htmlFor="session-chat-input" className="font-body text-sm font-semibold text-ink block">
+                Tu mensaje <span className="font-normal text-ink-2">(Enter envía · Shift + Enter salto de línea)</span>
               </label>
               <div className="flex flex-col sm:flex-row gap-2 items-stretch">
                 <textarea
@@ -844,80 +723,68 @@ export default function SessionPage({ params }) {
                   value={input}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Escribe aquí tu planteamiento o respuesta al asistente..."
+                  placeholder="Escribe aquí…"
                   disabled={streaming}
-                  className="flex-1 p-3 bg-paper border border-line-control font-body text-sm text-ink min-h-[56px]"
+                  className="flex-1 p-3 bg-paper border border-line-control font-body text-base text-ink min-h-[56px]"
                 />
-                <SplitButton
-                  variant="primary"
-                  iconBox="Send"
-                  onClick={sendMessage}
-                  disabled={!input.trim() || streaming}
-                  loading={streaming}
-                >
-                  Enviar turno
+                <SplitButton variant="primary" iconBox="Send" onClick={sendMessage} disabled={!input.trim() || streaming} loading={streaming} aria-label="Enviar mensaje">
+                  Enviar
                 </SplitButton>
               </div>
+            </div>
+
+            <div className="mt-5 pt-4 border-t-2 border-line-strong flex flex-wrap items-center justify-between gap-3">
+              <p className="font-body text-sm text-ink-2 m-0 max-w-md">
+                {studentTurnCount === 0
+                  ? 'Cuando termines de conversar, podrás pasar al siguiente paso.'
+                  : hasSurvey
+                  ? 'Cuando hayas terminado de conversar, pasa a las preguntas finales.'
+                  : 'Cuando hayas terminado de conversar, finaliza la actividad.'}
+              </p>
+              <SplitButton
+                variant={studentTurnCount > 0 ? 'primary' : 'secondary'}
+                iconBox="ArrowRight"
+                onClick={() => setConfirmCompleteOpen(true)}
+                disabled={streaming}
+              >
+                Terminar conversación
+              </SplitButton>
             </div>
           </BlueprintPanel>
         </div>
 
-        {/* Desktop Persistent Case Sheet */}
-        <aside aria-label="Hoja de caso experimental" className="hidden lg:block lg:col-span-4 space-y-4">
-          <BlueprintPanel
-            codeTag="HOJA_CASO"
-            title={version?.title || 'Escenario Asignado'}
-            subtitle="Referencia permanente durante la sesión"
-            headingLevel={2}
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <StatBadge label="Documento" value="Referencia activa" variant="cobalt" />
-              <MarginNote tone="vermilion" rotate={2}>
-                CONTEXTO BASE
-              </MarginNote>
-            </div>
+        <aside aria-label="Tu caso" className="hidden lg:block lg:col-span-4">
+          <BlueprintPanel title={version?.title || 'Tu caso'} subtitle="Puedes volver a leerlo cuando quieras." headingLevel={2}>
             <div className="font-body text-sm text-ink leading-relaxed prose max-w-none max-h-[480px] overflow-y-auto pr-1">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {version?.case_content || 'Escenario de conversación abierta.'}
-              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || 'Conversación abierta.'}</ReactMarkdown>
             </div>
           </BlueprintPanel>
         </aside>
       </div>
 
-      {/* Accessible Confirmation Dialog before completing session */}
+      <div className="lg:hidden">
+        <DrawerHandle onClick={() => setCaseOpenMobile(true)} label="Ver caso" icon="FileText" />
+        <Drawer open={caseOpenMobile} onClose={() => setCaseOpenMobile(false)} title={version?.title || 'Tu caso'} closeLabel="Cerrar caso">
+          <div className="font-body text-base text-ink leading-relaxed prose max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{version?.case_content || 'Conversación abierta.'}</ReactMarkdown>
+          </div>
+        </Drawer>
+      </div>
+
       {confirmCompleteOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="confirm-complete-title"
-        >
+        <div className="fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-complete-title">
           <div className="max-w-md w-full">
-            <BlueprintPanel
-              codeTag="CONFIRMACIÓN"
-              title="¿Finalizar el diálogo y pasar a la evaluación?"
-              headingLevel={2}
-            >
-              <p id="confirm-complete-title" className="font-body text-sm text-ink leading-relaxed mb-4">
-                Una vez cerrada la conversación pasarás al cuestionario breve de cierre y ya no podrás enviar más
-                turnos en esta etapa ({studentTurnCount} turno{studentTurnCount === 1 ? '' : 's'} registrado
-                {studentTurnCount === 1 ? '' : 's'}).
+            <BlueprintPanel title="¿Terminar la conversación?" headingLevel={2}>
+              <p id="confirm-complete-title" className="font-body text-base text-ink leading-relaxed mb-4">
+                {hasSurvey ? 'Pasarás a unas preguntas finales' : 'Se cerrará la actividad'} y ya no podrás enviar más mensajes en esta parte.
+                {studentTurnCount > 0 ? ` Enviaste ${studentTurnCount} ${studentTurnCount === 1 ? 'mensaje' : 'mensajes'}.` : ' Todavía no has enviado ningún mensaje.'}
               </p>
               <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-line-control">
-                <button
-                  type="button"
-                  onClick={() => setConfirmCompleteOpen(false)}
-                  className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink"
-                >
+                <button type="button" onClick={() => setConfirmCompleteOpen(false)} className="min-h-[44px] px-4 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink">
                   Seguir conversando
                 </button>
-                <SplitButton
-                  variant="primary"
-                  iconBox="Check"
-                  onClick={confirmAndAdvance}
-                >
-                  Confirmar y continuar
+                <SplitButton variant="primary" iconBox="Check" onClick={confirmAndAdvance}>
+                  Sí, terminar
                 </SplitButton>
               </div>
             </BlueprintPanel>

@@ -7,8 +7,8 @@ import {
   BlueprintPanel,
   SplitButton,
   Field,
-  MarginNote,
   LanguageSelector,
+  Logo,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useLanguage } from '@/lib/i18n/context';
@@ -34,6 +34,7 @@ export default function AdminLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [grainOff, setGrainOff] = useState(false);
 
   useEffect(() => {
@@ -98,27 +99,23 @@ export default function AdminLayout({ children }) {
   if (loading) {
     return (
       <div className="max-w-md mx-auto px-4 py-16">
-        <BlueprintPanel codeTag="SYS_INIT" title="Inicializando mesa de trabajo…">
-          <p className="font-ui-mono text-xs text-ink-2 m-0">Verificando sesión de investigador…</p>
-        </BlueprintPanel>
+        <p className="ps-lead" role="status">Cargando…</p>
       </div>
     );
   }
 
   if (!authed) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-12 md:py-20">
-        <div className="flex items-center justify-between mb-3">
+      <div className="max-w-lg mx-auto px-4 py-10 md:py-16">
+        <div className="flex items-center justify-between mb-8">
+          <Logo />
           <Link
             href="/"
-            className="min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink inline-flex items-center gap-1.5"
+            className="min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-1.5"
           >
             <CadIcon name="ArrowLeft" size={14} />
             <span>Volver al inicio</span>
           </Link>
-          <MarginNote tone="cobalt" rotate={-2}>
-            Área docente
-          </MarginNote>
         </div>
 
         <BlueprintPanel
@@ -126,14 +123,9 @@ export default function AdminLayout({ children }) {
           title="Ingresa la contraseña de administración"
           subtitle="Así podrás crear campañas, ver resultados y descargar los datos."
           headingLevel={2}
-          titleBlock={{
-            sheetNumber: 'SEC-01',
-            status: 'PROTEGIDO',
-            title: 'Acceso de administración',
-          }}
         >
           <form onSubmit={handleLogin} className="space-y-4">
-            {/* Hidden username input for WCAG password manager accessibility */}
+            {/* Hidden username input for password managers */}
             <input
               type="text"
               name="username"
@@ -143,32 +135,38 @@ export default function AdminLayout({ children }) {
               tabIndex={-1}
               aria-hidden="true"
             />
-            <Field
-              label="Contraseña de administración"
-              required={true}
-              error={error}
-              help="Es la contraseña que definiste al instalar PromptSketch."
-            >
+            <Field label="Contraseña" required={true} error={error}>
               <input
                 type="password"
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingresa la contraseña..."
                 autoComplete="current-password"
-                className="ps-field__control w-full font-ui-mono text-sm text-ink bg-paper border border-line-control px-3 py-2"
+                className="ps-field__control w-full font-body text-base text-ink bg-paper border border-line-control px-3 py-2"
               />
             </Field>
 
-            <div className="flex justify-end pt-2 border-t border-line-control">
-              <SplitButton
-                type="submit"
-                variant="primary"
-                iconBox="Lock"
-                loading={submitting}
-              >
-                Desbloquear mesa de trabajo
+            <div className="flex justify-center pt-2">
+              <SplitButton type="submit" variant="primary" iconBox="Lock" loading={submitting}>
+                Entrar
               </SplitButton>
+            </div>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setHelpOpen((v) => !v)}
+                aria-expanded={helpOpen}
+                className="min-h-[44px] font-body text-sm text-ink-2 underline underline-offset-4 hover:text-cobalt"
+              >
+                ¿No sabes la contraseña?
+              </button>
+              {helpOpen && (
+                <div className="mt-2 p-3 border border-line-control bg-paper-subtle text-left font-body text-sm text-ink space-y-2">
+                  <p className="m-0">Es la contraseña que definió quien instaló esta plataforma, en la variable <code className="font-stat">ADMIN_PASSWORD</code> del servidor.</p>
+                  <p className="m-0">Si la instalaste tú, búscala en la configuración del servidor (por ejemplo, en el panel de Vercel o en el archivo <code className="font-stat">.env.local</code>). Si no la configuraste, pídesela a quien administra la plataforma.</p>
+                </div>
+              )}
             </div>
           </form>
         </BlueprintPanel>
@@ -185,10 +183,10 @@ export default function AdminLayout({ children }) {
           <div className="flex items-center gap-3 shrink-0">
             <Link
               href="/admin"
-              className="min-h-[44px] px-2.5 py-1.5 bg-ink text-paper font-ui-mono text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2"
+              aria-label="PromptSketch, ir a En vivo"
+              className="min-h-[44px] inline-flex items-center"
             >
-              <CadIcon name="Compass" size={14} />
-              <span>PROMPTSKETCH</span>
+              <Logo size={26} />
             </Link>
           </div>
 

@@ -3,7 +3,7 @@
  * POST - Join a workshop by share code, get assigned a random version.
  */
 import { NextResponse } from 'next/server';
-import { getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion, getSessionsByChainUserId, getMessages } from '@/lib/db';
+import { getWorkshops, getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion, getSessionsByChainUserId, getMessages } from '@/lib/db';
 
 export async function GET(request) {
   try {
@@ -25,10 +25,25 @@ export async function GET(request) {
       analysis_type: workshop.analysis_type || 'preregistrado',
       chain_id: workshop.chain_id || null,
       chain_order: workshop.chain_order || 1,
+      ...(await campaignInfo(workshop)),
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+/** What the participant needs to know about the whole campaign (never admin-only data). */
+async function campaignInfo(workshop) {
+  const steps = workshop.chain_id
+    ? (await getWorkshops()).filter((w) => w.chain_id === workshop.chain_id)
+    : [workshop];
+  const first = [...steps].sort((a, b) => (a.chain_order || 1) - (b.chain_order || 1))[0] || workshop;
+  return {
+    campaign_name: first.campaign_name || first.name,
+    step_count: steps.length,
+    consent_required: Boolean(first.consent_required),
+    consent_url: first.consent_url || null,
+  };
 }
 
 export async function POST(request) {

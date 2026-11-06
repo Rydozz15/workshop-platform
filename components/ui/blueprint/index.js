@@ -15,3 +15,5 @@ export * from './kpi';
 export * from './stepper';
 export * from './disclosure';
 export * from './drawer';
+export * from '../brand';
+export * from './completion-screen';
