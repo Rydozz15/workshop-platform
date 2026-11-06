@@ -13,6 +13,7 @@ import {
   HandMark,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 function stripThinkingTags(text) {
   if (!text) return '';
@@ -34,6 +35,7 @@ function formatDuration(seconds) {
 }
 
 export default function SessionsPage() {
+  const tr = useTr();
   const [sessions, setSessions] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('');
@@ -66,12 +68,12 @@ export default function SessionsPage() {
     } catch (err) {
       setStatusBanner({
         tone: 'verm',
-        text: `Error al sincronizar sesiones: ${err.message}`,
+        text: tr('Error al sincronizar sesiones: {p0}', { p0: err.message }),
       });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tr]);
 
   useEffect(() => {
     loadData(selectedCampaign);
@@ -93,21 +95,21 @@ export default function SessionsPage() {
     setDeleting(true);
     try {
       const targetId = deleteTarget.id || deleteTarget.session_id;
-      const res = await fetch(`/api/session/${targetId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Error al eliminar registro de sesión');
+      const res = await fetch(`/api/admin/sessions/${targetId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(tr('Error al eliminar registro de sesión'));
       setDeleteTarget(null);
       if (inspectedSession && (inspectedSession.id === targetId || inspectedSession.session_id === targetId)) {
         setInspectedSession(null);
       }
       setStatusBanner({
         tone: 'em',
-        text: `Sesión de "${deleteTarget.participant_name}" eliminada correctamente.`,
+        text: tr('Sesión de "{p0}" eliminada correctamente.', { p0: deleteTarget.participant_name }),
       });
       await loadData(selectedCampaign);
     } catch (err) {
       setStatusBanner({
         tone: 'verm',
-        text: `No se pudo eliminar la sesión: ${err.message}`,
+        text: tr('No se pudo eliminar la sesión: {p0}', { p0: err.message }),
       });
     } finally {
       setDeleting(false);
@@ -124,7 +126,7 @@ export default function SessionsPage() {
 
       const url = `/api/admin/export${params.toString() ? `?${params.toString()}` : ''}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('Error al generar archivo de exportación');
+      if (!res.ok) throw new Error(tr('Error al generar archivo de exportación'));
 
       const content = format === null
         ? JSON.stringify(await res.json(), null, 2)
@@ -142,12 +144,12 @@ export default function SessionsPage() {
 
       setStatusBanner({
         tone: 'em',
-        text: `Archivo científico "${filename}" descargado (compatible con R, pandas y SPSS).`,
+        text: tr('Archivo científico "{p0}" descargado (compatible con R, pandas y SPSS).', { p0: filename }),
       });
     } catch (err) {
       setStatusBanner({
         tone: 'verm',
-        text: `Fallo en exportación: ${err.message}`,
+        text: tr('Fallo en exportación: {p0}', { p0: err.message }),
       });
     } finally {
       setExportingLabel('');
@@ -192,16 +194,16 @@ export default function SessionsPage() {
       sortable: true,
       format: (val, row) => (
         <div>
-          <div className="font-semibold text-ink">{val || 'Anónimo'}</div>
+          <div className="font-semibold text-ink">{val || tr('Anónimo')}</div>
           {row.chain_order ? (
-            <div className="font-ui-mono text-xs text-cobalt">Paso {row.chain_order}</div>
+            <div className="font-ui-mono text-xs text-cobalt">{tr('Paso')}{' '}{row.chain_order}</div>
           ) : null}
         </div>
       ),
     },
     {
       key: 'campaign_name',
-      label: 'Experimento / Condición',
+      label: tr('Experimento / Condición'),
       sortable: true,
     },
     {
@@ -215,7 +217,7 @@ export default function SessionsPage() {
       sortable: true,
       format: (val) => (
         <StatBadge
-          label="Estado"
+          label={tr('Estado')}
           value={val === 'completed' ? 'COMPLETADA' : 'EN CURSO'}
           variant={val === 'completed' ? 'em' : 'cobalt'}
         />
@@ -234,7 +236,7 @@ export default function SessionsPage() {
     },
     {
       key: 'durationFormatted',
-      label: 'Duración',
+      label: tr('Duración'),
       align: 'right',
     },
     {
@@ -249,12 +251,12 @@ export default function SessionsPage() {
             className="min-h-[44px] px-3 inline-flex items-center gap-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink"
           >
             <CadIcon name="Eye" size={14} />
-            <span>Ver detalle</span>
+            <span>{tr('Ver detalle')}</span>
           </button>
           <button
             type="button"
             onClick={() => setDeleteTarget(row)}
-            aria-label={`Eliminar sesión de ${row.participant_name}`}
+            aria-label={tr('Eliminar sesión de {p0}', { p0: row.participant_name })}
             className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-vermilion-ink bg-vermilion-tint text-vermilion-ink hover:bg-paper"
           >
             <CadIcon name="Trash2" size={14} />
@@ -272,22 +274,13 @@ export default function SessionsPage() {
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line-control pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-1">
-            <span className="font-ui-mono text-xs uppercase tracking-wider px-2 py-0.5 border border-line-control bg-paper-subtle text-ink">
-              MOD_04 // TRAZAS CONVERSACIONALES Y EXPORTACIÓN TIDY
-            </span>
-            <MarginNote tone="cobalt" rotate={1}>
-              DATOS LISTOS PARA R Y PANDAS
-            </MarginNote>
+            <span className="font-ui-mono text-xs uppercase tracking-wider px-2 py-0.5 border border-line-control bg-paper-subtle text-ink">{tr('MOD_04 // TRAZAS CONVERSACIONALES Y EXPORTACIÓN TIDY')}</span>
+            <MarginNote tone="cobalt" rotate={1}>{tr('DATOS LISTOS PARA R Y PANDAS')}</MarginNote>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">
-            Registro de{' '}
-            <HandMark type="underline" tone="cobalt">
-              Sesiones
-            </HandMark>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">{tr('Registro de')}{' '}
+            <HandMark type="underline" tone="cobalt">{tr('Sesiones')}</HandMark>
           </h1>
-          <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">
-            Lee cada conversación mensaje a mensaje junto con las respuestas de la encuesta. Para descargar los datos, ve a Resultados.
-          </p>
+          <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">{tr('Lee cada conversación mensaje a mensaje junto con las respuestas de la encuesta. Para descargar los datos, ve a Resultados.')}</p>
         </div>
 
         {/* Scientific Export SplitButton + Codebook */}
@@ -306,7 +299,7 @@ export default function SessionsPage() {
             className="min-h-[44px] px-3.5 inline-flex items-center gap-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs font-semibold uppercase text-ink"
           >
             <CadIcon name="BookOpen" size={14} />
-            <span>Diccionario de variables</span>
+            <span>{tr('Diccionario de variables')}</span>
           </button>
 
           <SplitButton
@@ -338,7 +331,7 @@ export default function SessionsPage() {
                   }),
               },
               {
-                label: 'Descargar seguimiento por participante (.csv)',
+                label: tr('Descargar seguimiento por participante (.csv)'),
                 icon: 'GitCompare',
                 onClick: () =>
                   triggerExport({
@@ -377,7 +370,7 @@ export default function SessionsPage() {
           <button
             type="button"
             onClick={() => setStatusBanner(null)}
-            aria-label="Cerrar notificación"
+            aria-label={tr('Cerrar notificación')}
             className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-current bg-paper text-ink"
           >
             <CadIcon name="X" size={14} />
@@ -388,23 +381,21 @@ export default function SessionsPage() {
       {/* Filter & Search Bar */}
       <BlueprintPanel
         codeTag="FILTROS"
-        title={`Explorador de Muestra (${filteredSessions.length} de ${sessions.length} sesiones)`}
+        title={tr('Explorador de Muestra ({p0} de {p1} sesiones)', { p0: filteredSessions.length, p1: sessions.length })}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
               htmlFor="campaign-filter-select"
               className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-            >
-              Filtrar por Experimento / Condición
-            </label>
+            >{tr('Filtrar por Experimento / Condición')}</label>
             <select
               id="campaign-filter-select"
               value={selectedCampaign}
               onChange={(e) => setSelectedCampaign(e.target.value)}
               className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-ui-mono text-xs text-ink"
             >
-              <option value="">Todos los experimentos ({campaigns.length})</option>
+              <option value="">{tr('Todos los experimentos (')}{campaigns.length})</option>
               {campaigns.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -417,15 +408,13 @@ export default function SessionsPage() {
             <label
               htmlFor="session-search-input"
               className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-            >
-              Buscar por participante o escenario
-            </label>
+            >{tr('Buscar por participante o escenario')}</label>
             <input
               id="session-search-input"
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Ej.: Participante 01, Authorship, Caso..."
+              placeholder={tr('Ej.: Participante 01, Authorship, Caso...')}
               className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-body text-xs text-ink"
             />
           </div>
@@ -433,15 +422,13 @@ export default function SessionsPage() {
 
         <div className="mt-4">
           {loading ? (
-            <p className="font-ui-mono text-xs text-ink-2 py-8 text-center">
-              Cargando registro completo de sesiones y mensajes...
-            </p>
+            <p className="font-ui-mono text-xs text-ink-2 py-8 text-center">{tr('Cargando registro completo de sesiones y mensajes...')}</p>
           ) : (
             <DataTable
               columns={columns}
               data={tableRows}
-              caption="Registro auditable de sesiones experimentales y balance léxico"
-              emptyText="No se encontraron sesiones para los criterios seleccionados."
+              caption={tr('Registro auditable de sesiones experimentales y balance léxico')}
+              emptyText={tr('No se encontraron sesiones para los criterios seleccionados.')}
             />
           )}
         </div>
@@ -466,14 +453,13 @@ export default function SessionsPage() {
                 <h2
                   id="transcript-modal-title"
                   className="font-ui-mono text-xs uppercase tracking-wider font-semibold text-ink m-0"
-                >
-                  INSPECTOR DE TRAZA CONVERSACIONAL · {inspectedSession.participant_name}
+                >{tr('INSPECTOR DE TRAZA CONVERSACIONAL ·')}{' '}{inspectedSession.participant_name}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectedSession(null)}
-                aria-label="Cerrar el detalle de la sesión"
+                aria-label={tr('Cerrar el detalle de la sesión')}
                 className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-line-control bg-paper text-ink"
               >
                 <CadIcon name="X" size={16} />
@@ -492,26 +478,22 @@ export default function SessionsPage() {
             <div className="p-5 overflow-y-auto space-y-5 flex-1">
               {/* System Prompt Box */}
               <div className="p-3 bg-paper-subtle border border-line-control">
-                <div className="font-ui-mono text-xs uppercase font-semibold text-ink mb-1">
-                  System Prompt Activo en esta Sesión
-                </div>
+                <div className="font-ui-mono text-xs uppercase font-semibold text-ink mb-1">{tr('System Prompt Activo en esta Sesión')}</div>
                 <pre className="font-ui-mono text-xs text-ink-2 whitespace-pre-wrap m-0 max-h-36 overflow-y-auto">
                   {inspectedSession.system_prompt
                     ? inspectedSession.system_prompt
-                    : 'Sin System Prompt adicional (Condición Base / Naive Mode)'}
+                    : tr('Sin System Prompt adicional (Condición Base / Naive Mode)')}
                 </pre>
               </div>
 
               {/* Conversation Log */}
               <div
                 role="log"
-                aria-label="Transcripción turno a turno"
+                aria-label={tr('Transcripción turno a turno')}
                 className="space-y-3"
               >
                 {(!inspectedSession.messages || inspectedSession.messages.length === 0) ? (
-                  <p className="font-ui-mono text-xs text-ink-2 text-center py-6">
-                    Esta sesión no registra mensajes conversacionales.
-                  </p>
+                  <p className="font-ui-mono text-xs text-ink-2 text-center py-6">{tr('Esta sesión no registra mensajes conversacionales.')}</p>
                 ) : (
                   inspectedSession.messages.map((msg, idx) => {
                     const isUser = msg.role === 'user';
@@ -533,9 +515,9 @@ export default function SessionsPage() {
                             #{idx + 1} · {isUser ? 'ESTUDIANTE' : 'ASISTENTE IA'}
                           </span>
                           <div className="flex flex-wrap items-center gap-2 text-ink-2 stat">
-                            <span>{wordCount} palabras</span>
-                            {tel?.ttft_ms ? <span>· TTFT {Math.round(tel.ttft_ms)} ms</span> : null}
-                            {tel?.cost_usd ? <span>· USD {Number(tel.cost_usd).toFixed(5)}</span> : null}
+                            <span>{wordCount}{' '}{tr('palabras')}</span>
+                            {tel?.ttft_ms ? <span>{tr('· TTFT')}{' '}{Math.round(tel.ttft_ms)}{' '}{tr('ms')}</span> : null}
+                            {tel?.cost_usd ? <span>{tr('· USD')}{' '}{Number(tel.cost_usd).toFixed(5)}</span> : null}
                             {msg.created_at ? (
                               <span>· {new Date(msg.created_at).toLocaleTimeString()}</span>
                             ) : null}
@@ -554,9 +536,7 @@ export default function SessionsPage() {
               {inspectedSession.survey_answers &&
                 Object.keys(inspectedSession.survey_answers).length > 0 && (
                   <div className="p-4 bg-paper-subtle border border-line-control space-y-2.5">
-                    <div className="font-ui-mono text-xs uppercase font-semibold text-cobalt">
-                      Respuestas del Instrumento Post-Sesión
-                    </div>
+                    <div className="font-ui-mono text-xs uppercase font-semibold text-cobalt">{tr('Respuestas del Instrumento Post-Sesión')}</div>
                     <dl className="space-y-2 m-0">
                       {Object.entries(inspectedSession.survey_answers).map(([k, val]) => {
                         const matchedQ = (inspectedSession.survey_config || []).find(
@@ -583,9 +563,7 @@ export default function SessionsPage() {
                 type="button"
                 onClick={() => setInspectedSession(null)}
                 className="min-h-[44px] px-4 border border-line-control bg-paper font-ui-mono text-xs font-semibold uppercase text-ink"
-              >
-                Cerrar Inspector
-              </button>
+              >{tr('Cerrar Inspector')}</button>
             </div>
           </div>
         </div>
@@ -606,29 +584,23 @@ export default function SessionsPage() {
           >
             <div className="flex items-center gap-2 text-vermilion-ink">
               <CadIcon name="AlertTriangle" size={18} />
-              <h3 id="delete-session-title" className="font-ui-mono text-xs uppercase font-bold m-0">
-                CONFIRMAR ELIMINACIÓN DE SESIÓN
-              </h3>
+              <h3 id="delete-session-title" className="font-ui-mono text-xs uppercase font-bold m-0">{tr('CONFIRMAR ELIMINACIÓN DE SESIÓN')}</h3>
             </div>
-            <p className="font-body text-sm text-ink m-0">
-              ¿Desea eliminar permanentemente la sesión de{' '}
-              <strong>{deleteTarget.participant_name}</strong> y todos sus turnos conversacionales?
-            </p>
+            <p className="font-body text-sm text-ink m-0">{tr('¿Desea eliminar permanentemente la sesión de')}{' '}
+              <strong>{deleteTarget.participant_name}</strong>{' '}{tr('y todos sus turnos conversacionales?')}</p>
             <div className="flex justify-end gap-3 pt-2 border-t border-line-control">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 className="min-h-[44px] px-4 border border-line-control bg-paper font-ui-mono text-xs uppercase text-ink"
-              >
-                Cancelar
-              </button>
+              >{tr('Cancelar')}</button>
               <button
                 type="button"
                 disabled={deleting}
                 onClick={confirmDeleteSession}
                 className="min-h-[44px] px-4 border border-vermilion-ink bg-vermilion-tint font-ui-mono text-xs font-bold uppercase text-vermilion-ink"
               >
-                {deleting ? 'Eliminando…' : 'Eliminar Sesión'}
+                {deleting ? 'Eliminando…' : tr('Eliminar Sesión')}
               </button>
             </div>
           </div>

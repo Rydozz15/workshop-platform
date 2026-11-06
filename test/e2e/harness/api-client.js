@@ -6,8 +6,8 @@ import { POST as joinRoute } from '../../../app/api/session/join/route.js';
 import {
   GET as getSessionRoute,
   PUT as putSessionRoute,
-  DELETE as deleteSessionRoute,
 } from '../../../app/api/session/[sessionId]/route.js';
+import { DELETE as deleteSessionRoute } from '../../../app/api/admin/sessions/[id]/route.js';
 import { POST as surveyRoute } from '../../../app/api/session/[sessionId]/survey/route.js';
 import { GET as getWorkshopsRoute, POST as postWorkshopsRoute } from '../../../app/api/admin/workshops/route.js';
 import { GET as getVersionsRoute, POST as postVersionsRoute } from '../../../app/api/admin/versions/route.js';
@@ -57,8 +57,8 @@ export const apiClient = {
 
   // 4. Delete Session
   async deleteSession(sessionId) {
-    const req = makeJsonRequest(`http://localhost:3000/api/session/${sessionId}`, 'DELETE');
-    const res = await deleteSessionRoute(req, { params: Promise.resolve({ sessionId }) });
+    const req = makeJsonRequest(`http://localhost:3000/api/admin/sessions/${sessionId}`, 'DELETE');
+    const res = await deleteSessionRoute(req, { params: Promise.resolve({ id: sessionId }) });
     const data = await res.json();
     return { status: res.status, ok: res.ok, data };
   },

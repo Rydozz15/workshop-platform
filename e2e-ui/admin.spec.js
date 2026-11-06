@@ -4,6 +4,9 @@ const { adminLogin, createCampaign, ADMIN_PASSWORD } = require('./helpers');
 test('admin API is closed without a session, and the wrong password is rejected', async ({ page, request }) => {
   const res = await request.get('/api/admin/campaigns');
   expect(res.status()).toBe(401);
+  // Deleting a session is admin-only: the public session route has no DELETE, the admin one needs the cookie.
+  expect((await request.delete('/api/session/some-id')).status()).toBe(405);
+  expect((await request.delete('/api/admin/sessions/some-id')).status()).toBe(401);
 
   await page.goto('/admin');
   await page.locator('input[type=password]').fill('incorrecta');

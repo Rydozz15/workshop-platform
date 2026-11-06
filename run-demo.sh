@@ -12,6 +12,13 @@ PORT="${PORT:-3000}"
 export DB_PROVIDER=memory
 export NODE_ENV=production
 
+# In production the admin stays locked without a password: generate one for this session.
+if [ -z "${ADMIN_PASSWORD:-}" ] && ! grep -q '^ADMIN_PASSWORD=' .env.local 2>/dev/null; then
+  ADMIN_PASSWORD="$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 10)"
+  export ADMIN_PASSWORD
+  echo "Admin password for this demo session: $ADMIN_PASSWORD"
+fi
+
 SERVER_PID=""
 TUNNEL_PID=""
 

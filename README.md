@@ -1,219 +1,130 @@
 # PromptSketch
 
-> **Design, run and analyze educational activities with an AI assistant: compare versions and see what works.**
+Design, run and analyze educational activities with an AI assistant. Compare versions of the assistant, watch participants live, download the data and get a first plain-language reading of what worked.
 
-PromptSketch is an open-source platform for teachers, researchers and learning designers. You create a **campaign** (an ordered list of steps), give each step one or more **conditions** (a case plus optional instructions for the assistant), share a single code or QR, watch participants **live**, and then download the data and read a first, plain-language comparison of the conditions.
+Built for teachers, researchers and learning designers. Available in Spanish, English and Portuguese (Brazil).
 
-Built with Next.js 16 (React 19), Tailwind CSS, and a strict **CAD Blueprint / Sketchbook** design system compliant with **WCAG 2.2 Level AAA**, PromptSketch completely eradicates "AI slop" (zero emojis, zero SaaS gradients, zero rounded pills) in favor of 90% technical drawing precision and 10% human marginalia.
-
----
-
-## 1-Click Cloud Deployment
-
-Deploy your own live PromptSketch instance in less than two minutes:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frydozz%2FPromptSketch&env=DB_PROVIDER,SUPABASE_URL,SUPABASE_ANON_KEY,ADMIN_PASSWORD,GROQ_API_KEY&project-name=promptsketch&repo-name=promptsketch)
+> **Built with Claude Code.** This project was developed with [Claude Code](https://claude.com/claude-code) (Anthropic) working under the direction of the maintainers. See [Development with Claude Code](#development-with-claude-code) for what that means and what it does not.
 
 ---
 
-## Core Capabilities
+## How it works
 
-### 1. Multi-Provider AI Engine & Real-Time Telemetry
-* **Ecosystem Providers:** Native integrations with **Groq Cloud API** (ultra-fast inference, Llama 3.3 70B, Llama 3.1 8B), **OpenRouter**, **OpenAI** (GPT-4o, GPT-4o-mini), **Anthropic** (Claude 3.5 Sonnet), and **Ollama** (offline local inference for air-gapped classrooms).
-* **Deterministic Fallback:** Robust mock engine for zero-cost automated tests and offline demonstrations when no API keys are present.
-* **Granular Telemetry:** Captures exact prompt and completion tokens, Time-to-First-Token (TTFT), total latency, and estimated monetary cost (\$ USD) per turn.
-* **Reasoning Tag Stripping:** Automatically parses and hides internal `<think>...</think>` tags from DeepSeek R1 and reasoning models before rendering to participants, while preserving them in researcher audit logs.
+1. **Create a campaign** – an ordered list of *steps*. Each step has one or more *conditions* (a case for the participant plus optional instructions for the assistant), an optional welcome message and an optional end-of-step survey.
+2. **Share one code or QR** per campaign. Participants join, enter a name or pseudonym, optionally accept an informed-consent notice, chat with the assistant and answer the survey.
+3. **Watch it live** – who is in each step, how conditions are balanced, and plain-language alerts (for example: the assistant is running in simulation, someone joined but never wrote, a step is paused).
+4. **Get the results** – download tidy CSV files (one row per session, per message, or per participant across steps) with a variable dictionary, and read a first comparison of the conditions. A detailed analysis page shows the assumptions and tests behind it.
 
-### 2. Assumption-First Statistics
-* **Normality & Homoscedasticity Pre-Flight:** Evaluates Shapiro-Wilk ($W$, $p$) and Levene's variance homogeneity ($F$, $p$) before suggesting inferential tests. When assumptions fail, it automatically gates the analysis toward non-parametric methods and explains *why*.
-* **Inferential Testing:** Computes Welch's $t$ with Cohen's $d$, and Mann-Whitney $U$ with Cliff's delta ($\delta$) derived directly from rank sums:
-  $$\delta = \frac{2U}{n_1 n_2} - 1$$
-* **Family-Wise Error Rate Control:** Step-down Holm-Bonferroni correction ($p_{\text{Holm}}$) adjusted dynamically across multiple survey items and behavioral dimensions.
-* **Psychometrics & Paired Learning Gain:** Cronbach's alpha ($\alpha$) with item-rest correlations, and Hake's normalized learning gain ($g$) for pre/post-test diagnostic pairs:
-  $$g = \frac{\text{Post} - \text{Pre}}{100 - \text{Pre}}$$
-* **Inter-Rater Reliability (IRR) Calibration Lab:** Computes Cohen's kappa ($\kappa$) alongside Gwet's $\text{AC}_1$ to resist the *prevalence paradox* in automated or human qualitative rubric coding.
-* **Conversational Learning Analytics:**
-  - Student/Bot Verbal Ratio ($R_{\text{vol}}$) and Mean Length of Utterance in words (MLU-w).
-  - Normalized Latency: Disentangles estimated reading time (based on bot word count) from formulation latency (student typing speed).
-  - Outlier Detection: Flags disengaged turns where tab inactivity exceeds 180 seconds.
-  - Moving-Average Type-Token Ratio (MATTR, window $W=20$) and cognitive connector density (causal markers: *"porque"*, *"por lo tanto"*, *"sin embargo"*).
+Conditions are assigned at random and balanced. Two conditions are not a limit: with three or more, the platform uses Welch's ANOVA or Kruskal-Wallis followed by Holm-corrected pairwise comparisons.
 
-### 3. Scientific Interoperability & Export
-* **Tidy Data Formats:** 1-click download of long-format CSV and JSON datasets structured for immediate ingestion in Python (`pandas`), R (`tidyverse`), and SPSS.
-* **Codebook Generation:** Automatic machine-readable dictionary documenting column definitions, measurement scales, and valid value ranges.
-* **LaTeX `booktabs` Export:** Generates clean, publication-ready LaTeX tables ready to paste directly into a manuscript.
-* **Methodological reviewer and floating assistant:** an LLM reviewer that stress-tests sample sizes, assumptions and effect sizes, and an in-app assistant (with an offline fallback) that answers questions about the platform.
+## Features
 
-### 4. Blueprint / Sketchbook Design System (WCAG 2.2 AAA)
-* **Zero AI Slop:** Strict linting rules reject Unicode emojis, blurred box shadows, gradients, and rounded borders.
-* **Visual Identity:** 90% technical CAD drawing (orthographic grids, title blocks, crop marks, tabular JetBrains Mono numerals) + 10% human annotations (Architects Daughter marginalia).
-* **Accessibility:** 42/42 color pairs pass WCAG 2.2 AAA contrast ($\ge 7:1$ for text, $\ge 3:1$ for controls). Includes 44px touch targets, visible 3px focus rings, keyboard `<Abbr/>` definitions, and accessible data table toggles for all chart visualizations.
+- **Campaigns, steps and conditions** with a full editor (create, edit, reorder, duplicate, delete) and a preview link.
+- **Live monitor** with KPIs, prioritised alerts, per-step progress and a projectable QR.
+- **Results hub** with CSV exports and a plain-language first reading; detailed analysis under progressive disclosure.
+- **Statistics** (`lib/stats*.js`): assumption checks (Shapiro-Wilk, Levene), Welch's t, Mann-Whitney U with Cliff's δ, Welch's ANOVA, Kruskal-Wallis, Holm-Bonferroni, Cronbach's α, Hake's gain, Cohen's κ and Gwet's AC₁, conversational metrics (MATTR, MLU-w, reading latency). Golden values are checked against SciPy.
+- **AI engine** (`lib/ai-engine.js`): OpenRouter, Groq, OpenAI, Anthropic and Ollama with streaming, `<think>` tag stripping, latency/token/cost telemetry and a simulated fallback when no key is configured. A model picker shows live OpenRouter pricing.
+- **Floating assistant** for facilitators, with an offline answer base.
+- **Participant flow** with visible progress, required-question handling, a case drawer on phones and a completion screen.
+- **Demo mode** loads sample data and removes only that data when you leave.
+- **Accessibility**: WCAG 2.2 AAA contrast for text (checked in CI), 44px targets, keyboard-operable components.
+- **Security**: signed httpOnly admin session; every `/api/admin/*` request is checked in `proxy.js`.
 
----
-
-## Quick Start (Zero-Setup Local Mode)
-
-PromptSketch runs immediately out-of-the-box without requiring a database, cloud account, or API key:
+## Quick start
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/rydozz/PromptSketch.git
-cd PromptSketch/workshop-app
-
-# 2. Run the automated setup and launch script
-./run.sh
-```
-
-`./run.sh` will:
-1. Detect or create a local `.env.local` configured with `DB_PROVIDER=memory`.
-2. Seed the in-memory database with the **ISDDE Benchmark Dataset** (2 prompt versions, 2 workshops, 18 complete participant sessions, and 108 chat turns).
-3. Start the Next.js server at `http://localhost:3000`.
-
-Open `http://localhost:3000/admin` (password: `workshop2025` or custom) to explore the full analytics dashboard, drafting table, and campaign builder.
-
----
-
-## Live Mobile & Conference Testing (`./run-demo.sh`)
-
-When presenting a live workshop or conference demo (e.g. at a conference or workshop), university or venue Wi-Fi networks often block local peer-to-peer device discovery.
-
-PromptSketch includes `./run-demo.sh` to provide an instant, secure public HTTPS tunnel with a terminal-rendered QR code:
-
-```bash
-./run-demo.sh
-```
-
-Features of `./run-demo.sh`:
-* Starts the server with an isolated in-memory test database.
-* Exposes a public HTTPS tunnel via `localtunnel` (or `cloudflared`).
-* Generates a high-contrast ASCII QR code directly in the terminal for audience mobile phone scanning.
-* Automatically updates `NEXT_PUBLIC_BASE_URL` so participant links and QR codes route seamlessly through the HTTPS tunnel.
-
----
-
-## Manual Installation & Environment Setup
-
-If you prefer running commands manually:
-
-```bash
-cd workshop-app
+git clone https://github.com/Rydozz15/workshop-platform.git
+cd workshop-platform
 npm install
+./run.sh          # in-memory database, http://localhost:3000
 ```
 
-Create `.env.local` in the `workshop-app/` directory:
+Open `http://localhost:3000/admin`. Outside production the local default password is `workshop2025`; set `ADMIN_PASSWORD` to use your own. In **production the admin stays locked until `ADMIN_PASSWORD` is set**.
 
-```env
-# AI Providers (At least one recommended; fallback mock engine used if empty)
-GROQ_API_KEY=gsk_...
-OPENROUTER_API_KEY=sk-or-...
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Admin Dashboard Password (required for /admin access)
-ADMIN_PASSWORD=workshop2025
-
-# Database Provider: "memory" (zero-setup local) or "supabase" (production)
-DB_PROVIDER=memory
-
-# Base URL for participant links and QR codes
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-
-# Default AI Provider & Model (optional; can also be configured in /admin/settings)
-DEFAULT_PROVIDER=groq
-DEFAULT_MODEL=llama-3.3-70b-versatile
-```
-
-Run development server:
-```bash
-npm run dev
-```
-
-Run production build:
-```bash
-npm run build
-npm start
-```
-
----
-
-## Production Deployment with Supabase (PostgreSQL)
-
-For production deployments with multi-user concurrency and persistent cloud storage:
-
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Navigate to **SQL Editor** in your Supabase dashboard and run the schema setup script located in:
-   [`workshop-app/lib/db-supabase.js`](file:///home/rydozz/Documents/Proyectos/MT4/ISSDE/workshop-app/lib/db-supabase.js) (see commented SQL at bottom of file).
-3. In your deployment platform (Vercel, Railway, or VPS), set the following environment variables:
-   ```env
-   DB_PROVIDER=supabase
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_ANON_KEY=eyJhbGciOi...
-   ADMIN_PASSWORD=your-secure-admin-password
-   GROQ_API_KEY=gsk_...
-   NEXT_PUBLIC_BASE_URL=https://your-production-domain.com
-   ```
-
----
-
-## Verification & Test Suites
-
-PromptSketch maintains rigorous automated quality gates:
+For a booth or classroom demo with a public HTTPS link and a terminal QR code:
 
 ```bash
-# 1. Verify strict WCAG 2.2 AAA color contrast (42 token pairs)
-npm run test:contrast
-
-# 2. Verify Anti-AI-Slop compliance across all 44 UI components and routes
-npm run test:slop
-
-# 3. Run all unit test suites (Stats, Chat Analytics, Multi-Provider AI Engine) and E2E API tests
-npm test        # unit + E2E logic suites
-npm run test:ui # Playwright UI journeys (needs Google Chrome)
+./run-demo.sh     # generates an admin password for the session if none is set
 ```
 
----
+## Configuration
 
-## Directory Structure
+Create `.env.local` (all optional except `ADMIN_PASSWORD` in production):
+
+| Variable | Purpose |
+| --- | --- |
+| `ADMIN_PASSWORD` | Admin password. Required in production. |
+| `SESSION_SECRET` | Extra secret mixed into the admin session signature. |
+| `DB_PROVIDER` | `memory` (default, JSON file) or `supabase`. |
+| `DB_MEMORY_PATH` | Path of the JSON file used by the memory provider (default `./data.json`). |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | Supabase connection when `DB_PROVIDER=supabase`. |
+| `OPENROUTER_API_KEY`, `GROQ_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | AI provider keys. Placeholder values run the simulated assistant. |
+| `OLLAMA_BASE_URL` | Local Ollama server (default `http://localhost:11434`). |
+| `DEFAULT_MODEL` | Default model when none is configured in Settings. |
+| `NEXT_PUBLIC_BASE_URL` | Public base URL used for participant links. |
+
+The memory provider keeps data in a single JSON file and is meant for demos and single-instance use. For real workshops with concurrency, use Supabase.
+
+### Supabase
+
+1. Create a project and run `docs/migrations/001_base_schema.sql`, then `docs/migrations/002_campaigns.sql` in the SQL editor. The first file is reconstructed from the code: try it on a scratch project before production.
+2. Set `DB_PROVIDER=supabase`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `ADMIN_PASSWORD` in your host (for example Vercel).
+
+### Privacy
+
+Conversations are sent to the AI provider you choose. Review its data policy and, for research, your ethics requirements. The Ollama option keeps everything on your machine. Participants can be asked for informed consent per campaign.
+
+## Testing
+
+```bash
+npm test               # unit and logic suites + 126 E2E API/logic tests (no server needed)
+npm run test:ui        # Playwright journeys in Google Chrome (starts its own dev server)
+npm run test:contrast  # WCAG AAA contrast of the design tokens
+npm run test:slop      # design-rule lint (no emojis, no layout-shifting hover, ...)
+npm run lint
+```
+
+`test/i18n.test.js` fails when a UI string lacks an English or Portuguese translation, or when a translation is unused.
+
+## Project structure
 
 ```
-workshop-app/
-├── app/
-│   ├── layout.js                     # Root layout with CAD webfonts & skip link
-│   ├── page.js                       # Public participant access & campaign finder
-│   ├── glosario/page.js              # Dedicated interactive statistical glossary
-│   ├── session/[code]/page.js        # Participant flow (Onboarding -> Chat -> Survey -> Journey)
-│   ├── admin/
-│   │   ├── layout.js                 # Admin navigation & breadcrumbs
-│   │   ├── page.js                   # Live Experiment Overview & Quick Metrics
-│   │   ├── versions/page.js          # Drafting Table A/B Prompt Comparator & Diff
-│   │   ├── campaigns/page.js         # Kraft Experiment Gallery & Campaign Builder
-│   │   ├── sessions/page.js          # Participant Session Table & Transcript Inspector
-│   │   ├── analytics/page.js         # Assumption Gatekeeper, Holm-Bonferroni, IRR & Charts
-│   │   └── settings/page.js          # 5-Provider AI Diagnostics & Benchmark Seed Loader
-│   └── api/                          # REST API endpoints for sessions, chat, analytics, exports
-├── components/ui/                    # Blueprint primitives (Panel, SplitButton, StatBadge, etc.)
-├── lib/
-│   ├── ai-engine.js                  # Multi-provider AI router with TTFT & cost telemetry
-│   ├── stats.js                      # Welch t, Mann-Whitney U, Cliff delta, Shapiro-Wilk, Levene
-│   ├── psychometrics.js              # Cronbach alpha, item-rest correlation, Hake gain
-│   ├── irr.js                        # Cohen kappa & Gwet AC1 inter-rater reliability
-│   ├── chat-analytics.js             # Conversational metrics, normalized latency, MATTR
-│   ├── tidy-export.js                # Python/R/SPSS tidy data export transformer
-│   ├── latex-generator.js            # Publication-grade LaTeX booktabs table generator
-│   ├── codebook.js                   # Variable codebook dictionary builder
-│   ├── methodology-reviewer-prompt.js # Methodological reviewer prompt
-│   ├── db.js                         # Database abstraction layer (memory vs supabase)
-│   └── seeds/isdde-benchmark.js      # Canonical benchmark dataset generator
-├── run.sh                            # 1-command zero-setup local launch script
-├── run-demo.sh                       # 1-command HTTPS tunnel & terminal QR code demo script
-└── scripts/                          # Automated contrast and anti-slop linters
+app/                    Next.js App Router (participant pages, /admin, /api)
+components/             UI primitives (blueprint/), campaign editor, assistant
+lib/                    db providers, AI engine, statistics, campaigns, live monitor, i18n
+test/, e2e-ui/          logic tests and Playwright UI tests
+docs/                   SQL migrations and design notes
 ```
 
----
+Conventions: Spanish is the source language for UI text (`tr('Texto')`, translations in `lib/i18n/messages-*.js`); design rules are enforced by `npm run test:slop`. See `DESIGN_NOTES.md` for the design system.
 
-## Citation & Academic Use
+## Development with Claude Code
 
-If you use PromptSketch in an academic publication, workshop, or research study, please cite our LAK27 companion paper:
+PromptSketch was built iteratively with Claude Code, Anthropic's agentic coding tool (models Claude Opus 5.5 and Sonnet 5.5). In line with common practice for AI-assisted projects:
+
+- **Transparency.** Commits made with Claude Code carry a `Co-Authored-By: Claude …` trailer, so AI-assisted changes can be traced in the history.
+- **Human direction and ownership.** The maintainers set the goals, the product decisions and the review criteria, and own the result. The logo is based on the maintainers' own artwork.
+- **What was generated.** Application code, tests, documentation and the English and Portuguese translations were drafted with Claude Code.
+- **Verification, not blind trust.** Changes are gated by the automated suites above (logic, statistics against SciPy reference values, UI journeys, accessibility contrast, design lint). These catch regressions; they are not a substitute for review.
+- **Known limits.**
+  - The code has not had an independent security audit.
+  - The English and Portuguese translations have not been reviewed by native speakers.
+  - Usability has not yet been tested with real facilitators; a protocol is in `docs/PRUEBA_USABILIDAD.md`.
+  - Check privacy, consent and data-protection requirements before using it with real participants.
+
+If you contribute, please say how AI was used in your pull request, keep the test suites green and review generated code as you would any other.
+
+## For AI agents
+
+`AGENTS.md` tells coding agents how to work on this repository (commands, conventions, rules that are easy to break) and tells operating agents how to drive a running instance through its API (authentication, campaign payloads, participant simulation, exports, guardrails).
+
+## License
+
+MIT.
+
+## Citation
+
+If you use PromptSketch in academic work, please cite the companion paper:
 
 ```bibtex
 @inproceedings{fuentes2027promptsketch,
@@ -225,16 +136,3 @@ If you use PromptSketch in an academic publication, workshop, or research study,
   publisher={Society for Learning Analytics Research (SoLAR)}
 }
 ```
-
----
-
-## License
-
-PromptSketch is open-source software released under the [MIT License](LICENSE).
-
-
-## Configuration notes
-
-- **Admin access:** set `ADMIN_PASSWORD`. Outside production a local default exists; in production the admin stays locked until the variable is set. Admin API routes are protected by a signed session cookie (`proxy.js`).
-- **Optional Supabase migration:** `docs/migrations/002_campaigns.sql` adds campaign fields and per-condition prompts. The app works without it; the new fields are just not stored.
-- **Languages:** Spanish, English and Portuguese (Brazil). See `CLAUDE.md` for the translation convention.

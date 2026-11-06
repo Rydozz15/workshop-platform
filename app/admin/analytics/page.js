@@ -11,8 +11,7 @@ import {
   DataTable,
   ChartFrame,
   Abbr,
-  MarginNote,
-  HandMark,
+  Disclosure,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 
@@ -30,7 +29,7 @@ import { calculateCronbachAlpha, calculateHakeGain } from '@/lib/psychometrics';
 import { calculateIRR } from '@/lib/irr';
 import { analyzeConversation } from '@/lib/chat-analytics';
 import { generateBooktabsTable } from '@/lib/latex-generator';
-import { useLanguage } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 
 /**
  * Resolves a survey answer from a session regardless of whether keys are stored
@@ -111,7 +110,19 @@ const TIER_SPANISH = {
   large: 'Grande',
 };
 
+
+/** Collapsible analysis block: plain-language question as the title, details on demand. */
+function AnalysisSection({ title, summary, defaultOpen = false, badge = null, children }) {
+  return (
+    <Disclosure title={title} summary={summary} defaultOpen={defaultOpen}>
+      {badge && <div className="mb-3">{badge}</div>}
+      <div className="space-y-4">{children}</div>
+    </Disclosure>
+  );
+}
+
 export default function AnalyticsPage() {
+  const tr = useTr();
   const { locale } = useLanguage();
   const [raw, setRaw] = useState({
     workshops: [],
@@ -192,12 +203,12 @@ export default function AnalyticsPage() {
     } catch (err) {
       setStatusBanner({
         tone: 'verm',
-        text: `Error al cargar motor analítico: ${err.message}`,
+        text: tr('Error al cargar motor analítico: {p0}', { p0: err.message }),
       });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tr]);
 
   useEffect(() => {
     loadAnalytics();
@@ -223,8 +234,8 @@ export default function AnalyticsPage() {
       const sessA = wA ? sessions.filter((s) => s.workshop_id === wA.id) : [];
       const sessB = wB ? sessions.filter((s) => s.workshop_id === wB.id) : [];
       return {
-        labelA: wA ? wA.name : 'Condición A',
-        labelB: wB ? wB.name : 'Condición B',
+        labelA: wA ? wA.name : tr('Condición A'),
+        labelB: wB ? wB.name : tr('Condición B'),
         analysisType: wB?.analysis_type || wA?.analysis_type || 'preregistrado',
         hypothesis: wB?.hypothesis || wA?.hypothesis || '',
         surveyConfigA: wA?.survey_config || [],
@@ -399,19 +410,19 @@ export default function AnalyticsPage() {
       },
       {
         key: 'student_mlu_w',
-        name: 'Longitud Media de Enunciado Estudiantil (MLU-w)',
+        name: tr('Longitud Media de Enunciado Estudiantil (MLU-w)'),
         groupA: dialogicSummary.A.mluArr,
         groupB: dialogicSummary.B.mluArr,
       },
       {
         key: 'mattr_25',
-        name: 'Diversidad Léxica Invariante (MATTR W=25)',
+        name: tr('Diversidad Léxica Invariante (MATTR W=25)'),
         groupA: dialogicSummary.A.mattr25Arr,
         groupB: dialogicSummary.B.mattr25Arr,
       },
       {
         key: 'epistemic_density',
-        name: 'Densidad Epistémica Total (conectores / 100 palabras)',
+        name: tr('Densidad Epistémica Total (conectores / 100 palabras)'),
         groupA: dialogicSummary.A.epistemicTotalArr,
         groupB: dialogicSummary.B.epistemicTotalArr,
       },
@@ -505,7 +516,7 @@ export default function AnalyticsPage() {
 
     const holmAdjusted = applyHolmBonferroni(rawEvaluations);
     return holmAdjusted;
-  }, [cohortData, dialogicSummary]);
+  }, [cohortData, dialogicSummary, tr]);
 
   // Keep selectedChartMetricKey synced
   useEffect(() => {
@@ -630,7 +641,7 @@ export default function AnalyticsPage() {
       const r1 = outcomePairs.map((p) => mapIsddeOutcomeConstruct(p.rater_human));
       const r2 = outcomePairs.map((p) => mapIsddeOutcomeConstruct(p.rater_llm));
       return {
-        title: 'ISDDE Humano vs. LLM-as-a-Judge (Dimensión: Resultado de Sesión)',
+        title: tr('ISDDE Humano vs. LLM-as-a-Judge (Dimensión: Resultado de Sesión)'),
         ...calculateIRR(r1, r2),
       };
     }
@@ -640,7 +651,7 @@ export default function AnalyticsPage() {
       const r1 = flowPairs.map((p) => mapIsddeFlowConstruct(p.rater_human));
       const r2 = flowPairs.map((p) => mapIsddeFlowConstruct(p.rater_llm));
       return {
-        title: 'ISDDE Humano vs. LLM-as-a-Judge (Dimensión: Patrón Dialógico)',
+        title: tr('ISDDE Humano vs. LLM-as-a-Judge (Dimensión: Patrón Dialógico)'),
         ...calculateIRR(r1, r2),
       };
     }
@@ -663,11 +674,11 @@ export default function AnalyticsPage() {
     return {
       title:
         irrMode === 'prevalence_demo'
-          ? 'Demostración de Paradoja de Prevalencia (90% Categoría Dominante)'
-          : 'Calibración Personalizada de Jueces (CSV)',
+          ? tr('Demostración de Paradoja de Prevalencia (90% Categoría Dominante)')
+          : tr('Calibración Personalizada de Jueces (CSV)'),
       ...calculateIRR(r1, r2),
     };
-  }, [raw.irrCalibration, irrMode, customIrrCsv]);
+  }, [raw.irrCalibration, irrMode, customIrrCsv, tr]);
 
   // 7. Publication-grade LaTeX booktabs snippet
   const latexCode = useMemo(() => {
@@ -676,12 +687,12 @@ export default function AnalyticsPage() {
     return generateBooktabsTable(
       { continuous, ordinal },
       {
-        caption: `Comparación Experimental: ${cohortData.labelA} vs. ${cohortData.labelB}.`,
+        caption: tr('Comparación Experimental: {p0} vs. {p1}.', { p0: cohortData.labelA, p1: cohortData.labelB }),
         label: 'tab:promptsketch_ab_results',
         familySize: inferentialBundle.length,
       }
     );
-  }, [inferentialBundle, cohortData]);
+  }, [inferentialBundle, cohortData, tr]);
 
   const copyLatexToClipboard = () => {
     navigator.clipboard.writeText(latexCode);
@@ -778,12 +789,12 @@ export default function AnalyticsPage() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Error en la revisión metodológica');
+      if (!res.ok) throw new Error(json.error || tr('Error en la revisión metodológica'));
       setLakReview(json);
     } catch (err) {
       setStatusBanner({
         tone: 'verm',
-        text: `Error al consultar el revisor metodológico: ${err.message}`,
+        text: tr('Error al consultar el revisor metodológico: {p0}', { p0: err.message }),
       });
     } finally {
       setLakLoading(false);
@@ -792,10 +803,8 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <BlueprintPanel codeTag="MOD_05" title="Calculando diagnósticos de supuestos e inferencia">
-        <p className="font-ui-mono text-xs text-ink-2 py-8 text-center">
-          Ejecutando Gatekeeper estadístico, Holm-Bonferroni, psicometría y analítica conversacional...
-        </p>
+      <BlueprintPanel codeTag="MOD_05" title={tr('Calculando diagnósticos de supuestos e inferencia')}>
+        <p className="font-ui-mono text-xs text-ink-2 py-8 text-center">{tr('Ejecutando Gatekeeper estadístico, Holm-Bonferroni, psicometría y analítica conversacional...')}</p>
       </BlueprintPanel>
     );
   }
@@ -812,23 +821,8 @@ export default function AnalyticsPage() {
       {/* Header */}
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line-control pb-4">
         <div>
-          <div className="flex flex-wrap items-center gap-3 mb-1">
-            <span className="font-ui-mono text-xs uppercase tracking-wider px-2 py-0.5 border border-line-control bg-paper-subtle text-ink">
-              MOD_05 // INFERENCIA CON SUPUESTOS, PSICOMETRÍA E IRR
-            </span>
-            <MarginNote tone="cobalt" rotate={-2}>
-              Primero los supuestos
-            </MarginNote>
-          </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">
-            Análisis de{' '}
-            <HandMark type="underline" tone="cobalt">
-              resultados
-            </HandMark>
-          </h1>
-          <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">
-            Análisis detallado para quien quiera revisar los supuestos y las pruebas. Si buscas una primera lectura, ve a Resultados.
-          </p>
+          <h1 className="ps-h1">{tr('Análisis detallado')}</h1>
+          <p className="ps-lead mt-1 max-w-3xl">{tr('Para quien quiere revisar las pruebas con calma. Si solo buscas una primera lectura, ve a Resultados.')}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
@@ -839,7 +833,7 @@ export default function AnalyticsPage() {
             className="min-h-[44px] px-3.5 inline-flex items-center gap-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs font-semibold uppercase text-ink"
           >
             <CadIcon name="FileText" size={14} className="text-cobalt" />
-            <span>Tabla LaTeX booktabs (.tex)</span>
+            <span>{tr('Tabla LaTeX booktabs (.tex)')}</span>
           </button>
 
           <SplitButton
@@ -847,9 +841,7 @@ export default function AnalyticsPage() {
             iconBox="ShieldCheck"
             loading={lakLoading}
             onClick={handleRunLakReview}
-          >
-            Revisar con asistente metodológico
-          </SplitButton>
+          >{tr('Revisar con asistente metodológico')}</SplitButton>
         </div>
       </header>
 
@@ -866,7 +858,7 @@ export default function AnalyticsPage() {
           <button
             type="button"
             onClick={() => setStatusBanner(null)}
-            aria-label="Cerrar notificación"
+            aria-label={tr('Cerrar notificación')}
             className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-current bg-paper text-ink"
           >
             <CadIcon name="X" size={14} />
@@ -876,8 +868,8 @@ export default function AnalyticsPage() {
 
       {/* Cohort & Axis Selector Panel */}
       <BlueprintPanel
-        codeTag="CFG_AB"
-        title="Definición del Contraste Experimental (Condición A vs. Condición B)"
+        title={tr('¿Qué quieres comparar?')}
+        subtitle={tr('Elige dos condiciones o dos campañas para compararlas.')}
         headerSlot={
           <div className="inline-flex border border-line-control bg-paper">
             <button
@@ -888,9 +880,7 @@ export default function AnalyticsPage() {
                   ? 'bg-ink text-paper font-semibold'
                   : 'bg-paper text-ink hover:bg-paper-subtle'
               }`}
-            >
-              Entre Campañas / Pasos
-            </button>
+            >{tr('Entre Campañas / Pasos')}</button>
             <button
               type="button"
               onClick={() => setCompareAxis('versions')}
@@ -899,9 +889,7 @@ export default function AnalyticsPage() {
                   ? 'bg-ink text-paper font-semibold'
                   : 'bg-paper text-ink hover:bg-paper-subtle'
               }`}
-            >
-              Entre Escenarios
-            </button>
+            >{tr('Entre Escenarios')}</button>
           </div>
         }
         titleBlock={{
@@ -919,9 +907,7 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-cond-a"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-              >
-                Condición A · Línea Base / Control (Trama Diagonal)
-              </label>
+              >{tr('Condición A · Línea Base / Control (Trama Diagonal)')}</label>
               <select
                 id="select-cond-a"
                 value={campaignAId}
@@ -940,9 +926,7 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-cond-b"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-cobalt mb-1.5"
-              >
-                Condición B · Intervención / Andamiaje (Cobalto Sólido)
-              </label>
+              >{tr('Condición B · Intervención / Andamiaje (Cobalto Sólido)')}</label>
               <select
                 id="select-cond-b"
                 value={campaignBId}
@@ -963,16 +947,14 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-version-scope"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-              >
-                Ámbito de Experimento
-              </label>
+              >{tr('Ámbito de Experimento')}</label>
               <select
                 id="select-version-scope"
                 value={versionScopeWorkshopId}
                 onChange={(e) => setVersionScopeWorkshopId(e.target.value)}
                 className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-ui-mono text-xs text-ink"
               >
-                <option value="">Todos los experimentos combinados</option>
+                <option value="">{tr('Todos los experimentos combinados')}</option>
                 {raw.workshops.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.name}
@@ -985,9 +967,7 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-ver-a"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-              >
-                Escenario A (Trama)
-              </label>
+              >{tr('Escenario A (Trama)')}</label>
               <select
                 id="select-ver-a"
                 value={versionAId}
@@ -1006,9 +986,7 @@ export default function AnalyticsPage() {
               <label
                 htmlFor="select-ver-b"
                 className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-cobalt mb-1.5"
-              >
-                Escenario B (Cobalto)
-              </label>
+              >{tr('Escenario B (Cobalto)')}</label>
               <select
                 id="select-ver-b"
                 value={versionBId}
@@ -1030,12 +1008,12 @@ export default function AnalyticsPage() {
       {lakReview?.critique && (
         <BlueprintPanel
           variant="drawer"
-          codeTag="REVISIÓN"
-          title="Revisión metodológica del análisis"
+          codeTag={tr('REVISIÓN')}
+          title={tr('Revisión metodológica del análisis')}
           headerSlot={
             <StatBadge
-              label="Motor"
-              value={lakReview.source === 'live_llm' ? 'LLM EN VIVO' : 'AUDITOR MATEMÁTICO'}
+              label={tr('Motor')}
+              value={lakReview.source === 'live_llm' ? tr('LLM EN VIVO') : tr('AUDITOR MATEMÁTICO')}
               variant="cobalt"
             />
           }
@@ -1047,13 +1025,17 @@ export default function AnalyticsPage() {
       )}
 
       {/* SECTION 1: ASSUMPTION DIAGNOSTIC GATEKEEPER */}
-      <BlueprintPanel
-        codeTag="PASO 01 // GATEKEEPER"
-        title="Diagnóstico Previo de Supuestos Estadísticos (Escala, Normalidad y Homocedasticidad)"
-        subtitle="Evita aplicar pruebas paramétricas sobre escalas ordinales Likert o distribuciones asimétricas"
-      >
+      <div className="border-2 border-line-strong bg-paper-subtle p-4">
+        <p className="font-body text-base text-ink m-0">
+          {inferentialBundle.length === 0
+            ? tr('Todavía no hay suficientes datos para comparar estas condiciones.')
+            : tr('{p0} de {p1} medidas muestran diferencias entre las condiciones (con ajuste por comparaciones múltiples).', { p0: significantCount, p1: inferentialBundle.length })}
+        </p>
+      </div>
+
+      <AnalysisSection title={tr('¿Se pueden usar estas pruebas con tus datos?')} summary={tr('Revisamos que los datos cumplan lo que cada prueba necesita')}>
         <DataTable
-          caption="Auditoría automática de supuestos por variable antes de seleccionar el estimador inferencial"
+          caption={tr('Auditoría automática de supuestos por variable antes de seleccionar el estimador inferencial')}
           columns={[
             { key: 'name', label: 'Variable / Indicador', sortable: true },
             {
@@ -1061,16 +1043,16 @@ export default function AnalyticsPage() {
               label: 'Escala Detectada',
               format: (val) => (
                 <StatBadge
-                  label="Escala"
+                  label={tr('Escala')}
                   value={val}
                   variant={val === 'ORDINAL' ? 'cobalt' : 'default'}
                 />
               ),
             },
             { key: 'normalityStr', label: 'Shapiro-Wilk W (A / B)', align: 'right' },
-            { key: 'varRatioStr', label: 'Razón Var. (Levene)', align: 'right' },
+            { key: 'varRatioStr', label: tr('Razón Var. (Levene)'), align: 'right' },
             { key: 'selectedRoute', label: 'Ruta Seleccionada' },
-            { key: 'rationale', label: 'Justificación Metodológica' },
+            { key: 'rationale', label: tr('Justificación Metodológica') },
           ]}
           data={inferentialBundle.map((r) => ({
             id: r.key,
@@ -1093,33 +1075,21 @@ export default function AnalyticsPage() {
         />
 
         <div className="mt-4 p-3 bg-paper-subtle border-l-4 border-cobalt font-body text-xs text-ink leading-relaxed">
-          <strong className="font-ui-mono uppercase text-cobalt mr-1.5">
-            En palabras simples:
-          </strong>
-          Antes de calcular cualquier diferencia entre A y B, PromptSketch verifica qué tipo de dato es cada métrica. Los ítems de encuesta del 1 al 5 son escalas ordinales (la distancia psicológica entre 4 y 5 no es idéntica a la distancia entre 2 y 3), por lo que la plataforma bloquea el promedio paramétrico clásico y aplica rangos no paramétricos (<Abbr term="u">U de Mann-Whitney</Abbr> y <Abbr term="cliff-delta">δ de Cliff</Abbr>). En variables continuas de texto, aplica <Abbr term="d">t de Welch</Abbr> únicamente cuando ambos grupos cumplen criterios de simetría y normalidad de Shapiro-Wilk.
-        </div>
-      </BlueprintPanel>
+          <strong className="font-ui-mono uppercase text-cobalt mr-1.5">{tr('En palabras simples:')}</strong>{tr('Antes de calcular cualquier diferencia entre A y B, PromptSketch verifica qué tipo de dato es cada métrica. Los ítems de encuesta del 1 al 5 son escalas ordinales (la distancia psicológica entre 4 y 5 no es idéntica a la distancia entre 2 y 3), por lo que la plataforma bloquea el promedio paramétrico clásico y aplica rangos no paramétricos (')}<Abbr term="u">{tr('U de Mann-Whitney')}</Abbr> y <Abbr term="cliff-delta">{tr('δ de Cliff')}</Abbr>{tr('). En variables continuas de texto, aplica')}{' '}<Abbr term="d">{tr('t de Welch')}</Abbr>{' '}{tr('únicamente cuando ambos grupos cumplen criterios de simetría y normalidad de Shapiro-Wilk.')}</div>
+      </AnalysisSection>
 
       {/* SECTION 2: PRIMARY INFERENTIAL TABLE + DUAL-ENCODED CHARTFRAME */}
-      <BlueprintPanel
-        codeTag="PASO 02 // INFERENCIA"
-        title="Contraste A/B y Control de Error Familiar de Holm-Bonferroni"
-        subtitle="Convención direccional A − B (valores negativos indican puntuaciones mayores en la Condición B)"
-        headerSlot={
-          <StatBadge
-            label="Familia"
+      <AnalysisSection title={tr('¿Hay diferencias entre las condiciones?')} summary={tr('El resultado principal, medida por medida')} defaultOpen
+        badge={<StatBadge
+            label={tr('Familia')}
             abbr="p-holm"
             value={`m = ${inferentialBundle.length}`}
             variant="cobalt"
-          />
-        }
-      >
+          />}>
         {activeChartRow && (
           <div className="mb-6 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-ui-mono text-xs uppercase text-ink-2">
-                Visualizar métrica:
-              </span>
+              <span className="font-ui-mono text-xs uppercase text-ink-2">{tr('Visualizar métrica:')}</span>
               {inferentialBundle.map((r) => (
                 <button
                   key={r.key}
@@ -1162,22 +1132,21 @@ export default function AnalyticsPage() {
                 },
                 diff: Number((activeChartRow.meanB || 0) - (activeChartRow.meanA || 0)).toFixed(2),
               }}
-              trendSummary={`En "${activeChartRow.name}", la Condición A registra media ${Number(activeChartRow.meanA || 0).toFixed(2)} y la Condición B ${Number(activeChartRow.meanB || 0).toFixed(2)} (${activeChartRow.effectLabel} ${activeChartRow.effectCiLabel}; p ajustado Holm = ${activeChartRow.adjustedP !== null ? activeChartRow.adjustedP.toFixed(3) : 'N/A'}).`}
+              trendSummary={tr('En "{p0}", la Condición A registra media {p1} y la Condición B {p2} ({p3} {p4}; p ajustado Holm = {p5}).', { p0: activeChartRow.name, p1: Number(activeChartRow.meanA || 0).toFixed(2), p2: Number(activeChartRow.meanB || 0).toFixed(2), p3: activeChartRow.effectLabel, p4: activeChartRow.effectCiLabel, p5: activeChartRow.adjustedP !== null ? activeChartRow.adjustedP.toFixed(3) : 'N/A' })}
             />
           </div>
         )}
 
         <DataTable
-          caption="Tabla maestra de resultados inferenciales con ajuste monótono secuencial de Holm-Bonferroni"
+          caption={tr('Tabla maestra de resultados inferenciales con ajuste monótono secuencial de Holm-Bonferroni')}
           columns={[
-            { key: 'name', label: 'Métrica', sortable: true },
+            { key: 'name', label: tr('Métrica'), sortable: true },
             { key: 'summaryA', label: 'Cond. A', align: 'right' },
             { key: 'summaryB', label: 'Cond. B', align: 'right' },
             {
               key: 'effectFull',
               label: (
-                <span>
-                  Tamaño Efecto [<Abbr term="ic-95">IC 95%</Abbr>]
+                <span>{tr('Tamaño Efecto [')}<Abbr term="ic-95">{tr('IC 95%')}</Abbr>]
                 </span>
               ),
               align: 'right',
@@ -1187,20 +1156,20 @@ export default function AnalyticsPage() {
               label: 'Magnitud',
               format: (val) => (
                 <StatBadge
-                  label="Magnitud"
-                  value={TIER_SPANISH[val] || val}
+                  label={tr('Magnitud')}
+                  value={tr(TIER_SPANISH[val] || val)}
                   variant={val === 'large' || val === 'medium' ? 'cobalt' : 'default'}
                 />
               ),
             },
             {
               key: 'pRawStr',
-              label: <Abbr term="p">p crudo</Abbr>,
+              label: <Abbr term="p">{tr('p crudo')}</Abbr>,
               align: 'right',
             },
             {
               key: 'pHolmStr',
-              label: <Abbr term="p-holm">p Holm</Abbr>,
+              label: <Abbr term="p-holm">{tr('p Holm')}</Abbr>,
               align: 'right',
             },
             {
@@ -1208,7 +1177,7 @@ export default function AnalyticsPage() {
               label: 'Inferencia',
               format: (isSig) => (
                 <StatBadge
-                  label="Holm"
+                  label={tr('Holm')}
                   value={isSig ? 'SIGNIFICATIVO' : 'NO SIG.'}
                   variant={isSig ? 'significant' : 'default'}
                 />
@@ -1237,9 +1206,9 @@ export default function AnalyticsPage() {
         {checklistComparison.length > 0 && (
           <div className="mt-6">
             <DataTable
-              caption="Verificación conductual observable reportada por los participantes (Lista de Cotejo)"
+              caption={tr('Verificación conductual observable reportada por los participantes (Lista de Cotejo)')}
               columns={[
-                { key: 'behavior', label: 'Conducta Observable del Asistente' },
+                { key: 'behavior', label: tr('Conducta Observable del Asistente') },
                 { key: 'condA', label: 'Frecuencia Cond. A', align: 'right' },
                 { key: 'condB', label: 'Frecuencia Cond. B', align: 'right' },
                 { key: 'deltaPct', label: 'Cambio (B − A)', align: 'right' },
@@ -1250,46 +1219,33 @@ export default function AnalyticsPage() {
         )}
 
         <div className="mt-4 p-3 bg-paper-subtle border-l-4 border-cobalt font-body text-xs text-ink leading-relaxed">
-          <strong className="font-ui-mono uppercase text-cobalt mr-1.5">
-            En palabras simples:
-          </strong>
-          Cuando se comparan varias preguntas al mismo tiempo (m = {inferentialBundle.length}), crece el riesgo de encontrar falsos positivos por puro azar. La columna <Abbr term="p-holm">p Holm</Abbr> corrige ese riesgo de forma rigurosa. Incluso en muestras piloto pequeñas donde p Holm ≥ 0.05, revise la columna de <strong>Magnitud</strong> y la tabla de conductas observables para distinguir si el efecto pedagógico práctico es grande, mediano o insignificante.
-        </div>
-      </BlueprintPanel>
+          <strong className="font-ui-mono uppercase text-cobalt mr-1.5">{tr('En palabras simples:')}</strong>{tr('Cuando se comparan varias preguntas al mismo tiempo (m =')}{' '}{inferentialBundle.length}{tr('), crece el riesgo de encontrar falsos positivos por puro azar. La columna')}{' '}<Abbr term="p-holm">{tr('p Holm')}</Abbr>{' '}{tr('corrige ese riesgo de forma rigurosa. Incluso en muestras piloto pequeñas donde p Holm ≥ 0.05, revise la columna de')}{' '}<strong>{tr('Magnitud')}</strong>{' '}{tr('y la tabla de conductas observables para distinguir si el efecto pedagógico práctico es grande, mediano o insignificante.')}</div>
+      </AnalysisSection>
 
       {/* SECTION 3: PSYCHOMETRICS (CRONBACH ALPHA & HAKE GAIN) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BlueprintPanel
-          codeTag="PASO 03A // PSICOMETRÍA"
-          title="Consistencia Interna de la Escala (Alfa de Cronbach)"
-          headerSlot={
-            psychometricsBundle.alphaRes.canCompute ? (
+        <AnalysisSection title={tr('¿Las preguntas de la encuesta miden lo mismo?')} summary={tr('Consistencia interna de la escala')}
+        badge={psychometricsBundle.alphaRes.canCompute ? (
               <StatBadge
                 label="α"
                 abbr="alpha"
                 value={psychometricsBundle.alphaRes.alpha.toFixed(3)}
                 variant={psychometricsBundle.alphaRes.isAcceptable ? 'em' : 'verm'}
               />
-            ) : null
-          }
-        >
+            ) : null}>
           {!psychometricsBundle.alphaRes.canCompute ? (
-            <p className="font-ui-mono text-xs text-ink-2">
-              Se requieren al menos 2 ítems Likert completados por 2 o más participantes para estimar la consistencia interna.
-            </p>
+            <p className="font-ui-mono text-xs text-ink-2">{tr('Se requieren al menos 2 ítems Likert completados por 2 o más participantes para estimar la consistencia interna.')}</p>
           ) : (
             <div className="space-y-4">
               {psychometricsBundle.alphaRes.reverseCodingOmissionSuspected && (
-                <div className="p-3 bg-vermilion-tint border border-vermilion-ink font-ui-mono text-xs text-vermilion-ink">
-                  [!] Alerta psicométrica: Se detectó correlación ítem-total negativa (r ítem-total &lt; 0). Verifique si olvidó marcar algún ítem inverso en el constructor.
-                </div>
+                <div className="p-3 bg-vermilion-tint border border-vermilion-ink font-ui-mono text-xs text-vermilion-ink">{tr('[!] Alerta psicométrica: Se detectó correlación ítem-total negativa (r ítem-total < 0). Verifique si olvidó marcar algún ítem inverso en el constructor.')}</div>
               )}
 
               <DataTable
-                caption={`Diagnóstico por ítem (N = ${psychometricsBundle.alphaRes.N}, k = ${psychometricsBundle.alphaRes.k})`}
+                caption={tr('Diagnóstico por ítem (N = {p0}, k = {p1})', { p0: psychometricsBundle.alphaRes.N, p1: psychometricsBundle.alphaRes.k })}
                 columns={[
-                  { key: 'item', label: 'Ítem de Escala' },
-                  { key: 'ritc', label: 'r ítem-total', align: 'right' },
+                  { key: 'item', label: tr('Ítem de Escala') },
+                  { key: 'ritc', label: tr('r ítem-total'), align: 'right' },
                   { key: 'alphaDel', label: 'α si se elimina', align: 'right' },
                 ]}
                 data={psychometricsBundle.likertQuestions.map((q, idx) => ({
@@ -1306,51 +1262,40 @@ export default function AnalyticsPage() {
               />
 
               <div className="p-3 bg-paper-subtle border-l-4 border-cobalt font-body text-xs text-ink leading-relaxed">
-                <strong className="font-ui-mono uppercase text-cobalt mr-1.5">
-                  En palabras simples:
-                </strong>
-                El <Abbr term="alpha">Alfa de Cronbach</Abbr> mide si las preguntas Likert de su encuesta apuntan hacia un mismo constructo coherente (α ≥ 0.70 es aceptable para promediarlas en un índice global).
-              </div>
+                <strong className="font-ui-mono uppercase text-cobalt mr-1.5">{tr('En palabras simples:')}</strong>{tr('El')}{' '}<Abbr term="alpha">{tr('Alfa de Cronbach')}</Abbr>{' '}{tr('mide si las preguntas Likert de su encuesta apuntan hacia un mismo constructo coherente (α ≥ 0.70 es aceptable para promediarlas en un índice global).')}</div>
             </div>
           )}
-        </BlueprintPanel>
+        </AnalysisSection>
 
-        <BlueprintPanel
-          codeTag="PASO 03B // LONGITUDINAL"
-          title="Ganancia Normalizada Intra-Sujeto (g de Hake)"
-          headerSlot={
-            psychometricsBundle.hakeRes.canCompute ? (
+        <AnalysisSection title={tr('¿Cuánto mejoró cada persona entre un paso y otro?')} summary={tr('Ganancia de aprendizaje')}
+        badge={psychometricsBundle.hakeRes.canCompute ? (
               <StatBadge
-                label="g Hake"
+                label={tr('g Hake')}
                 abbr="hake-g"
                 value={psychometricsBundle.hakeRes.gClass.toFixed(3)}
                 variant={psychometricsBundle.hakeRes.gClass >= 0.3 ? 'em' : 'default'}
               />
-            ) : null
-          }
-        >
+            ) : null}>
           {!psychometricsBundle.hakeRes.canCompute ? (
-            <p className="font-ui-mono text-xs text-ink-2">
-              No se detectaron sesiones encadenadas pareadas (chain_user_id) entre las dos condiciones seleccionadas. Utilice secuencias de 2 pasos para medir cambio intra-sujeto.
-            </p>
+            <p className="font-ui-mono text-xs text-ink-2">{tr('No se detectaron sesiones encadenadas pareadas (chain_user_id) entre las dos condiciones seleccionadas. Utilice secuencias de 2 pasos para medir cambio intra-sujeto.')}</p>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 <div className="p-3 bg-paper-subtle border border-line-control">
-                  <div className="font-ui-mono text-xs uppercase text-ink-2">Pares (N)</div>
+                  <div className="font-ui-mono text-xs uppercase text-ink-2">{tr('Pares (N)')}</div>
                   <div className="font-stat text-lg font-bold text-ink stat">
                     {psychometricsBundle.hakeRes.n}
                   </div>
                 </div>
                 <div className="p-3 bg-paper-subtle border border-line-control">
-                  <div className="font-ui-mono text-xs uppercase text-ink-2">Pre → Post</div>
+                  <div className="font-ui-mono text-xs uppercase text-ink-2">{tr('Pre → Post')}</div>
                   <div className="font-stat text-lg font-bold text-ink stat">
                     {psychometricsBundle.hakeRes.meanPre.toFixed(2)} →{' '}
                     {psychometricsBundle.hakeRes.meanPost.toFixed(2)}
                   </div>
                 </div>
                 <div className="p-3 bg-paper-subtle border border-line-control">
-                  <div className="font-ui-mono text-xs uppercase text-ink-2">IC 95% (g indiv.)</div>
+                  <div className="font-ui-mono text-xs uppercase text-ink-2">{tr('IC 95% (g indiv.)')}</div>
                   <div className="font-stat text-sm font-bold text-cobalt stat mt-1">
                     [{psychometricsBundle.hakeRes.ci[0].toFixed(2)},{' '}
                     {psychometricsBundle.hakeRes.ci[1].toFixed(2)}]
@@ -1359,122 +1304,103 @@ export default function AnalyticsPage() {
               </div>
 
               <div className="p-3 bg-paper-subtle border-l-4 border-cobalt font-body text-xs text-ink leading-relaxed">
-                <strong className="font-ui-mono uppercase text-cobalt mr-1.5">
-                  En palabras simples:
-                </strong>
-                La <Abbr term="hake-g">g de Hake</Abbr> calcula qué fracción de la mejora máxima posible logró el grupo entre el Paso 1 y el Paso 2, descontando el puntaje de partida (&lt; 0.30 baja, 0.30–0.70 media, ≥ 0.70 alta).
-              </div>
+                <strong className="font-ui-mono uppercase text-cobalt mr-1.5">{tr('En palabras simples:')}</strong>{tr('La')}{' '}<Abbr term="hake-g">{tr('g de Hake')}</Abbr>{' '}{tr('calcula qué fracción de la mejora máxima posible logró el grupo entre el Paso 1 y el Paso 2, descontando el puntaje de partida (< 0.30 baja, 0.30–0.70 media, ≥ 0.70 alta).')}</div>
             </div>
           )}
-        </BlueprintPanel>
+        </AnalysisSection>
       </div>
 
       {/* SECTION 4: CONVERSATIONAL ANALYTICS & NORMALIZED LATENCY */}
-      <BlueprintPanel
-        codeTag="PASO 04 // DISCURSO Y LATENCIA"
-        title="Analítica Lingüística Conversacional y Latencia de Lectura Normalizada"
-        subtitle="Separación entre riqueza léxica estudiantil, marcadores epistémicos bilingües y ritmo de lectura"
-      >
+      <AnalysisSection title={tr('¿Cómo conversaron los participantes?')} summary={tr('Largo de los mensajes, vocabulario y ritmo de lectura')}>
         <DataTable
-          caption="Comparación de indicadores objetivos del discurso y telemetría cognitiva"
+          caption={tr('Comparación de indicadores objetivos del discurso y telemetría cognitiva')}
           columns={[
-            { key: 'indicator', label: 'Indicador Dialógico / Cognitivo' },
-            { key: 'valA', label: `Condición A (${cohortData.labelA})`, align: 'right' },
-            { key: 'valB', label: `Condición B (${cohortData.labelB})`, align: 'right' },
-            { key: 'interpretation', label: 'Criterio de Lectura en Learning Analytics' },
+            { key: 'indicator', label: tr('Indicador Dialógico / Cognitivo') },
+            { key: 'valA', label: tr('Condición A ({p0})', { p0: cohortData.labelA }), align: 'right' },
+            { key: 'valB', label: tr('Condición B ({p0})', { p0: cohortData.labelB }), align: 'right' },
+            { key: 'interpretation', label: tr('Criterio de Lectura en Learning Analytics') },
           ]}
           data={[
             {
               id: 'rvol',
               indicator: (
-                <span>
-                  Protagonismo Verbal (<Abbr term="r-vol">R_vol</Abbr>)
+                <span>{tr('Protagonismo Verbal (')}<Abbr term="r-vol">{tr('R_vol')}</Abbr>)
                 </span>
               ),
               valA: dialogicSummary.A.verbalVolumeRatio.toFixed(3),
               valB: dialogicSummary.B.verbalVolumeRatio.toFixed(3),
-              interpretation: 'Palabras del estudiante divididas por palabras del asistente',
+              interpretation: tr('Palabras del estudiante divididas por palabras del asistente'),
             },
             {
               id: 'mluw',
               indicator: (
-                <span>
-                  Longitud Media de Enunciado (<Abbr term="mlu-w">MLU-w</Abbr>)
+                <span>{tr('Longitud Media de Enunciado (')}<Abbr term="mlu-w">{tr('MLU-w')}</Abbr>)
                 </span>
               ),
               valA: `${dialogicSummary.A.studentMluW.toFixed(1)} pal/turno`,
               valB: `${dialogicSummary.B.studentMluW.toFixed(1)} pal/turno`,
-              interpretation: 'Extensión media de elaboración por mensaje estudiantil',
+              interpretation: tr('Extensión media de elaboración por mensaje estudiantil'),
             },
             {
               id: 'mattr',
               indicator: (
-                <span>
-                  Diversidad Léxica (<Abbr term="mattr">MATTR</Abbr> W=25 / W=50)
+                <span>{tr('Diversidad Léxica (')}<Abbr term="mattr">{tr('MATTR')}</Abbr> W=25 / W=50)
                 </span>
               ),
               valA: `${dialogicSummary.A.mattr25.toFixed(3)} / ${dialogicSummary.A.mattr50.toFixed(3)}`,
               valB: `${dialogicSummary.B.mattr25.toFixed(3)} / ${dialogicSummary.B.mattr50.toFixed(3)}`,
-              interpretation: 'Riqueza de vocabulario libre del sesgo por longitud total',
+              interpretation: tr('Riqueza de vocabulario libre del sesgo por longitud total'),
             },
             {
               id: 'causal',
-              indicator: 'Conectores Causales (por 100 palabras)',
+              indicator: tr('Conectores Causales (por 100 palabras)'),
               valA: dialogicSummary.A.causalDensity.toFixed(2),
               valB: dialogicSummary.B.causalDensity.toFixed(2),
-              interpretation: 'Marcadores explicativos ("porque", "por lo tanto", "because", "therefore")',
+              interpretation: tr('Marcadores explicativos ("porque", "por lo tanto", "because", "therefore")'),
             },
             {
               id: 'adversative',
-              indicator: 'Conectores Adversativos / Refutativos (por 100 palabras)',
+              indicator: tr('Conectores Adversativos / Refutativos (por 100 palabras)'),
               valA: dialogicSummary.A.adversativeDensity.toFixed(2),
               valB: dialogicSummary.B.adversativeDensity.toFixed(2),
-              interpretation: 'Contraste de perspectivas ("sin embargo", "aunque", "however")',
+              interpretation: tr('Contraste de perspectivas ("sin embargo", "aunque", "however")'),
             },
             {
               id: 'metacog',
-              indicator: 'Marcadores Metacognitivos (por 100 palabras)',
+              indicator: tr('Marcadores Metacognitivos (por 100 palabras)'),
               valA: dialogicSummary.A.metacognitiveDensity.toFixed(2),
               valB: dialogicSummary.B.metacognitiveDensity.toFixed(2),
-              interpretation: 'Monitoreo epistémico ("me di cuenta", "dudo que", "i realize")',
+              interpretation: tr('Monitoreo epistémico ("me di cuenta", "dudo que", "i realize")'),
             },
             {
               id: 'latency',
-              indicator: 'Latencia de Lectura Normalizada (ms / palabra IA)',
+              indicator: tr('Latencia de Lectura Normalizada (ms / palabra IA)'),
               valA:
                 dialogicSummary.A.avgReadingLatencyMsPerWord > 0
                   ? `${Math.round(dialogicSummary.A.avgReadingLatencyMsPerWord)} ms/pal`
-                  : 'Sin telemetría cliente',
+                  : tr('Sin telemetría cliente'),
               valB:
                 dialogicSummary.B.avgReadingLatencyMsPerWord > 0
                   ? `${Math.round(dialogicSummary.B.avgReadingLatencyMsPerWord)} ms/pal`
-                  : 'Sin telemetría cliente',
-              interpretation: 'Tiempo hasta primera tecla normalizado por longitud del turno del bot',
+                  : tr('Sin telemetría cliente'),
+              interpretation: tr('Tiempo hasta primera tecla normalizado por longitud del turno del bot'),
             },
             {
               id: 'skipped',
-              indicator: 'Lectura Omitida (< 100 ms/pal) / Outliers de Pestaña',
+              indicator: tr('Lectura Omitida (< 100 ms/pal) / Outliers de Pestaña'),
               valA: `${(dialogicSummary.A.skippedReadingRatio * 100).toFixed(1)}% / ${dialogicSummary.A.outlierTurnsTotal}`,
               valB: `${(dialogicSummary.B.skippedReadingRatio * 100).toFixed(1)}% / ${dialogicSummary.B.outlierTurnsTotal}`,
-              interpretation: 'Detecta escaneo superficial o abandono temporal de pestaña',
+              interpretation: tr('Detecta escaneo superficial o abandono temporal de pestaña'),
             },
           ]}
         />
 
         <div className="mt-4 p-3 bg-paper-subtle border-l-4 border-cobalt font-body text-xs text-ink leading-relaxed">
-          <strong className="font-ui-mono uppercase text-cobalt mr-1.5">
-            En palabras simples:
-          </strong>
-          Contar solo cuántos mensajes envió un alumno puede engañar si repite frases breves o si el bot escribe textos larguísimos. Estas métricas miden cuánto elabora realmente el estudiante (<Abbr term="mlu-w">MLU-w</Abbr>, <Abbr term="mattr">MATTR</Abbr> y conectores de razonamiento) y dividen el tiempo de pausa por la cantidad de palabras del bot para saber si leyó con atención.
-        </div>
-      </BlueprintPanel>
+          <strong className="font-ui-mono uppercase text-cobalt mr-1.5">{tr('En palabras simples:')}</strong>{tr('Contar solo cuántos mensajes envió un alumno puede engañar si repite frases breves o si el bot escribe textos larguísimos. Estas métricas miden cuánto elabora realmente el estudiante (')}<Abbr term="mlu-w">{tr('MLU-w')}</Abbr>, <Abbr term="mattr">{tr('MATTR')}</Abbr>{' '}{tr('y conectores de razonamiento) y dividen el tiempo de pausa por la cantidad de palabras del bot para saber si leyó con atención.')}</div>
+      </AnalysisSection>
 
       {/* SECTION 5: INTER-RATER RELIABILITY (IRR) CALIBRATION */}
-      <BlueprintPanel
-        codeTag="PASO 05 // ACUERDO INTER-JUECES"
-        title="Calibración de Codificación Cualitativa (κ de Cohen y AC₁ de Gwet)"
-        subtitle="Validación de rúbricas Humano-Humano o Humano vs. LLM-as-a-Judge resistente a paradoja de prevalencia"
-      >
+      <AnalysisSection title={tr('¿Coinciden quienes codifican las conversaciones?')} summary={tr('Acuerdo entre evaluadores')}>
         <div className="flex flex-wrap gap-2 mb-4">
           <button
             type="button"
@@ -1484,9 +1410,7 @@ export default function AnalyticsPage() {
                 ? 'border-cobalt bg-cobalt-tint text-cobalt font-semibold'
                 : 'border-line-control bg-paper-subtle text-ink'
             }`}
-          >
-            ISDDE: Resultado (N=18)
-          </button>
+          >{tr('ISDDE: Resultado (N=18)')}</button>
           <button
             type="button"
             onClick={() => setIrrMode('isdde_flow')}
@@ -1495,9 +1419,7 @@ export default function AnalyticsPage() {
                 ? 'border-cobalt bg-cobalt-tint text-cobalt font-semibold'
                 : 'border-line-control bg-paper-subtle text-ink'
             }`}
-          >
-            ISDDE: Patrón de Flujo (N=18)
-          </button>
+          >{tr('ISDDE: Patrón de Flujo (N=18)')}</button>
           <button
             type="button"
             onClick={() => setIrrMode('prevalence_demo')}
@@ -1506,9 +1428,7 @@ export default function AnalyticsPage() {
                 ? 'border-cobalt bg-cobalt-tint text-cobalt font-semibold'
                 : 'border-line-control bg-paper-subtle text-ink'
             }`}
-          >
-            Demostración Paradoja Prevalencia
-          </button>
+          >{tr('Demostración Paradoja Prevalencia')}</button>
           <button
             type="button"
             onClick={() => setIrrMode('custom')}
@@ -1517,9 +1437,7 @@ export default function AnalyticsPage() {
                 ? 'border-cobalt bg-cobalt-tint text-cobalt font-semibold'
                 : 'border-line-control bg-paper-subtle text-ink'
             }`}
-          >
-            Pegar Pares Propios (CSV)
-          </button>
+          >{tr('Pegar Pares Propios (CSV)')}</button>
         </div>
 
         {irrMode === 'custom' && (
@@ -1527,9 +1445,7 @@ export default function AnalyticsPage() {
             <label
               htmlFor="custom-irr-textarea"
               className="block font-ui-mono text-xs font-semibold uppercase text-ink mb-1"
-            >
-              Pares de codificación (una fila por unidad: etiqueta_juez_1,etiqueta_juez_2)
-            </label>
+            >{tr('Pares de codificación (una fila por unidad: etiqueta_juez_1,etiqueta_juez_2)')}</label>
             <textarea
               id="custom-irr-textarea"
               rows={5}
@@ -1544,26 +1460,26 @@ export default function AnalyticsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 bg-paper-subtle border border-line-control">
-                <div className="font-ui-mono text-xs uppercase text-ink-2">Unidades (N)</div>
+                <div className="font-ui-mono text-xs uppercase text-ink-2">{tr('Unidades (N)')}</div>
                 <div className="font-stat text-xl font-bold text-ink stat">
                   {irrResult.sampleSize}
                 </div>
               </div>
               <div className="p-3 bg-paper-subtle border border-line-control">
-                <div className="font-ui-mono text-xs uppercase text-ink-2">Acuerdo Observado</div>
+                <div className="font-ui-mono text-xs uppercase text-ink-2">{tr('Acuerdo Observado')}</div>
                 <div className="font-stat text-xl font-bold text-ink stat">
                   {(irrResult.observedAgreement * 100).toFixed(1)}%
                 </div>
               </div>
               <div className="p-3 bg-paper-subtle border border-line-control">
-                <div className="font-ui-mono text-xs uppercase text-ink-2">κ de Cohen</div>
+                <div className="font-ui-mono text-xs uppercase text-ink-2">{tr('κ de Cohen')}</div>
                 <div className="font-stat text-xl font-bold text-ink stat">
                   {irrResult.cohenKappa.toFixed(3)}
                 </div>
               </div>
               <div className="p-3 bg-paper-subtle border border-cobalt">
                 <div className="font-ui-mono text-xs uppercase text-cobalt">
-                  <Abbr term="gwet-ac1">AC₁ de Gwet</Abbr>
+                  <Abbr term="gwet-ac1">{tr('AC₁ de Gwet')}</Abbr>
                 </div>
                 <div className="font-stat text-xl font-bold text-cobalt stat">
                   {irrResult.gwetsAC1.toFixed(3)}
@@ -1578,7 +1494,7 @@ export default function AnalyticsPage() {
             )}
 
             <DataTable
-              caption={`Matriz de confusión: ${irrResult.title}`}
+              caption={tr('Matriz de confusión: {p0}', { p0: irrResult.title })}
               columns={[
                 { key: 'catRow', label: 'Juez 1 \\ Juez 2' },
                 ...irrResult.categories.map((cat) => ({
@@ -1597,29 +1513,19 @@ export default function AnalyticsPage() {
             />
 
             <div className="p-3 bg-paper-subtle border-l-4 border-cobalt font-body text-xs text-ink leading-relaxed">
-              <strong className="font-ui-mono uppercase text-cobalt mr-1.5">
-                En palabras simples:
-              </strong>
-              Al usar un modelo de lenguaje o dos codificadores humanos para etiquetar diálogos, Kappa de Cohen suele desplomarse injustamente cuando una categoría es muy frecuente (la <em>paradoja de la prevalencia</em>). Por eso PromptSketch calcula en paralelo <Abbr term="gwet-ac1">AC₁ de Gwet</Abbr>, el estándar recomendado en Learning Analytics para distribuciones desbalanceadas.
-            </div>
+              <strong className="font-ui-mono uppercase text-cobalt mr-1.5">{tr('En palabras simples:')}</strong>{tr('Al usar un modelo de lenguaje o dos codificadores humanos para etiquetar diálogos, Kappa de Cohen suele desplomarse injustamente cuando una categoría es muy frecuente (la')}{' '}<em>{tr('paradoja de la prevalencia')}</em>{tr('). Por eso PromptSketch calcula en paralelo')}{' '}<Abbr term="gwet-ac1">{tr('AC₁ de Gwet')}</Abbr>{tr(', el estándar recomendado en Learning Analytics para distribuciones desbalanceadas.')}</div>
           </div>
         ) : (
-          <p className="font-ui-mono text-xs text-vermilion-ink">
-            Ingrese al menos 2 categorías distintas en pares válidos para calcular acuerdo inter-jueces.
-          </p>
+          <p className="font-ui-mono text-xs text-vermilion-ink">{tr('Ingrese al menos 2 categorías distintas en pares válidos para calcular acuerdo inter-jueces.')}</p>
         )}
-      </BlueprintPanel>
+      </AnalysisSection>
 
       {/* SECTION 6: AI COST / TOKENS OBSERVABILITY */}
-      <BlueprintPanel
-        codeTag="PASO 06 // OBSERVABILIDAD IA"
-        title="Telemetría de Tokens, Costo Operativo y Latencia del Modelo"
-        subtitle="Comparación de eficiencia computacional entre condiciones experimentales"
-      >
+      <AnalysisSection title={tr('¿Cuánto cuesta y qué tan rápido responde el asistente?')} summary={tr('Tokens, costo y tiempos del modelo')}>
         <DataTable
-          caption="Resumen operativo de inferencia por condición"
+          caption={tr('Resumen operativo de inferencia por condición')}
           columns={[
-            { key: 'cohort', label: 'Condición' },
+            { key: 'cohort', label: tr('Condición') },
             { key: 'sessions', label: 'Sesiones', align: 'right' },
             { key: 'promptTok', label: 'Prompt Tokens', align: 'right' },
             { key: 'compTok', label: 'Completion Tokens', align: 'right' },
@@ -1629,29 +1535,29 @@ export default function AnalyticsPage() {
           data={[
             {
               id: 'obsA',
-              cohort: `Condición A · ${cohortData.labelA}`,
+              cohort: tr('Condición A · {p0}', { p0: cohortData.labelA }),
               sessions: dialogicSummary.A.n,
               promptTok: dialogicSummary.A.promptTokens,
               compTok: dialogicSummary.A.completionTokens,
               ttft: dialogicSummary.A.meanTtftMs
                 ? `${Math.round(dialogicSummary.A.meanTtftMs)} ms`
-                : 'Histórico',
+                : tr('Histórico'),
               cost: `USD ${dialogicSummary.A.estimatedCostUsd.toFixed(5)}`,
             },
             {
               id: 'obsB',
-              cohort: `Condición B · ${cohortData.labelB}`,
+              cohort: tr('Condición B · {p0}', { p0: cohortData.labelB }),
               sessions: dialogicSummary.B.n,
               promptTok: dialogicSummary.B.promptTokens,
               compTok: dialogicSummary.B.completionTokens,
               ttft: dialogicSummary.B.meanTtftMs
                 ? `${Math.round(dialogicSummary.B.meanTtftMs)} ms`
-                : 'Histórico',
+                : tr('Histórico'),
               cost: `USD ${dialogicSummary.B.estimatedCostUsd.toFixed(5)}`,
             },
           ]}
         />
-      </BlueprintPanel>
+      </AnalysisSection>
 
       {/* LaTeX booktabs Modal */}
       {showLatexModal && (
@@ -1670,13 +1576,11 @@ export default function AnalyticsPage() {
               <h2
                 id="latex-modal-title"
                 className="font-ui-mono text-xs uppercase tracking-wider font-semibold text-ink m-0"
-              >
-                EXPORTACIÓN DIRECTA LATEX BOOKTABS (LISTA PARA OVERLEAF / ACM / JLA)
-              </h2>
+              >{tr('EXPORTACIÓN DIRECTA LATEX BOOKTABS (LISTA PARA OVERLEAF / ACM / JLA)')}</h2>
               <button
                 type="button"
                 onClick={() => setShowLatexModal(false)}
-                aria-label="Cerrar exportación LaTeX"
+                aria-label={tr('Cerrar exportación LaTeX')}
                 className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border border-line-control bg-paper text-ink"
               >
                 <CadIcon name="X" size={16} />
@@ -1694,15 +1598,13 @@ export default function AnalyticsPage() {
                   className="min-h-[44px] px-4 inline-flex items-center gap-2 border border-line-control bg-paper font-ui-mono text-xs font-semibold uppercase text-ink"
                 >
                   <CadIcon name={copiedLatex ? 'Check' : 'Copy'} size={14} />
-                  <span>{copiedLatex ? 'Código copiado' : 'Copiar al portapapeles'}</span>
+                  <span>{copiedLatex ? tr('Código copiado') : tr('Copiar al portapapeles')}</span>
                 </button>
                 <SplitButton
                   variant="primary"
                   iconBox="Download"
                   onClick={downloadLatexFile}
-                >
-                  Descargar .tex
-                </SplitButton>
+                >{tr('Descargar .tex')}</SplitButton>
               </div>
             </div>
           </div>

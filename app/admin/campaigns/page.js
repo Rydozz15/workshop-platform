@@ -135,7 +135,6 @@ export default function CampaignsPage() {
 
       {campaigns && campaigns.length > 0 && (
         <p className="ps-meta flex items-center gap-1">{tr('Cada campaña tiene un único código y QR para todos sus pasos.')}<InfoTip label={tr('Cómo avanzan los participantes')}>{tr('Los participantes entran con el código de la campaña y avanzan de un paso al siguiente sin volver a escanear.')}</InfoTip>
-          <Link href="/admin/campaigns/classic" className="ml-3 underline hover:text-cobalt">{tr('Editor clásico')}</Link>
         </p>
       )}
     </div>
