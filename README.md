@@ -1,8 +1,8 @@
-# PromptSketch (v2.0)
+# PromptSketch
 
-> **Publication-Grade Scientific Workbench for Educational Prompt A/B Experimentation & Learning Analytics (LAK / AIED)**
+> **Design, run and analyze educational activities with an AI assistant: compare versions and see what works.**
 
-PromptSketch is an open-source, reproducible experimental platform designed for educational researchers, learning designers, and EdTech engineers. It enables running randomized, pre-registered A/B interventions on pedagogical conversational agents, collecting high-resolution student interaction telemetry, and generating publication-ready statistical analyses adhering to the highest standards of the Learning Analytics & Knowledge (LAK), AIED, and EDM communities.
+PromptSketch is an open-source platform for teachers, researchers and learning designers. You create a **campaign** (an ordered list of steps), give each step one or more **conditions** (a case plus optional instructions for the assistant), share a single code or QR, watch participants **live**, and then download the data and read a first, plain-language comparison of the conditions.
 
 Built with Next.js 16 (React 19), Tailwind CSS, and a strict **CAD Blueprint / Sketchbook** design system compliant with **WCAG 2.2 Level AAA**, PromptSketch completely eradicates "AI slop" (zero emojis, zero SaaS gradients, zero rounded pills) in favor of 90% technical drawing precision and 10% human marginalia.
 
@@ -24,7 +24,7 @@ Deploy your own live PromptSketch instance in less than two minutes:
 * **Granular Telemetry:** Captures exact prompt and completion tokens, Time-to-First-Token (TTFT), total latency, and estimated monetary cost (\$ USD) per turn.
 * **Reasoning Tag Stripping:** Automatically parses and hides internal `<think>...</think>` tags from DeepSeek R1 and reasoning models before rendering to participants, while preserving them in researcher audit logs.
 
-### 2. Assumption-First Statistical Gatekeeper & Rigor LAK
+### 2. Assumption-First Statistics
 * **Normality & Homoscedasticity Pre-Flight:** Evaluates Shapiro-Wilk ($W$, $p$) and Levene's variance homogeneity ($F$, $p$) before suggesting inferential tests. When assumptions fail, it automatically gates the analysis toward non-parametric methods and explains *why*.
 * **Inferential Testing:** Computes Welch's $t$ with Cohen's $d$, and Mann-Whitney $U$ with Cliff's delta ($\delta$) derived directly from rank sums:
   $$\delta = \frac{2U}{n_1 n_2} - 1$$
@@ -41,8 +41,8 @@ Deploy your own live PromptSketch instance in less than two minutes:
 ### 3. Scientific Interoperability & Export
 * **Tidy Data Formats:** 1-click download of long-format CSV and JSON datasets structured for immediate ingestion in Python (`pandas`), R (`tidyverse`), and SPSS.
 * **Codebook Generation:** Automatic machine-readable dictionary documenting column definitions, measurement scales, and valid value ranges.
-* **LaTeX `booktabs` Export:** Generates clean, publication-ready LaTeX tables ready to paste directly into ACM / IEEE / LAK manuscripts.
-* **Critical LAK Peer-Reviewer Copilot:** Specialized LLM reviewer prompt trained to stress-test sample sizes, statistical assumptions, and effect sizes with the rigor of an ACM senior program committee reviewer.
+* **LaTeX `booktabs` Export:** Generates clean, publication-ready LaTeX tables ready to paste directly into a manuscript.
+* **Methodological reviewer and floating assistant:** an LLM reviewer that stress-tests sample sizes, assumptions and effect sizes, and an in-app assistant (with an offline fallback) that answers questions about the platform.
 
 ### 4. Blueprint / Sketchbook Design System (WCAG 2.2 AAA)
 * **Zero AI Slop:** Strict linting rules reject Unicode emojis, blurred box shadows, gradients, and rounded borders.
@@ -75,7 +75,7 @@ Open `http://localhost:3000/admin` (password: `workshop2025` or custom) to explo
 
 ## Live Mobile & Conference Testing (`./run-demo.sh`)
 
-When presenting a live workshop or conference demo (e.g. at LAK or ISDDE), university or venue Wi-Fi networks often block local peer-to-peer device discovery.
+When presenting a live workshop or conference demo (e.g. at a conference or workshop), university or venue Wi-Fi networks often block local peer-to-peer device discovery.
 
 PromptSketch includes `./run-demo.sh` to provide an instant, secure public HTTPS tunnel with a terminal-rendered QR code:
 
@@ -167,7 +167,8 @@ npm run test:contrast
 npm run test:slop
 
 # 3. Run all unit test suites (Stats, Chat Analytics, Multi-Provider AI Engine) and E2E API tests
-npm test
+npm test        # unit + E2E logic suites
+npm run test:ui # Playwright UI journeys (needs Google Chrome)
 ```
 
 ---
@@ -200,7 +201,7 @@ workshop-app/
 │   ├── tidy-export.js                # Python/R/SPSS tidy data export transformer
 │   ├── latex-generator.js            # Publication-grade LaTeX booktabs table generator
 │   ├── codebook.js                   # Variable codebook dictionary builder
-│   ├── lak-reviewer-prompt.js        # Senior LAK Reviewer System Prompt
+│   ├── methodology-reviewer-prompt.js # Methodological reviewer prompt
 │   ├── db.js                         # Database abstraction layer (memory vs supabase)
 │   └── seeds/isdde-benchmark.js      # Canonical benchmark dataset generator
 ├── run.sh                            # 1-command zero-setup local launch script
@@ -230,3 +231,10 @@ If you use PromptSketch in an academic publication, workshop, or research study,
 ## License
 
 PromptSketch is open-source software released under the [MIT License](LICENSE).
+
+
+## Configuration notes
+
+- **Admin access:** set `ADMIN_PASSWORD`. Outside production a local default exists; in production the admin stays locked until the variable is set. Admin API routes are protected by a signed session cookie (`proxy.js`).
+- **Optional Supabase migration:** `docs/migrations/002_campaigns.sql` adds campaign fields and per-condition prompts. The app works without it; the new fields are just not stored.
+- **Languages:** Spanish, English and Portuguese (Brazil). See `CLAUDE.md` for the translation convention.

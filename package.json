@@ -10,7 +10,8 @@
     "lint:design": "node scripts/lint-slop.js",
     "test": "node test/admin-auth.test.js && node test/campaigns.test.js && node test/stats-multigroup.test.js && node test/live-monitor.test.js && node test/quick-analysis.test.js && node test/model-catalog.test.js && node test/demo-mode.test.js && node test/i18n.test.js && node test/stats.test.js && node test/chat-analytics.test.js && node test/ai-engine.test.js && node test/e2e/runner.js",
     "test:contrast": "node scripts/check-contrast.js",
-    "test:slop": "node scripts/lint-slop.js"
+    "test:slop": "node scripts/lint-slop.js",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
@@ -27,6 +28,7 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
     "eslint": "^9",

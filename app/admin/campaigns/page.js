@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { BlueprintPanel, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useLanguage, useTr } from '@/lib/i18n/context';
+import { useTr } from '@/lib/i18n/context';
 
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
 const BTN_PRIMARY = 'min-h-[44px] px-4 py-2 border border-line-strong bg-cobalt hover:bg-cobalt-hover text-paper font-body text-sm font-semibold inline-flex items-center gap-2';
@@ -89,7 +89,6 @@ function CampaignCard({ campaign, origin, onDeleted }) {
 
 export default function CampaignsPage() {
   const tr = useTr();
-  const { t } = useLanguage();
   const [campaigns, setCampaigns] = useState(null);
   const [error, setError] = useState('');
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -109,11 +108,11 @@ export default function CampaignsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="ps-h1">{t('campaigns.title', 'Campañas')}</h1>
-          <p className="ps-lead mt-1">{t('campaigns.subtitle', 'Crea y administra las actividades que tus participantes van a realizar.')}</p>
+          <h1 className="ps-h1">{tr('Campañas')}</h1>
+          <p className="ps-lead mt-1">{tr('Crea y administra las actividades que tus participantes van a realizar.')}</p>
         </div>
         <Link href="/admin/campaigns/new" className={BTN_PRIMARY}>
-          <CadIcon name="Plus" size={16} /> {t('campaigns.create', 'Crear campaña')}
+          <CadIcon name="Plus" size={16} /> {tr('Crear campaña')}
         </Link>
       </div>
 

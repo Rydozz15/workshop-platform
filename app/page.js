@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SplitButton, LanguageSelector, Logo } from '@/components/ui/blueprint';
-import { useLanguage } from '@/lib/i18n/context';
+import { useTr } from '@/lib/i18n/context';
 
 export default function HomePage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const tr = useTr();
   const [sessionCode, setSessionCode] = useState('');
   const [codeError, setCodeError] = useState('');
 
@@ -16,7 +16,7 @@ export default function HomePage() {
     e.preventDefault();
     const cleaned = sessionCode.trim().toLowerCase();
     if (!cleaned) {
-      setCodeError(t('home.join_err_empty', 'Escribe el código que te dieron para poder entrar.'));
+      setCodeError(tr('Escribe el código que te dieron para poder entrar.'));
       return;
     }
     setCodeError('');
@@ -33,12 +33,12 @@ export default function HomePage() {
       <main className="flex-1 flex flex-col items-center justify-center py-12">
         <form onSubmit={handleJoinSubmit} className="w-full max-w-xl text-center space-y-6">
           <h1 className="ps-h1">
-            {t('home.join_title', 'Ingresa el código para comenzar con el taller o actividad')}
+            {tr('Ingresa el código para comenzar con el taller o actividad')}
           </h1>
 
           <div className="space-y-2">
             <label htmlFor="join-session-input" className="sr-only">
-              {t('home.join_label', 'Código de la actividad')}
+              {tr('Código de la actividad')}
             </label>
             <input
               id="join-session-input"
@@ -49,7 +49,7 @@ export default function HomePage() {
                 setSessionCode(e.target.value);
                 if (codeError) setCodeError('');
               }}
-              placeholder={t('home.join_placeholder', 'Código')}
+              placeholder={tr('Código')}
               autoComplete="off"
               spellCheck="false"
               aria-describedby={codeError ? 'join-error-text' : undefined}
@@ -67,7 +67,7 @@ export default function HomePage() {
 
           <div className="flex justify-center">
             <SplitButton type="submit" variant="primary" iconBox="ArrowRight" className="text-base">
-              {t('home.join_btn', 'Entrar')}
+              {tr('Entrar')}
             </SplitButton>
           </div>
         </form>
@@ -75,7 +75,7 @@ export default function HomePage() {
 
       <footer className="text-center pb-2">
         <Link href="/admin" className="font-body text-sm text-ink-2 hover:text-cobalt underline underline-offset-4 inline-flex items-center min-h-[44px]">
-          {t('home.admin_link', '¿Diriges el taller? Ingresa aquí')}
+          {tr('¿Diriges el taller? Ingresa aquí')}
         </Link>
       </footer>
     </div>

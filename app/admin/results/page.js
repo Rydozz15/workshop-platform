@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { extractMeasures, analyzeMeasure } from '@/lib/quick-analysis';
-import { useLanguage, useTr } from '@/lib/i18n/context';
+import { useTr } from '@/lib/i18n/context';
 
 const SELECT = 'w-full min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
@@ -33,7 +33,6 @@ const fmt = (n, d = 2) => (Number.isFinite(n) ? n.toFixed(d).replace('.', ',') :
 
 function ResultsInner() {
   const tr = useTr();
-  const { t } = useLanguage();
   const params = useSearchParams();
   const [campaigns, setCampaigns] = useState(null);
   const [campaignId, setCampaignId] = useState(params.get('campaign') || '');
@@ -117,7 +116,7 @@ function ResultsInner() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="ps-h1">{t('results.title', 'Resultados')}</h1>
+          <h1 className="ps-h1">{tr('Resultados')}</h1>
           <p className="ps-lead mt-1">{tr('Descarga los datos, revisa qué pasó y mira una primera lectura.')}</p>
         </div>
         {campaigns && campaigns.length > 1 && (

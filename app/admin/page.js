@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { BlueprintPanel, Kpi, Drawer } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useLanguage, useTr } from '@/lib/i18n/context';
+import { useTr } from '@/lib/i18n/context';
 
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
 const REFRESH_MS = 8000;
@@ -25,7 +25,6 @@ function timeAgo(iso) {
 
 export default function LivePage() {
   const tr = useTr();
-  const { t } = useLanguage();
   const [campaignId, setCampaignId] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
@@ -72,7 +71,7 @@ export default function LivePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="ps-h1">{t('live.title', 'En vivo')}</h1>
+          <h1 className="ps-h1">{tr('En vivo')}</h1>
           <p className="ps-lead mt-1">{sel ? tr('Qué está pasando ahora en “{name}”.', { name: sel.name }) : tr('Cargando…')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

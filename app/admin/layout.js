@@ -11,21 +11,20 @@ import {
   Logo,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useLanguage, useTr } from '@/lib/i18n/context';
+import { useTr } from '@/lib/i18n/context';
 import AssistantWidget from '@/components/admin/assistant-widget';
 import DemoBanner from '@/components/admin/demo-banner';
 
 export default function AdminLayout({ children }) {
   const tr = useTr();
-  const { t } = useLanguage();
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/admin/campaigns', label: t('nav.campaigns', 'Campañas'), icon: 'Layers', match: ['/admin/campaigns', '/admin/versions'] },
-    { href: '/admin', label: t('nav.live', 'En vivo'), icon: 'Activity', match: ['/admin'], exact: true },
-    { href: '/admin/results', label: t('nav.results', 'Resultados'), icon: 'BarChart2', match: ['/admin/results', '/admin/sessions', '/admin/analytics'] },
+    { href: '/admin/campaigns', label: tr('Campañas'), icon: 'Layers', match: ['/admin/campaigns', '/admin/versions'] },
+    { href: '/admin', label: tr('En vivo'), icon: 'Activity', match: ['/admin'], exact: true },
+    { href: '/admin/results', label: tr('Resultados'), icon: 'BarChart2', match: ['/admin/results', '/admin/sessions', '/admin/analytics'] },
   ];
-  const settingsItem = { href: '/admin/settings', label: t('nav.settings', 'Ajustes'), icon: 'Settings' };
+  const settingsItem = { href: '/admin/settings', label: tr('Ajustes'), icon: 'Settings' };
   const isActiveItem = (item) =>
     item.exact ? pathname === item.href : (item.match || [item.href]).some((m) => pathname.startsWith(m));
 
@@ -234,7 +233,7 @@ export default function AdminLayout({ children }) {
               className="hidden sm:inline-flex min-h-[44px] px-2.5 py-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink items-center gap-1.5"
             >
               <CadIcon name="Layers" size={13} />
-              <span>{grainOff ? t('nav.paper_smooth', 'Papel liso') : t('nav.paper_cad', 'Textura CAD')}</span>
+              <span>{grainOff ? tr('Papel liso') : tr('Textura CAD')}</span>
             </button>
 
             <button
@@ -243,7 +242,7 @@ export default function AdminLayout({ children }) {
               className="hidden sm:inline-flex min-h-[44px] px-3 py-1.5 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink items-center gap-1.5"
             >
               <CadIcon name="LogOut" size={13} />
-              <span>{t('nav.logout', 'Salir')}</span>
+              <span>{tr('Salir')}</span>
             </button>
 
             {/* Mobile Menu Button */}
@@ -296,7 +295,7 @@ export default function AdminLayout({ children }) {
                 onClick={handleLogout}
                 className="min-h-[44px] px-3 py-2 border border-vermilion-ink bg-vermilion-tint font-ui-mono text-xs text-vermilion-ink font-semibold"
               >
-                {t('nav.logout', 'Cerrar sesión')}
+                {tr('Cerrar sesión')}
               </button>
             </div>
           </nav>
