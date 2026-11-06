@@ -48,6 +48,11 @@ const T = {
   rule: '#8F8670',
   focus: '#1A3FA8',
   white: '#FFFFFF',
+  // Theme "Plano azul" (data-theme=plano in app/globals.css)
+  planoCanvas: '#DCE8F5',
+  planoAccent: '#5E4300',
+  planoAccentHover: '#4A3500',
+  planoTint: '#F2E3B8',
   cond: ['#5B574F', '#1A3FA8', '#0F4F33', '#86280F', '#6B4F00', '#0B5563'],
 };
 
@@ -117,6 +122,24 @@ const pairs = [
   [T.vermInk, T.subtle, 3.0, 'vermilion-ink icon on paper-subtle box'],
   [T.focus, T.paper, 3.0, 'focus ring on paper'],
   [T.focus, T.canvas, 3.0, 'focus ring on canvas'],
+
+  // --- Theme "Plano azul": light blue canvas, dark ochre accent ---
+  [T.ink, T.planoCanvas, 7.0, 'plano: ink on canvas'],
+  [T.ink2, T.planoCanvas, 7.0, 'plano: ink-2 on canvas'],
+  [T.planoAccent, T.planoCanvas, 7.0, 'plano: accent on canvas'],
+  [T.planoAccent, T.paper, 7.0, 'plano: accent on paper'],
+  [T.planoAccent, T.subtle, 7.0, 'plano: accent on paper-subtle'],
+  [T.planoAccent, T.planoTint, 7.0, 'plano: accent on accent-tint'],
+  [T.ink, T.planoTint, 7.0, 'plano: ink on accent-tint'],
+  [T.ink2, T.planoTint, 7.0, 'plano: ink-2 on accent-tint'],
+  [T.paper, T.planoAccent, 7.0, 'plano: paper on accent'],
+  [T.paper, T.planoAccentHover, 7.0, 'plano: paper on accent-hover'],
+  [T.vermInk, T.planoCanvas, 7.0, 'plano: vermilion-ink on canvas'],
+  [T.emerald, T.planoCanvas, 7.0, 'plano: emerald on canvas'],
+  [T.lineCtl, T.planoCanvas, 3.0, 'plano: line-control on canvas'],
+  [T.lineStrong, T.planoCanvas, 3.0, 'plano: line-strong on canvas'],
+  [T.planoAccent, T.paper, 3.0, 'plano: focus ring / accent graphic on paper'],
+  [T.planoAccent, T.planoCanvas, 3.0, 'plano: focus ring on canvas'],
 ];
 
 console.log('='.repeat(70));

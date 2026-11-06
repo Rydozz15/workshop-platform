@@ -4,6 +4,47 @@
  */
 import { NextResponse } from 'next/server';
 import { getWorkshops, getWorkshopByCode, getVersion, createSession, getSessions, getLastSessionVersion, getSessionsByChainUserId, getMessages } from '@/lib/db';
+import { stepsOfCampaign } from '@/lib/campaigns';
+import { chooseSequence, isValidSequence, positionIn, sequencesPerParticipant } from '@/lib/step-order';
+
+/**
+ * Campaigns with randomize_order give each participant their own order of steps, decided when they
+ * start and kept on their sessions. Returns the step they must be in now, the whole sequence and
+ * the position, or null when the campaign follows the fixed order.
+ */
+async function resolveStepOrder(workshop, chainUserId) {
+  if (!workshop.chain_id || !workshop.randomize_order) return null;
+  const steps = stepsOfCampaign(await getWorkshops(), workshop.chain_id);
+  if (steps.length < 2) return null;
+  const stepIds = steps.map((s) => s.id);
+  const isEntry = steps[0].id === workshop.id; // the campaign code is the first step's code
+
+  // The order this participant already has (they did an earlier step of this campaign)?
+  const prior = chainUserId
+    ? (await getSessionsByChainUserId(chainUserId))
+        .filter((s) => stepIds.includes(s.workshop_id) && isValidSequence(s.step_sequence, stepIds))
+        .sort((a, b) => new Date(a.started_at) - new Date(b.started_at))
+    : [];
+  if (prior.length > 0) {
+    const sequence = prior[0].step_sequence;
+    let stepId = workshop.id;
+    if (isEntry) {
+      // Came back through the campaign code: continue with the first step they have not finished.
+      const done = new Set(prior.filter((s) => s.status === 'completed').map((s) => s.workshop_id));
+      stepId = sequence.find((id) => !done.has(id)) || sequence[0];
+    }
+    return { step: steps.find((s) => s.id === stepId), sequence, position: positionIn(sequence, stepId) };
+  }
+
+  if (!isEntry) {
+    // Arrived at a later step's code with no order yet: keep the fixed order for this person.
+    return { step: workshop, sequence: stepIds, position: positionIn(stepIds, workshop.id) };
+  }
+
+  const everyone = (await Promise.all(stepIds.map((id) => getSessions(id)))).flat();
+  const sequence = chooseSequence(stepIds, sequencesPerParticipant(everyone));
+  return { step: steps.find((s) => s.id === sequence[0]), sequence, position: 1 };
+}
 
 export async function GET(request) {
   try {
@@ -55,10 +96,14 @@ export async function POST(request) {
     }
 
     // Find the workshop by share code
-    const workshop = await getWorkshopByCode(code);
-    if (!workshop) {
+    const codeWorkshop = await getWorkshopByCode(code);
+    if (!codeWorkshop) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
     }
+
+    // With a randomized order the participant may start in a different step than the code's.
+    const order = await resolveStepOrder(codeWorkshop, chain_user_id);
+    const workshop = order ? order.step : codeWorkshop;
 
     if (!workshop.is_active) {
       return NextResponse.json({ error: 'This workshop is no longer active' }, { status: 403 });
@@ -117,11 +162,12 @@ export async function POST(request) {
       participant_name: participant_name || 'Anonymous',
       chain_user_id: chain_user_id || null,
       onboarding_answers: onboarding_answers || null,
+      ...(order ? { chain_position: order.position, step_sequence: order.sequence } : {}),
     });
 
     // For chained sessions (step > 1), find the first user message from the previous session
     let previousFirstMessage = null;
-    if (workshop.chain_id && workshop.chain_order > 1 && chain_user_id) {
+    if (workshop.chain_id && (order ? order.position : workshop.chain_order) > 1 && chain_user_id) {
       try {
         const previousSessions = await getSessionsByChainUserId(chain_user_id);
         // Find completed sessions that are NOT the one we just created, sorted by most recent
@@ -153,7 +199,8 @@ export async function POST(request) {
       onboarding_instructions: workshop.onboarding_instructions || null,
       analysis_type: workshop.analysis_type || 'preregistrado',
       chain_id: workshop.chain_id || null,
-      chain_order: workshop.chain_order || 1,
+      chain_order: order ? order.position : workshop.chain_order || 1,
+      share_code: workshop.share_code,
       survey_config: workshop.survey_config || [],
       previous_first_message: previousFirstMessage,
     });

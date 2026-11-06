@@ -8,6 +8,7 @@ import {
   passwordMatches,
   createSessionToken,
   verifySessionToken,
+  sessionCookieOptions,
   SESSION_TTL_MS,
 } from '../lib/admin-auth.js';
 
@@ -61,6 +62,22 @@ check('production without ADMIN_PASSWORD keeps the admin locked', () => {
   assert.equal(verifySessionToken(token), false);
   process.env.NODE_ENV = prevEnv;
   process.env.ADMIN_PASSWORD = 'correct-horse';
+});
+
+check('cookie is Secure in production, except in local mode over plain HTTP', () => {
+  const prevEnv = process.env.NODE_ENV;
+  const prevLocal = process.env.LOCAL_MODE;
+  process.env.NODE_ENV = 'production';
+  delete process.env.LOCAL_MODE;
+  assert.equal(sessionCookieOptions().secure, true);
+  process.env.LOCAL_MODE = '1';
+  assert.equal(sessionCookieOptions().secure, false);
+  process.env.NODE_ENV = 'development';
+  delete process.env.LOCAL_MODE;
+  assert.equal(sessionCookieOptions().secure, false);
+  process.env.NODE_ENV = prevEnv;
+  if (prevLocal === undefined) delete process.env.LOCAL_MODE;
+  else process.env.LOCAL_MODE = prevLocal;
 });
 
 console.log(`\nadmin-auth: ${passed} tests passed`);

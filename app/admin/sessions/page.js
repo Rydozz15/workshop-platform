@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useTr } from '@/lib/i18n/context';
+import { displayAnswer, otherKey } from '@/lib/survey-schema';
+import useSelectedCampaign from '@/lib/use-selected-campaign';
+import SectionTrail from '@/components/admin/section-trail';
 
 function stripThinkingTags(text) {
   if (!text) return '';
@@ -38,7 +41,7 @@ export default function SessionsPage() {
   const tr = useTr();
   const [sessions, setSessions] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
-  const [selectedCampaign, setSelectedCampaign] = useState('');
+  const [selectedCampaign, setSelectedCampaign] = useSelectedCampaign();
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [exportingLabel, setExportingLabel] = useState('');
@@ -51,14 +54,14 @@ export default function SessionsPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  const loadData = useCallback(async (workshopId = '') => {
+  const loadData = useCallback(async (campaignId = '') => {
     setLoading(true);
     try {
-      const exportUrl = workshopId
-        ? `/api/admin/export?workshopId=${encodeURIComponent(workshopId)}`
+      const exportUrl = campaignId
+        ? `/api/admin/export?campaignId=${encodeURIComponent(campaignId)}`
         : '/api/admin/export';
       const [wRes, sRes] = await Promise.all([
-        fetch('/api/admin/workshops'),
+        fetch('/api/admin/campaigns'),
         fetch(exportUrl),
       ]);
       const wData = await wRes.json();
@@ -120,7 +123,7 @@ export default function SessionsPage() {
     setExportingLabel(filename);
     try {
       const params = new URLSearchParams();
-      if (selectedCampaign) params.set('workshopId', selectedCampaign);
+      if (selectedCampaign) params.set('campaignId', selectedCampaign);
       if (format) params.set('format', format);
       if (level) params.set('level', level);
 
@@ -271,6 +274,11 @@ export default function SessionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
+      <SectionTrail
+        current={tr('Sesiones')}
+        description={tr('Cada conversación individual de la campaña. Resultados las resume todas juntas.')}
+        tr={tr}
+      />
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line-control pb-4">
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-1">
@@ -388,14 +396,14 @@ export default function SessionsPage() {
             <label
               htmlFor="campaign-filter-select"
               className="block font-ui-mono text-xs font-semibold uppercase tracking-wider text-ink mb-1.5"
-            >{tr('Filtrar por Experimento / Condición')}</label>
+            >{tr('Filtrar por campaña')}</label>
             <select
               id="campaign-filter-select"
               value={selectedCampaign}
               onChange={(e) => setSelectedCampaign(e.target.value)}
               className="min-h-[44px] w-full px-3 border border-line-control bg-paper font-ui-mono text-xs text-ink"
             >
-              <option value="">{tr('Todos los experimentos (')}{campaigns.length})</option>
+              <option value="">{tr('Todas las campañas ({n})', { n: campaigns.length })}</option>
               {campaigns.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -478,11 +486,11 @@ export default function SessionsPage() {
             <div className="p-5 overflow-y-auto space-y-5 flex-1">
               {/* System Prompt Box */}
               <div className="p-3 bg-paper-subtle border border-line-control">
-                <div className="font-ui-mono text-xs uppercase font-semibold text-ink mb-1">{tr('System Prompt Activo en esta Sesión')}</div>
+                <div className="font-ui-mono text-xs uppercase font-semibold text-ink mb-1">{tr('Prompt activo en esta sesión')}</div>
                 <pre className="font-ui-mono text-xs text-ink-2 whitespace-pre-wrap m-0 max-h-36 overflow-y-auto">
                   {inspectedSession.system_prompt
                     ? inspectedSession.system_prompt
-                    : tr('Sin System Prompt adicional (Condición Base / Naive Mode)')}
+                    : tr('Sin prompt adicional (condición base)')}
                 </pre>
               </div>
 
@@ -538,12 +546,13 @@ export default function SessionsPage() {
                   <div className="p-4 bg-paper-subtle border border-line-control space-y-2.5">
                     <div className="font-ui-mono text-xs uppercase font-semibold text-cobalt">{tr('Respuestas del Instrumento Post-Sesión')}</div>
                     <dl className="space-y-2 m-0">
-                      {Object.entries(inspectedSession.survey_answers).map(([k, val]) => {
+                      {Object.entries(inspectedSession.survey_answers).filter(([k]) => !k.endsWith('__other')).map(([k, val]) => {
                         const matchedQ = (inspectedSession.survey_config || []).find(
                           (q) => q.id === k
                         );
                         const label = matchedQ ? matchedQ.text : k;
-                        const displayVal = Array.isArray(val) ? val.join(' · ') : String(val);
+                        const shown = displayAnswer(val, inspectedSession.survey_answers[otherKey(k)], tr('Otro'));
+                        const displayVal = Array.isArray(shown) ? shown.join(' · ') : shown;
                         return (
                           <div key={k} className="border-b border-dotted border-rule pb-1.5">
                             <dt className="font-ui-mono text-xs text-ink-2">{label}</dt>

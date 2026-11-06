@@ -63,6 +63,7 @@ async function loadAllSuites() {
     { createDraftingLaunchTelemetrySuite },
     { createSurveyPsychometricsPipelineSuite },
     { createIRRJudgeCalibrationSuite },
+    { createRandomizedStepOrderSuite },
 
     // Tier 4
     { createScenario1ContestableVsBaselineSuite },
@@ -100,6 +101,7 @@ async function loadAllSuites() {
     import('./tier3-interactions/drafting-launch-telemetry.test.js'),
     import('./tier3-interactions/survey-psychometrics-pipeline.test.js'),
     import('./tier3-interactions/irr-judge-calibration.test.js'),
+    import('./tier3-interactions/randomized-step-order.test.js'),
 
     // Tier 4
     import('./tier4-real-world/scenario-1-contestable-vs-baseline.test.js'),
@@ -136,6 +138,7 @@ async function loadAllSuites() {
     createDraftingLaunchTelemetrySuite(),
     createSurveyPsychometricsPipelineSuite(),
     createIRRJudgeCalibrationSuite(),
+    createRandomizedStepOrderSuite(),
 
     createScenario1ContestableVsBaselineSuite(),
     createScenario2CeilingEffectSuite(),

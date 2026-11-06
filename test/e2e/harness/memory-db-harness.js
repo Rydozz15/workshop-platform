@@ -8,7 +8,6 @@ import { randomUUID } from 'crypto';
 import { testDbPath } from './env.js';
 
 const PRIMARY_DATA_FILE = path.join(process.cwd(), 'data.json');
-const BACKUP_DATA_FILE = path.join(process.cwd(), 'scratch', 'data.json.bak');
 
 export function createInitialStore() {
   const now = new Date().toISOString();
@@ -102,40 +101,19 @@ export function createInitialStore() {
   };
 }
 
+// The suites only ever write to testDbPath (scratch/test-e2e.json, forced by env.js through DB_MEMORY_PATH).
+// The real data.json is never written: it used to be backed up and overwritten here, which put a
+// user's local campaigns at risk whenever the tests ran next to a running app.
 export function setupTestDatabase() {
-  // If a primary data.json exists, backup to scratch
-  if (fs.existsSync(PRIMARY_DATA_FILE) && !fs.existsSync(BACKUP_DATA_FILE)) {
-    try {
-      fs.copyFileSync(PRIMARY_DATA_FILE, BACKUP_DATA_FILE);
-    } catch (e) {
-      console.warn('Could not backup primary data.json:', e.message);
-    }
-  }
-
   // Write fresh test dataset to testDbPath
   const store = createInitialStore();
   fs.writeFileSync(testDbPath, JSON.stringify(store, null, 2), 'utf-8');
-
-  // Also write to data.json if lib/db-memory is hardcoded to data.json
-  try {
-    fs.writeFileSync(PRIMARY_DATA_FILE, JSON.stringify(store, null, 2), 'utf-8');
-  } catch (e) {
-    // Ignore if not writable
-  }
 
   return store;
 }
 
 export function teardownTestDatabase() {
-  // Restore original data.json if backup exists
-  if (fs.existsSync(BACKUP_DATA_FILE)) {
-    try {
-      fs.copyFileSync(BACKUP_DATA_FILE, PRIMARY_DATA_FILE);
-      fs.unlinkSync(BACKUP_DATA_FILE);
-    } catch (e) {
-      console.warn('Could not restore primary data.json from backup:', e.message);
-    }
-  }
+  // Nothing to restore: the real data.json is never touched (see setupTestDatabase).
 }
 
 export function readTestStore() {
@@ -150,9 +128,4 @@ export function readTestStore() {
 
 export function writeTestStore(store) {
   fs.writeFileSync(testDbPath, JSON.stringify(store, null, 2), 'utf-8');
-  if (fs.existsSync(PRIMARY_DATA_FILE)) {
-    try {
-      fs.writeFileSync(PRIMARY_DATA_FILE, JSON.stringify(store, null, 2), 'utf-8');
-    } catch (e) {}
-  }
 }

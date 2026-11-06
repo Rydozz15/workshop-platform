@@ -31,7 +31,7 @@ function nodeIsSupported(version = process.versions.node) {
 }
 
 function generatePassword() {
-  const alphabet = 'abcdefghijkmnpqrstuvwxyz23456789'; // no look-alike characters
+  const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789'; // no look-alike characters
   return Array.from(crypto.randomBytes(10), (b) => alphabet[b % alphabet.length]).join('');
 }
 
@@ -147,7 +147,7 @@ async function main() {
   const server = spawn(process.execPath, [nextBin, 'start', '-p', String(opts.port), '-H', '0.0.0.0'], {
     cwd: ROOT,
     stdio: 'inherit',
-    env: { ...process.env, NODE_ENV: 'production', DB_PROVIDER: env.DB_PROVIDER, ADMIN_PASSWORD: env.ADMIN_PASSWORD, NEXT_PUBLIC_BASE_URL: base },
+    env: { ...process.env, NODE_ENV: 'production', LOCAL_MODE: '1', DB_PROVIDER: env.DB_PROVIDER, ADMIN_PASSWORD: env.ADMIN_PASSWORD, NEXT_PUBLIC_BASE_URL: base },
   });
   const stop = () => server.kill();
   process.on('SIGINT', stop);

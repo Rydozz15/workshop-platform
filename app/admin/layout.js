@@ -36,17 +36,14 @@ export default function AdminLayout({ children }) {
   const [submitting, setSubmitting] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [grainOff, setGrainOff] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth')
       .then((r) => r.json())
       .then((d) => setAuthed(Boolean(d.authed)))
       .catch(() => setAuthed(false));
-    const savedGrain = localStorage.getItem('ps_grain_off') === '1';
-    setGrainOff(savedGrain);
-    if (savedGrain) {
-      document.documentElement.dataset.grain = 'off';
+    if (localStorage.getItem('ps_theme') === 'plano') {
+      document.documentElement.dataset.theme = 'plano';
     }
     const savedMotion = localStorage.getItem('ps_reduced_motion') === '1';
     if (savedMotion) {
@@ -54,18 +51,6 @@ export default function AdminLayout({ children }) {
     }
     setLoading(false);
   }, []);
-
-  const toggleGrain = () => {
-    const next = !grainOff;
-    setGrainOff(next);
-    if (next) {
-      document.documentElement.dataset.grain = 'off';
-      localStorage.setItem('ps_grain_off', '1');
-    } else {
-      delete document.documentElement.dataset.grain;
-      localStorage.removeItem('ps_grain_off');
-    }
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -224,17 +209,6 @@ export default function AdminLayout({ children }) {
             >
               <CadIcon name="Settings" size={18} />
             </Link>
-
-            <button
-              type="button"
-              onClick={toggleGrain}
-              aria-pressed={!grainOff}
-              title={tr('Alternar textura de papel')}
-              className="hidden sm:inline-flex min-h-[44px] px-2.5 py-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink items-center gap-1.5"
-            >
-              <CadIcon name="Layers" size={13} />
-              <span>{grainOff ? tr('Papel liso') : tr('Textura CAD')}</span>
-            </button>
 
             <button
               type="button"

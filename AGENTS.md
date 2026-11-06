@@ -106,7 +106,8 @@ Legacy but still available: `/api/admin/workshops`, `/api/admin/versions`, `/api
       "maintain_version": false,
       "survey_config": [
         { "id": "useful", "text": "Was it useful?", "type": "likert", "required": true },
-        { "id": "notes", "text": "Comments", "type": "text", "required": false }
+        { "id": "notes", "text": "Comments", "type": "text", "required": false, "minChars": 10, "maxChars": 500 },
+        { "id": "uses", "text": "What do you use it for?", "type": "checklist", "options": ["Study", "Write"], "allowOther": true, "minSelections": 1, "maxSelections": 2 }
       ],
       "conditions": [
         { "title": "Neutral", "case_content": "# Case\nMarkdown shown to the participant." },
@@ -116,6 +117,8 @@ Legacy but still available: `/api/admin/workshops`, `/api/admin/versions`, `/api
   ]
 }
 ```
+
+Question types (`lib/survey-schema.js`): `likert` (optional `minLabel`/`maxLabel`), `multiple` (one option), `dropdown`, `checklist` (several options, `minSelections`/`maxSelections`) and `text` (`minChars`/`maxChars`). The choice types take `options` and `allowOther` (answer `__other__`, typed text under `<id>__other`). Set `randomize_order: true` on the campaign (2+ steps) to give each participant their own, balanced order of steps. A campaign's questions can also be loaded from a CSV in the editor (template in `lib/survey-csv.js`).
 
 Validation errors come back as `400` with a human-readable `error`. Each step needs a name and at least one condition with a title and `case_content`. To edit, `GET` the detail, change it and `PUT` it back (keep `id` fields so existing steps and conditions are updated, not recreated).
 
@@ -127,6 +130,7 @@ POST /api/session/join   {code, participant_name, chain_user_id, onboarding_answ
                          -> {session_id, version (the assigned condition), survey_config, ...}
 POST /api/session/{session_id}/chat   {message, client_telemetry?}      -> SSE stream (data: {...})
 POST /api/session/{session_id}/survey {survey_answers: {<question id>: value}, chain_user_id}
+                                      -> 400 {error, errors} if an answer breaks its question's rules
 PUT  /api/session/{session_id}        {status: "completed"}              -> includes next_share_code if more steps
 ```
 

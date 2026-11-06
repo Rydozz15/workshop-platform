@@ -16,6 +16,8 @@ import {
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useLanguage, useTr } from '@/lib/i18n/context';
+import SurveyQuestion from '@/components/survey/survey-question';
+import { validateAnswers } from '@/lib/survey-schema';
 
 function stripThinkingTags(text) {
   if (!text) return '';
@@ -455,11 +457,13 @@ export default function SessionPage({ params }) {
   // PHASE 3: POST-SESSION SCIENTIFIC SURVEY
   // ============================================================
   if (phase === 'survey') {
+    const surveyCheck = validateAnswers(surveyConfig, surveyAnswers, { tr });
     const unanswered = surveyConfig.filter((q) => {
       if (q.required === false) return false;
       const v = surveyAnswers[q.id];
       return v === undefined || v === '' || (Array.isArray(v) && v.length === 0);
     });
+    const invalidCount = Object.keys(surveyCheck.errors).length - unanswered.length;
     return (
       <div className="max-w-3xl mx-auto px-4 py-6 md:py-10 space-y-5">
         <div className="flex items-center justify-between gap-3">
@@ -481,107 +485,9 @@ export default function SessionPage({ params }) {
           )}
 
           <form onSubmit={submitSurvey} className="space-y-5">
-            {surveyConfig.map((q, idx) => {
-              const qType = q.type || 'likert';
-              const isRequired = q.required !== false;
-              const scaleValues = Array.isArray(q.scale) && q.scale.length > 0 ? q.scale : [1, 2, 3, 4, 5];
-
-              return (
-                <fieldset key={q.id || idx} className="p-4 bg-paper-subtle border border-line-control m-0 space-y-3 min-w-0">
-                  <legend className="w-full max-w-full float-left font-body text-base font-semibold text-ink leading-snug break-words mb-2">
-                    {q.text}
-                    {isRequired ? (
-                      <span className="text-vermilion-ink ml-1" aria-hidden="true">*</span>
-                    ) : (
-                      <span className="ml-2 font-normal text-ink-2 text-sm">{tr('(opcional)')}</span>
-                    )}
-                    {isRequired && <span className="sr-only">{' '}{tr('(obligatoria)')}</span>}
-                  </legend>
-                  <div className="clear-both" />
-
-                  {qType === 'likert' && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-3 font-body text-sm text-ink-2">
-                        <span>{q.minLabel || tr('1 · Nada de acuerdo')}</span>
-                        <span className="text-right">{q.maxLabel || `${scaleValues[scaleValues.length - 1]} · ${tr('Totalmente de acuerdo')}`}</span>
-                      </div>
-                      <div className="grid grid-cols-5 gap-2">
-                        {scaleValues.map((num) => {
-                          const strVal = String(num);
-                          const isSelected = String(surveyAnswers[q.id] ?? '') === strVal;
-                          return (
-                            <label
-                              key={strVal}
-                              className={`min-h-[52px] border-2 flex items-center justify-center cursor-pointer font-stat text-base font-semibold ${
-                                isSelected ? 'bg-cobalt text-paper border-cobalt' : 'bg-paper text-ink border-line-control hover:bg-cobalt-tint'
-                              }`}
-                            >
-                              <input
-                                type="radio"
-                                name={`survey_${q.id}`}
-                                value={strVal}
-                                checked={isSelected}
-                                onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })}
-                                className="sr-only"
-                              />
-                              <span>{num}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {qType === 'multiple' && (
-                    <div className="space-y-2">
-                      {(q.options || []).map((opt) => {
-                        const isSelected = surveyAnswers[q.id] === opt;
-                        return (
-                          <label key={opt} className={`min-h-[44px] px-3 py-2 border flex items-center gap-2.5 cursor-pointer font-body text-sm ${isSelected ? 'bg-cobalt-tint border-cobalt text-cobalt font-medium' : 'bg-paper border-line-control text-ink'}`}>
-                            <input type="radio" name={`survey_${q.id}`} value={opt} checked={isSelected} onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })} className="w-4 h-4 accent-cobalt" />
-                            <span>{opt}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {(qType === 'checklist' || qType === 'checkbox') && (
-                    <div className="space-y-2">
-                      {(q.options || []).map((opt) => {
-                        const currentArr = Array.isArray(surveyAnswers[q.id]) ? surveyAnswers[q.id] : [];
-                        const isChecked = currentArr.includes(opt);
-                        return (
-                          <label key={opt} className={`min-h-[44px] px-3 py-2 border flex items-center gap-2.5 cursor-pointer font-body text-sm ${isChecked ? 'bg-cobalt-tint border-cobalt text-ink font-medium' : 'bg-paper border-line-control text-ink'}`}>
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={(e) => {
-                                const next = e.target.checked ? [...currentArr, opt] : currentArr.filter((item) => item !== opt);
-                                setSurveyAnswers({ ...surveyAnswers, [q.id]: next });
-                              }}
-                              className="w-4 h-4 accent-cobalt shrink-0"
-                            />
-                            <span>{opt}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {(qType === 'text' || qType === 'open') && (
-                    <textarea
-                      rows={3}
-                      aria-label={q.text}
-                      value={surveyAnswers[q.id] || ''}
-                      onChange={(e) => setSurveyAnswers({ ...surveyAnswers, [q.id]: e.target.value })}
-                      placeholder={tr('Escribe aquí tu respuesta')}
-                      className="w-full p-3 bg-paper border border-line-control font-body text-base text-ink"
-                    />
-                  )}
-                </fieldset>
-              );
-            })}
+            {surveyConfig.map((q, idx) => (
+              <SurveyQuestion key={q.id || idx} question={q} answers={surveyAnswers} setAnswers={setSurveyAnswers} tr={tr} />
+            ))}
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line-control">
               <button
@@ -597,7 +503,10 @@ export default function SessionPage({ params }) {
                   <span className="font-body text-sm text-ink-2">{tr('Faltan {n} pregunta(s) obligatoria(s)', { n: unanswered.length })}
                   </span>
                 )}
-                <SplitButton type="submit" variant="primary" iconBox="Check" loading={submittingSurvey} disabled={unanswered.length > 0}>{tr('Enviar y terminar')}</SplitButton>
+                {invalidCount > 0 && (
+                  <span className="font-body text-sm text-vermilion-ink">{tr('Revisa las respuestas marcadas.')}</span>
+                )}
+                <SplitButton type="submit" variant="primary" iconBox="Check" loading={submittingSurvey} disabled={!surveyCheck.ok}>{tr('Enviar y terminar')}</SplitButton>
               </div>
             </div>
           </form>

@@ -11,6 +11,7 @@ cd "$SCRIPT_DIR/.."
 PORT="${PORT:-3000}"
 export DB_PROVIDER=memory
 export NODE_ENV=production
+export LOCAL_MODE=1
 
 # In production the admin stays locked without a password: generate one for this session.
 if [ -z "${ADMIN_PASSWORD:-}" ] && ! grep -q '^ADMIN_PASSWORD=' .env.local 2>/dev/null; then

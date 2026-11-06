@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useTr } from '@/lib/i18n/context';
+import { normalizeQuestion, canonicalType, parseOptions } from '@/lib/survey-schema';
+import QuestionEditor from './question-editor';
+import QuestionImport from './question-import';
 
 const INPUT = 'w-full font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
@@ -38,6 +41,7 @@ function fromDetail(detail) {
       description: detail.description || '',
       consent_required: Boolean(detail.consent_required),
       consent_url: detail.consent_url || '',
+      randomize_order: Boolean(detail.randomize_order),
     },
     steps: detail.steps.map((s) => ({
       key: nextKey(),
@@ -48,7 +52,13 @@ function fromDetail(detail) {
       ai_provider: s.ai_provider || 'openrouter',
       openrouter_model: s.openrouter_model || '',
       maintain_version: Boolean(s.maintain_version),
-      questions: (s.survey_config || []).map((q) => ({ key: nextKey(), required: false, ...q })),
+      questions: (s.survey_config || []).map((q) => ({
+        ...q,
+        key: nextKey(),
+        type: canonicalType(q.type),
+        required: q.required !== false,
+        optionsText: (q.options || []).join('\n'),
+      })),
       conditions: (s.conditions || []).map((c) => ({
         key: nextKey(),
         id: c.id,
@@ -73,7 +83,7 @@ function toPayload(meta, steps) {
       maintain_version: s.maintain_version,
       survey_config: s.questions
         .filter((q) => q.text.trim())
-        .map(({ id, text, type, required }) => ({ id, text: text.trim(), type, required })),
+        .map(({ key, optionsText, ...q }) => normalizeQuestion({ ...q, text: q.text.trim(), options: parseOptions(optionsText) })),
       conditions: s.conditions.map(({ id, title, case_content, system_prompt }) => ({ id, title, case_content, system_prompt })),
     })),
   };
@@ -91,7 +101,7 @@ export default function CampaignEditor({ campaignId = null }) {
   const tr = useTr();
   const router = useRouter();
   const [loading, setLoading] = useState(Boolean(campaignId));
-  const [meta, setMeta] = useState({ name: '', description: '', consent_required: false, consent_url: '' });
+  const [meta, setMeta] = useState({ name: '', description: '', consent_required: false, consent_url: '', randomize_order: false });
   const [steps, setSteps] = useState(() => [newStep(1)]);
   const [openKey, setOpenKey] = useState(() => steps[0]?.key ?? null);
   const [confirmDeleteKey, setConfirmDeleteKey] = useState(null);
@@ -246,9 +256,18 @@ export default function CampaignEditor({ campaignId = null }) {
 
       <BlueprintPanel
         title={tr('2. Pasos de la campaña')}
-        subtitle={tr('Los participantes los recorren en este orden.')}
+        subtitle={meta.randomize_order ? tr('Cada participante los recorre en un orden distinto.') : tr('Los participantes los recorren en este orden.')}
         headerSlot={<span className="ps-meta">{tr('{n} paso(s)', { n: steps.length })}</span>}
       >
+        {steps.length > 1 && (
+          <label className="flex items-start gap-2 font-body text-sm text-ink min-h-[44px] mb-3">
+            <input type="checkbox" className="w-5 h-5 mt-0.5" checked={meta.randomize_order} onChange={(e) => setMeta({ ...meta, randomize_order: e.target.checked })} />
+            <span>
+              <span className="font-semibold">{tr('Orden aleatorio de los pasos')}</span>
+              <span className="block text-ink-2">{tr('Cada participante recorre los pasos en un orden distinto, repartido de forma equilibrada. Útil para comparar control y tratamiento sin efecto de orden.')}</span>
+            </span>
+          </label>
+        )}
         <ol className="list-none m-0 p-0 space-y-3">
           {steps.map((step, index) => {
             const open = openKey === step.key;
@@ -307,7 +326,7 @@ export default function CampaignEditor({ campaignId = null }) {
                     <section aria-label={tr('Condiciones')} className="space-y-3">
                       <div className="flex items-center gap-2">
                         <h3 className="ps-h3">{tr('Condiciones')}</h3>
-                        <InfoTip label={tr('Qué es una condición')}>{tr('Una condición es una versión de la experiencia: un caso y, si quieres, instrucciones propias para el asistente. Con dos o más, cada participante recibe una al azar y se reparten de forma equilibrada.')}</InfoTip>
+                        <InfoTip label={tr('Qué es una condición')}>{tr('Una condición es una versión de la experiencia: un caso y, si quieres, un prompt propio para el asistente. Con dos o más, cada participante recibe una al azar y se reparten de forma equilibrada.')}</InfoTip>
                       </div>
                       {step.conditions.length > 1 && (
                         <p className="ps-lead">{tr('Cada participante verá solo una de estas condiciones, asignada al azar y equilibrada.')}</p>
@@ -329,7 +348,7 @@ export default function CampaignEditor({ campaignId = null }) {
                           <Field label={tr('Caso o escenario que verá el participante')} required help={tr('Admite formato Markdown.')}>
                             <textarea className={INPUT} rows={5} value={cond.case_content} onChange={(e) => patchCondition(step.key, cond.key, { case_content: e.target.value })} />
                           </Field>
-                          <Disclosure title={tr('Instrucciones propias del asistente')} summary={cond.system_prompt.trim() ? tr('Definidas') : tr('Opcional: si no las defines se usan las del paso')}>
+                          <Disclosure title={tr('Prompt propio del asistente')} summary={cond.system_prompt.trim() ? tr('Definidas') : tr('Opcional: si no lo defines se usa el del paso')}>
                             <textarea className={INPUT} rows={6} value={cond.system_prompt} placeholder={tr('Cómo debe comportarse el asistente en esta condición')} onChange={(e) => patchCondition(step.key, cond.key, { system_prompt: e.target.value })} />
                           </Disclosure>
                         </div>
@@ -338,32 +357,35 @@ export default function CampaignEditor({ campaignId = null }) {
                         <CadIcon name="Plus" size={16} />{' '}{tr('Agregar condición')}</button>
                     </section>
 
-                    <Disclosure title={tr('Instrucciones del asistente para todo el paso')} summary={tr('Se usan en las condiciones que no tienen instrucciones propias')}>
+                    <Disclosure title={tr('Prompt del asistente para todo el paso')} summary={tr('Se usa en las condiciones que no tienen prompt propio')}>
                       <textarea className={INPUT} rows={6} value={step.system_prompt} onChange={(e) => patchStep(step.key, { system_prompt: e.target.value })} />
                     </Disclosure>
 
                     <Disclosure title={tr('Preguntas al terminar')} summary={questionCount ? tr('{q} pregunta(s)', { q: questionCount }) : tr('Sin preguntas')}>
                       <div className="space-y-3">
                         {step.questions.map((q, qi) => (
-                          <div key={q.key} className="border border-line-control p-3 space-y-2">
-                            <Field label={tr('Pregunta {n}', { n: qi + 1 })}>
-                              <input className={INPUT} value={q.text} onChange={(e) => patchQuestion(step.key, q.key, { text: e.target.value })} />
-                            </Field>
-                            <div className="flex flex-wrap items-center gap-4">
-                              <label className="flex items-center gap-2 font-body text-sm">{tr('Tipo')}<select className={INPUT + ' w-auto'} value={q.type} onChange={(e) => patchQuestion(step.key, q.key, { type: e.target.value })}>
-                                  <option value="likert">{tr('Escala de 1 a 5')}</option>
-                                  <option value="text">{tr('Respuesta abierta')}</option>
-                                </select>
-                              </label>
-                              <label className="flex items-center gap-2 font-body text-sm min-h-[44px]">
-                                <input type="checkbox" className="w-5 h-5" checked={q.required} onChange={(e) => patchQuestion(step.key, q.key, { required: e.target.checked })} />{tr('Obligatoria')}</label>
-                              <button type="button" onClick={() => patchStep(step.key, { questions: step.questions.filter((x) => x.key !== q.key) })} className={BTN + ' text-vermilion-ink ml-auto'}>
-                                <CadIcon name="Trash2" size={16} />{' '}{tr('Quitar')}</button>
-                            </div>
-                          </div>
+                          <QuestionEditor
+                            key={q.key}
+                            q={q}
+                            index={qi}
+                            tr={tr}
+                            onChange={(patch) => patchQuestion(step.key, q.key, patch)}
+                            onRemove={() => patchStep(step.key, { questions: step.questions.filter((x) => x.key !== q.key) })}
+                          />
                         ))}
-                        <button type="button" onClick={() => patchStep(step.key, { questions: [...step.questions, newQuestion()] })} className={BTN}>
-                          <CadIcon name="Plus" size={16} />{' '}{tr('Agregar pregunta')}</button>
+                        <div className="flex flex-wrap gap-2">
+                          <button type="button" onClick={() => patchStep(step.key, { questions: [...step.questions, newQuestion()] })} className={BTN}>
+                            <CadIcon name="Plus" size={16} />{' '}{tr('Agregar pregunta')}</button>
+                        </div>
+                        <QuestionImport
+                          tr={tr}
+                          hasQuestions={step.questions.length > 0}
+                          onImport={(imported, mode) =>
+                            patchStep(step.key, {
+                              questions: [...(mode === 'replace' ? [] : step.questions), ...imported.map((q) => newQuestion(q))],
+                            })
+                          }
+                        />
                       </div>
                     </Disclosure>
 

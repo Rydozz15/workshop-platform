@@ -47,8 +47,8 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [banner, setBanner] = useState(null);
   const [demo, setDemo] = useState({ loaded: false, busy: false, available: true });
-  const [grainOff, setGrainOff] = useState(() => {
-    try { return typeof window !== 'undefined' && localStorage.getItem('ps_grain_off') === '1'; } catch { return false; }
+  const [plano, setPlano] = useState(() => {
+    try { return typeof window !== 'undefined' && localStorage.getItem('ps_theme') === 'plano'; } catch { return false; }
   });
   const [reduced, setReduced] = useState(() => {
     try { return typeof window !== 'undefined' && localStorage.getItem('ps_reduced_motion') === '1'; } catch { return false; }
@@ -123,10 +123,10 @@ export default function SettingsPage() {
     }
   };
 
-  const toggleGrain = (on) => {
-    setGrainOff(on);
-    try { on ? localStorage.setItem('ps_grain_off', '1') : localStorage.removeItem('ps_grain_off'); } catch { /* storage unavailable */ }
-    if (on) document.documentElement.dataset.grain = 'off'; else delete document.documentElement.dataset.grain;
+  const togglePlano = (on) => {
+    setPlano(on);
+    try { on ? localStorage.setItem('ps_theme', 'plano') : localStorage.removeItem('ps_theme'); } catch { /* storage unavailable */ }
+    if (on) document.documentElement.dataset.theme = 'plano'; else delete document.documentElement.dataset.theme;
   };
   const toggleReduced = (on) => {
     setReduced(on);
@@ -269,7 +269,7 @@ export default function SettingsPage() {
       </Disclosure>
 
       <Disclosure title={tr('Apariencia y accesibilidad')} summary={tr('Se guarda solo en este navegador')}>
-        <Toggle id="grain" checked={grainOff} onChange={toggleGrain} label={tr('Papel liso, sin textura')} hint={tr('Útil con proyectores o si la textura cansa la vista.')} />
+        <Toggle id="theme" checked={plano} onChange={togglePlano} label={tr('Tema “Plano azul” (prueba)')} hint={tr('Fondo azul claro como papel de planos, con acento ocre. Solo cambia los colores.')} />
         <Toggle id="motion" checked={reduced} onChange={toggleReduced} label={tr('Reducir el movimiento')} hint={tr('Quita animaciones y transiciones.')} />
       </Disclosure>
 

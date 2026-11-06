@@ -6,6 +6,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { BlueprintPanel, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useTr } from '@/lib/i18n/context';
+import QrProjector from '@/components/admin/qr-projector';
 
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
 const BTN_PRIMARY = 'min-h-[44px] px-4 py-2 border border-line-strong bg-cobalt hover:bg-cobalt-hover text-paper font-body text-sm font-semibold inline-flex items-center gap-2';
@@ -15,6 +16,7 @@ function CampaignCard({ campaign, origin, onDeleted }) {
   const [confirming, setConfirming] = useState(false);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const link = `${origin}/session/${campaign.share_code}`;
 
   const copy = async () => {
@@ -74,7 +76,17 @@ function CampaignCard({ campaign, origin, onDeleted }) {
         </div>
       </div>
       <div className="sm:w-56 shrink-0 p-4 border-t sm:border-t-0 sm:border-l border-line-control bg-paper-subtle flex sm:flex-col items-center gap-3">
-        {origin && <QRCodeSVG value={link} size={96} bgColor="transparent" fgColor="currentColor" className="text-ink shrink-0" aria-label={tr('Código QR de {name}', { name: campaign.name })} />}
+        {origin && (
+          <button
+            type="button"
+            onClick={() => setQrOpen(true)}
+            aria-label={tr('Ampliar el código QR de {name}', { name: campaign.name })}
+            className="ps-attention shrink-0 p-2 border border-line-control bg-paper hover:bg-cobalt-tint flex flex-col items-center gap-1"
+          >
+            <QRCodeSVG value={link} size={96} bgColor="transparent" fgColor="currentColor" className="text-ink" aria-hidden="true" />
+            <span className="ps-meta inline-flex items-center gap-1 text-cobalt"><CadIcon name="Maximize2" size={14} />{tr('Ampliar')}</span>
+          </button>
+        )}
         <div className="min-w-0 text-center sm:w-full">
           <p className="ps-meta m-0">{tr('Código')}</p>
           <p className="font-stat text-lg font-bold text-ink m-0 tracking-wider">{campaign.share_code}</p>
@@ -83,6 +95,7 @@ function CampaignCard({ campaign, origin, onDeleted }) {
           </button>
         </div>
       </div>
+      <QrProjector open={qrOpen} onClose={() => setQrOpen(false)} name={campaign.name} code={campaign.share_code} link={link} tr={tr} />
     </article>
   );
 }
@@ -122,7 +135,7 @@ export default function CampaignsPage() {
 
       {campaigns && campaigns.length === 0 && (
         <BlueprintPanel title={tr('Aún no tienes campañas')} subtitle={tr('Una campaña reúne los pasos que vivirá cada participante.')}>
-          <Link href="/admin/campaigns/new" className={BTN_PRIMARY}>
+          <Link href="/admin/campaigns/new" className={`${BTN_PRIMARY} ps-attention`}>
             <CadIcon name="Plus" size={16} />{' '}{tr('Crear mi primera campaña')}</Link>
         </BlueprintPanel>
       )}

@@ -60,6 +60,8 @@ export async function GET(request) {
           campaign_id: session.workshop_id,
           chain_id: workshop ? workshop.chain_id : null,
           chain_order: workshop ? workshop.chain_order : null,
+          chain_position: session.chain_position || null,
+          step_sequence: session.step_sequence || null,
           chain_user_id: session.chain_user_id,
           version_title: version ? version.title : 'Unknown',
           version_id: session.version_id,

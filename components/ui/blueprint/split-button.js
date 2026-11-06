@@ -97,12 +97,13 @@ export const SplitButton = forwardRef(function SplitButton(
             aria-haspopup="menu"
             aria-expanded={menuOpen}
             aria-label="Más acciones"
+            title="Más acciones"
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`min-h-[44px] min-w-[44px] px-2 flex items-center justify-center border-y border-r border-line-control bg-paper hover:bg-paper-subtle active:translate-y-px ${
-              variant === 'primary' ? 'bg-cobalt text-paper border-cobalt hover:bg-cobalt-hover' : 'text-ink'
+            className={`min-h-[44px] min-w-[44px] px-2 flex items-center justify-center border border-line-control bg-paper hover:bg-paper-subtle active:translate-y-px ${
+              variant === 'primary' ? 'bg-cobalt text-paper border-cobalt border-l-paper/40 hover:bg-cobalt-hover' : 'text-ink'
             }`}
           >
-            <CadIcon name="ChevronDown" size={14} />
+            <CadIcon name="ChevronDown" size={18} strokeWidth={2.25} />
           </button>
 
           {menuOpen && (

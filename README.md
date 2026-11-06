@@ -67,7 +67,7 @@ The memory provider keeps data in a single JSON file and is meant for demos and 
 
 ### Supabase
 
-1. Create a project and run `docs/migrations/001_base_schema.sql`, then `docs/migrations/002_campaigns.sql` in the SQL editor. The first file is reconstructed from the code: try it on a scratch project before production.
+1. Create a project and run `docs/migrations/001_base_schema.sql`, then `002_campaigns.sql` and `003_step_order.sql` (all in `docs/migrations/`) in the SQL editor, in that order. The first file is reconstructed from the code: try it on a scratch project before production. If you already deployed with 001 and 002, run only `003_step_order.sql`: it is needed for the "random order of steps" option to be saved (without it everything else keeps working and every participant follows the fixed order).
 2. Set `DB_PROVIDER=supabase`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `ADMIN_PASSWORD` in your host (for example Vercel).
 
 ### Privacy

@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { QRCodeSVG } from 'qrcode.react';
-import { BlueprintPanel, Kpi, Drawer } from '@/components/ui/blueprint';
+import { BlueprintPanel, Kpi } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { useTr } from '@/lib/i18n/context';
+import useSelectedCampaign from '@/lib/use-selected-campaign';
+import StepProgressChart from '@/components/admin/step-progress-chart';
+import QrProjector from '@/components/admin/qr-projector';
 
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
 const REFRESH_MS = 8000;
@@ -25,13 +27,21 @@ function timeAgo(iso) {
 
 export default function LivePage() {
   const tr = useTr();
-  const [campaignId, setCampaignId] = useState('');
+  const [campaignId, setCampaignId] = useSelectedCampaign();
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [paused, setPaused] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [view, setView] = useState('bars');
   const [updatedAt, setUpdatedAt] = useState(null);
+  const [alertsHidden, setAlertsHidden] = useState(() => {
+    try { return typeof window !== 'undefined' && localStorage.getItem('ps_alerts_hidden') === '1'; } catch { return false; }
+  });
+  const toggleAlerts = () => {
+    const next = !alertsHidden;
+    setAlertsHidden(next);
+    try { next ? localStorage.setItem('ps_alerts_hidden', '1') : localStorage.removeItem('ps_alerts_hidden'); } catch { /* storage unavailable */ }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -111,9 +121,18 @@ export default function LivePage() {
           <BlueprintPanel
             title={st.alerts.length ? tr('Requiere tu atención') : tr('Todo en orden')}
             subtitle={st.alerts.length ? tr('Lo más importante primero.') : tr('No detectamos problemas en este momento.')}
-            headerSlot={updatedAt && <span className="ps-meta">{tr('Actualizado')}{' '}{updatedAt.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>}
+            headerSlot={
+              <div className="flex flex-wrap items-center gap-3">
+                {updatedAt && <span className="ps-meta">{tr('Actualizado')}{' '}{updatedAt.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>}
+                <button type="button" onClick={toggleAlerts} aria-pressed={!alertsHidden} className={BTN}>
+                  <CadIcon name={alertsHidden ? 'Eye' : 'EyeOff'} size={16} />{' '}{alertsHidden ? tr('Mostrar') : tr('Ocultar')}
+                </button>
+              </div>
+            }
           >
-            {st.alerts.length === 0 ? (
+            {alertsHidden ? (
+              st.alerts.length > 0 && <p className="ps-meta m-0">{tr('{n} alerta(s) oculta(s).', { n: st.alerts.length })}</p>
+            ) : st.alerts.length === 0 ? (
               <p className="flex items-center gap-2 font-body text-sm text-emerald"><CadIcon name="CheckCircle" size={18} />{' '}{tr('Sin alertas.')}</p>
             ) : (
               <ul className="list-none m-0 p-0 space-y-3">
@@ -179,50 +198,7 @@ export default function LivePage() {
                 </table>
               </div>
             ) : (
-              <ol className="list-none m-0 p-0 space-y-5">
-                {st.steps.map((s) => {
-                  const max = Math.max(1, ...s.conditions.map((c) => c.count));
-                  const total = s.conditions.reduce((a, c) => a + c.count, 0);
-                  return (
-                    <li key={s.id}>
-                      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                        <h3 className="ps-h3">{s.order}. {s.name}</h3>
-                        <span className="ps-meta">{tr('{started} iniciaron · {active} en curso · {completed} terminaron', { started: s.started, active: s.active, completed: s.completed })}</span>
-                      </div>
-                      {view === 'share' ? (
-                        <div className="mt-2">
-                          <div className="flex h-6 border border-line-strong bg-paper-muted" role="img" aria-label={s.conditions.map((c) => `${c.title}: ${c.count}`).join(', ')}>
-                            {s.conditions.map((c, i) => (
-                              <span key={c.id} className={`ps-cond-${(i % 6) + 1} block h-full`} style={{ width: `${total ? (c.count / total) * 100 : 0}%`, backgroundColor: 'var(--cond)' }} />
-                            ))}
-                          </div>
-                          <ul className="list-none m-0 p-0 mt-2 flex flex-wrap gap-x-5 gap-y-1 font-body text-sm">
-                            {s.conditions.map((c, i) => (
-                              <li key={c.id} className={`ps-cond-${(i % 6) + 1} flex items-center gap-2 text-ink`}>
-                                <span aria-hidden="true" className="inline-block w-3 h-3" style={{ backgroundColor: 'var(--cond)' }} />
-                                {c.title}: <span className="font-stat font-semibold">{c.count}</span>
-                                {total > 0 && <span className="text-ink-2">({Math.round((c.count / total) * 100)}%)</span>}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ) : (
-                        <ul className="list-none m-0 p-0 mt-2 space-y-1.5">
-                          {s.conditions.map((c, i) => (
-                            <li key={c.id} className={`ps-cond-${(i % 6) + 1} grid grid-cols-[minmax(6rem,12rem)_1fr_2.5rem] items-center gap-3 font-body text-sm`}>
-                              <span className="truncate text-ink" title={c.title}>{c.title}</span>
-                              <span className="h-3 bg-paper-muted border border-line-control">
-                                <span className="block h-full" style={{ width: `${(c.count / max) * 100}%`, backgroundColor: 'var(--cond)' }} />
-                              </span>
-                              <span className="font-stat font-semibold text-ink text-right">{c.count}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ol>
+              <StepProgressChart steps={st.steps} view={view} tr={tr} />
             )}
           </BlueprintPanel>
 
@@ -266,15 +242,7 @@ export default function LivePage() {
         </>
       )}
 
-      <Drawer open={qrOpen} onClose={() => setQrOpen(false)} title={tr('Código para participantes')} closeLabel={tr('Cerrar')}>
-        {sel && (
-          <div className="text-center space-y-4">
-            <QRCodeSVG value={link} size={256} bgColor="transparent" fgColor="currentColor" className="text-ink mx-auto max-w-full h-auto" aria-label={tr('Código QR de {name}', { name: sel.name })} />
-            <p className="font-stat text-4xl font-bold tracking-widest text-ink m-0">{sel.share_code}</p>
-            <p className="ps-meta m-0 break-all">{link}</p>
-          </div>
-        )}
-      </Drawer>
+      {sel && <QrProjector open={qrOpen} onClose={() => setQrOpen(false)} name={sel.name} code={sel.share_code} link={link} tr={tr} />}
     </div>
   );
 }

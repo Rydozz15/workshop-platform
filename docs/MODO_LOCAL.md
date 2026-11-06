@@ -43,6 +43,7 @@ pnpm run local       # igual que Windows y macOS
 | "Falta instalar Node.js" | Instálalo (paso 1) y vuelve a abrir `iniciar.bat`. |
 | "No se pudo instalar" | Revisa tu conexión a internet y vuelve a intentarlo. |
 | La ventana se cierra sola | Abre `cmd` en la carpeta y ejecuta `node scripts\start-local.js` para ver el mensaje. |
+| Entro al admin pero no puedo hacer nada ("No pudimos actualizar los datos") | Actualiza PromptSketch: el modo local ya no marca la sesión como "segura", que es lo que impedía guardarla al entrar por la dirección con IP. |
 | El celular no abre la página | Mismo Wi-Fi, Firewall permitido y dirección con la IP (no `localhost`). |
 | Otro programa usa el puerto 3000 | `iniciar.bat --port 3001` |
 | Quiero actualizar PromptSketch | Descarga el ZIP nuevo, copia tu `data.json` y `.env.local` a la carpeta nueva y ejecuta con `--rebuild` la primera vez. |

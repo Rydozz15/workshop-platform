@@ -2,11 +2,11 @@
 
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
 import { extractMeasures, analyzeMeasure } from '@/lib/quick-analysis';
 import { useTr, useLanguage } from '@/lib/i18n/context';
+import useSelectedCampaign, { withCampaign } from '@/lib/use-selected-campaign';
 
 const SELECT = 'w-full min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
 const BTN = 'min-h-[44px] px-3 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-body text-sm text-ink inline-flex items-center gap-2';
@@ -34,9 +34,8 @@ function ResultsInner() {
   const tr = useTr();
   const { locale } = useLanguage();
   const fmt = (n, d = 2) => (Number.isFinite(n) ? n.toFixed(d).replace('.', locale === 'en' ? '.' : ',') : '–');
-  const params = useSearchParams();
   const [campaigns, setCampaigns] = useState(null);
-  const [campaignId, setCampaignId] = useState(params.get('campaign') || '');
+  const [campaignId, setCampaignId] = useSelectedCampaign();
   const [detail, setDetail] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [dataset, setDataset] = useState('session');
@@ -51,7 +50,7 @@ function ResultsInner() {
       .then((r) => r.json())
       .then((list) => {
         setCampaigns(list);
-        setCampaignId((current) => current || list[0]?.id || '');
+        if (!list.some((c) => c.id === campaignId)) setCampaignId(list[0]?.id || '');
       })
       .catch(() => setCampaigns([]));
   }, []);
@@ -159,7 +158,20 @@ function ResultsInner() {
       <BlueprintPanel
         title={tr('Primera lectura')}
         subtitle={tr('Compara las condiciones en una medida a la vez.')}
-        headerSlot={<Link href="/admin/analytics" className="font-body text-sm font-semibold text-cobalt underline">{tr('Abrir análisis completo')}</Link>}
+        headerSlot={
+          <Link
+            href={withCampaign('/admin/analytics', campaignId)}
+            title={tr('Pruebas de hipótesis, tamaños de efecto, confiabilidad, comparación por condición y exportación.')}
+            className="ps-attention flex items-start gap-3 max-w-md p-3 border-2 border-cobalt bg-cobalt-tint text-ink hover:bg-paper"
+          >
+            <CadIcon name="FlaskConical" size={22} className="text-cobalt shrink-0 mt-0.5" />
+            <span className="min-w-0">
+              <span className="block font-body text-sm font-semibold text-cobalt">{tr('Abrir laboratorio estadístico')}</span>
+              <span className="block font-body text-sm text-ink">{tr('Pruebas de hipótesis, tamaños de efecto, confiabilidad, comparación por condición y exportación.')}</span>
+            </span>
+            <CadIcon name="ArrowRight" size={16} className="text-cobalt shrink-0 mt-1" />
+          </Link>
+        }
       >
         {!analytics && <p className="ps-lead" role="status">{tr('Cargando…')}</p>}
         {analytics && measures.length === 0 && <p className="ps-lead">{tr('Cuando haya respuestas de la encuesta o conversaciones, podrás compararlas aquí.')}</p>}
@@ -234,7 +246,7 @@ function ResultsInner() {
       </BlueprintPanel>
 
       <BlueprintPanel title={tr('Revisar las conversaciones')} subtitle={tr('Lee cada sesión mensaje a mensaje y corrige lo que haga falta.')}>
-        <Link href="/admin/sessions" className={BTN}><CadIcon name="MessageSquare" size={16} />{' '}{tr('Ver sesiones')}{analytics ? ` (${sessionCount})` : ''}</Link>
+        <Link href={withCampaign('/admin/sessions', campaignId)} className={BTN}><CadIcon name="MessageSquare" size={16} />{' '}{tr('Ver sesiones')}{analytics ? ` (${sessionCount})` : ''}</Link>
       </BlueprintPanel>
     </div>
   );

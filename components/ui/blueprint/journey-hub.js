@@ -10,6 +10,7 @@ import Abbr from './abbr';
 import DataTable from './data-table';
 import MarginNote from './margin-note';
 import CadIcon from '../cad-icon';
+import { displayAnswer, otherKey } from '@/lib/survey-schema';
 import { analyzeConversation } from '@/lib/chat-analytics';
 
 function stripThinkingTags(text) {
@@ -415,7 +416,8 @@ export function JourneyHub({ historyData = [], loading = false }) {
                   No hay respuestas de encuesta asociadas a esta etapa.
                 </p>
               ) : (
-                Object.entries(currentStep.survey_answers).map(([qKey, ans]) => {
+                Object.entries(currentStep.survey_answers).filter(([qKey]) => !qKey.endsWith('__other')).map(([qKey, rawAns]) => {
+                  const ans = displayAnswer(rawAns, currentStep.survey_answers[otherKey(qKey)]);
                   const cfgList = currentStep.workshops?.survey_config || currentStep.survey_config || [];
                   const matchedQ = cfgList.find((q) => q.id === qKey || q.text === qKey);
                   const labelText = matchedQ ? matchedQ.text : qKey;

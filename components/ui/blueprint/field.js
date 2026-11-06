@@ -12,6 +12,7 @@ export function Field({
   help,
   helperText,
   required = false,
+  showOptional = true,
   id: customId,
   children,
   className = '',
@@ -52,11 +53,11 @@ export function Field({
             <span className="text-vermilion-ink font-normal text-xs lowercase">
               (obligatorio)
             </span>
-          ) : (
+          ) : showOptional ? (
             <span className="text-ink-2 font-normal text-xs lowercase">
               (opcional)
             </span>
-          )}
+          ) : null}
         </label>
       )}
 

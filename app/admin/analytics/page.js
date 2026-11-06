@@ -27,6 +27,9 @@ import {
 } from '@/lib/stats';
 import { calculateCronbachAlpha, calculateHakeGain } from '@/lib/psychometrics';
 import { calculateIRR } from '@/lib/irr';
+import { stepsOfCampaign } from '@/lib/campaigns';
+import useSelectedCampaign from '@/lib/use-selected-campaign';
+import SectionTrail from '@/components/admin/section-trail';
 import { analyzeConversation } from '@/lib/chat-analytics';
 import { generateBooktabsTable } from '@/lib/latex-generator';
 import { useLanguage, useTr } from '@/lib/i18n/context';
@@ -157,6 +160,8 @@ export default function AnalyticsPage() {
   const [lakLoading, setLakLoading] = useState(false);
   const [lakReview, setLakReview] = useState(null);
 
+  const [selectedCampaignId] = useSelectedCampaign();
+
   const loadAnalytics = useCallback(async () => {
     setLoading(true);
     try {
@@ -182,12 +187,16 @@ export default function AnalyticsPage() {
         irrCalibration: json.irrCalibration || null,
       });
 
-      if (sortedWs.length >= 2) {
-        setCampaignAId((prev) => prev || sortedWs[0].id);
-        setCampaignBId((prev) => prev || sortedWs[1].id);
-      } else if (sortedWs.length === 1) {
-        setCampaignAId((prev) => prev || sortedWs[0].id);
-        setCampaignBId((prev) => prev || sortedWs[0].id);
+      // When a campaign is selected in the admin, compare its own steps by default.
+      const campaignSteps = selectedCampaignId ? stepsOfCampaign(sortedWs, selectedCampaignId) : [];
+      const pool = campaignSteps.length > 0 ? campaignSteps : sortedWs;
+
+      if (pool.length >= 2) {
+        setCampaignAId((prev) => prev || pool[0].id);
+        setCampaignBId((prev) => prev || pool[1].id);
+      } else if (pool.length === 1) {
+        setCampaignAId((prev) => prev || pool[0].id);
+        setCampaignBId((prev) => prev || pool[0].id);
         if (vs.length >= 2) {
           setCompareAxis('versions');
         }
@@ -208,7 +217,7 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  }, [tr]);
+  }, [tr, selectedCampaignId]);
 
   useEffect(() => {
     loadAnalytics();
@@ -818,6 +827,16 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
+      <SectionTrail
+        current={tr('Análisis completo')}
+        description={tr('El laboratorio estadístico profundiza en lo que ves en Resultados: pruebas, tamaños de efecto y confiabilidad.')}
+        tr={tr}
+      />
+      {raw.workshops.some((w) => w.randomize_order && (!selectedCampaignId || stepsOfCampaign(raw.workshops, selectedCampaignId).some((x) => x.id === w.id))) && (
+        <p role="note" className="p-3 border-2 border-cobalt bg-cobalt-tint font-body text-sm text-ink m-0">
+          {tr('Esta campaña recorre los pasos en orden aleatorio: cada persona los hizo en un orden distinto. El análisis por paso mezcla a quienes lo hicieron primero y segundo; para medir el efecto del orden usa la columna chain_position del CSV de sesiones.')}
+        </p>
+      )}
       {/* Header */}
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line-control pb-4">
         <div>

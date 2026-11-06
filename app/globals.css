@@ -137,19 +137,6 @@ body {
   background-color: var(--ps-kraft);
   isolation: isolate;
 }
-.bg-kraft::before, .has-grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: .08;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
-[data-grain="off"] .bg-kraft::before, [data-grain="off"] .has-grain::before {
-  display: none;
-}
 
 /* CAD Iconography */
 .lucide, svg.ps-icon {
@@ -209,7 +196,6 @@ body {
 
 @media (prefers-contrast: more) {
   .bg-blueprint-grid { background-image: none; }
-  .bg-kraft::before, .has-grain::before { display: none; }
   :root {
     --ps-line-control: #1F1D1A;
     --ps-rule: #1F1D1A;
@@ -664,7 +650,8 @@ body {
   .ps-kpi--emerald { --kpi-accent: var(--ps-emerald); --kpi-tint: var(--ps-emerald-tint); --kpi-ink: var(--ps-emerald); }
   .ps-kpi--vermilion { --kpi-accent: var(--ps-vermilion-ink); --kpi-tint: var(--ps-vermilion-tint); --kpi-ink: var(--ps-vermilion-ink); }
   .ps-kpi--graphite { --kpi-accent: var(--ps-graphite); --kpi-tint: var(--ps-graphite-tint); --kpi-ink: var(--ps-ink-2); }
-  .ps-kpi__icon { flex: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--kpi-tint, var(--ps-graphite-tint)); color: var(--kpi-ink, var(--ps-graphite)); border: 1px solid var(--kpi-accent, var(--ps-graphite)); }
+  /* KPI icons always use the accent family so they stand out; the tone only colors the left edge. */
+  .ps-kpi__icon { flex: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--ps-cobalt-tint); color: var(--ps-cobalt); border: 1px solid var(--ps-cobalt); }
   .ps-kpi__value { font-family: var(--font-stat); font-size: 1.875rem; line-height: 1.1; font-weight: 700; color: var(--ps-ink); }
 
   /* Stepper */
@@ -679,4 +666,23 @@ body {
   .ps-drawer { transition: transform .22s ease; }
   :root[data-motion="reduced"] .ps-drawer { transition: none; }
   @media (prefers-reduced-motion: reduce) { .ps-drawer { transition: none; } }
+
+  /* Attention: two soft pulses shortly after the element appears, then still. It only animates a
+     box-shadow, so nothing moves in the layout. */
+  .ps-attention { animation: ps-attention 1.4s ease-in-out .8s 2; }
+  @keyframes ps-attention { 0%,100% { box-shadow: 0 0 0 0 var(--ps-cobalt-tint); } 50% { box-shadow: 0 0 0 6px var(--ps-cobalt-tint); } }
+  :root[data-motion="reduced"] .ps-attention { animation: none; }
+  @media (prefers-reduced-motion: reduce) { .ps-attention { animation: none; } }
+}
+
+/* Optional theme "Plano azul" (Ajustes): light blue drafting sheet with a dark ochre accent.
+   Only the tokens change; every pair is checked in scripts/check-contrast.js. */
+:root[data-theme="plano"] {
+  --ps-canvas: #DCE8F5;
+  --ps-grid-minor: #C5D8EE;
+  --ps-grid-major: #A9C3E3;
+  --ps-cobalt: #5E4300;
+  --ps-cobalt-hover: #4A3500;
+  --ps-cobalt-tint: #F2E3B8;
+  --ps-focus: #5E4300;
 }

@@ -1,5 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // Condition colors and KPI tones are built with template strings (`ps-cond-${n}`), so Tailwind
+  // cannot see them in the source: keep them from being purged.
+  safelist: [
+    { pattern: /^ps-cond-[1-6]$/ },
+    { pattern: /^ps-kpi--(cobalt|emerald|vermilion|graphite)$/ },
+    'ps-split--ghost',
+  ],
   content: [
     './app/**/*.{js,jsx,ts,tsx}',
     './components/**/*.{js,jsx,ts,tsx}',
