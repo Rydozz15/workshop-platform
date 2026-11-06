@@ -271,6 +271,19 @@ export default function VersionsPage() {
     );
   }
 
+  const handleDeployToExperiment = () => {
+    const draftPayload = {
+      title: 'Experimento A/B desde Mesa de Dibujo',
+      promptA: textA,
+      promptB: textB,
+      suggestedVersionId: compareSource === 'versions' ? selectedLeftId : (versions[0]?.id || null),
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ps_pending_draft', JSON.stringify(draftPayload));
+      window.location.href = '/admin/campaigns?from=draft';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -288,8 +301,21 @@ export default function VersionsPage() {
           <MarginNote tone="vermilion" rotate={-2}>
             AISLAR UNA VARIABLE
           </MarginNote>
-          <SplitButton variant="primary" iconBox="Plus" onClick={openCreate}>
-            Nuevo Escenario / Versión
+          <button
+            type="button"
+            onClick={openCreate}
+            className="min-h-[44px] px-3.5 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink inline-flex items-center gap-2"
+          >
+            <CadIcon name="Plus" size={14} />
+            <span>Nuevo Escenario / Caso</span>
+          </button>
+          <SplitButton
+            variant="primary"
+            iconBox="ArrowRight"
+            onClick={handleDeployToExperiment}
+            title="Llevar estos dos prompts directamente al constructor de experimento A/B"
+          >
+            Lanzar como Experimento A/B
           </SplitButton>
         </div>
       </div>

@@ -315,7 +315,7 @@ export default function SettingsPage() {
         <BlueprintPanel
           codeTag="CFG_01"
           title="Proveedor y Modelo Predeterminado"
-          subtitle="Valores iniciales al crear experimentos y al ejecutar el Asistente Metodológico LAK"
+          subtitle="Valores iniciales al crear experimentos y al ejecutar el asistente metodológico"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Proveedor IA por defecto" required>
@@ -588,12 +588,12 @@ export default function SettingsPage() {
         {/* Synthetic Benchmark Loader & Workshop Mode */}
         <BlueprintPanel
           codeTag="CFG_04"
-          title="Dataset Sintético de Referencia LAK y Modo Demo"
+          title="Modo demo: datos de ejemplo"
           subtitle="Protección automática de base de datos remota y carga idempotente en memoria local"
         >
           <div className="space-y-4">
             <p className="font-body text-xs text-ink leading-relaxed m-0">
-              Para demostraciones en conferencias (LAK) o docencia de métodos cuantitativos, puede poblar la memoria local con el <strong>Benchmark Sintético Educativo (Cohorte Simulada de 20+ sesiones pareadas)</strong>, turnos sintéticos y pares de calibración Humano vs. LLM.
+              Para demostraciones o docencia de métodos cuantitativos, puede poblar la memoria local con el <strong>Benchmark Sintético Educativo (Cohorte Simulada de 20+ sesiones pareadas)</strong>, turnos sintéticos y pares de calibración Humano vs. LLM.
             </p>
             <div className="p-3 bg-paper-subtle border border-line-control font-ui-mono text-xs text-ink-2 space-y-1">
               <div>

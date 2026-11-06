@@ -130,7 +130,7 @@ export function DataTable({
               return (
                 <tr
                   key={rowKey}
-                  className="border-b border-dotted border-rule hover:border-l-[3px] hover:border-l-ink transition-colors bg-paper"
+                  className="border-b border-dotted border-rule hover:bg-cobalt-tint transition-colors bg-paper"
                 >
                   {columns.map((col) => {
                     const cellVal = row[col.key];

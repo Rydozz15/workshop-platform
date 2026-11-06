@@ -43,3 +43,9 @@ next-env.d.ts
 # scratch testing artifacts
 /scratch/*.json
 /scratch/*.tmp
+/data.json
+
+# Claude Code
+.claude/
+CLAUDE.md
+CLAUDE.local.md

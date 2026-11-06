@@ -147,18 +147,18 @@ export default function DashboardPage() {
             TELEMETRÍA EN VIVO
           </MarginNote>
           <Link
-            href="/admin/campaigns"
+            href="/admin/analytics"
             className="min-h-[44px] px-3.5 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink inline-flex items-center gap-2"
           >
-            <CadIcon name="Plus" size={14} />
-            <span>Nuevo Experimento</span>
+            <CadIcon name="BarChart2" size={14} />
+            <span>Ver Análisis Estadístico</span>
           </Link>
           <Link
-            href="/admin/analytics"
-            className="min-h-[44px] px-3.5 py-2 border border-cobalt bg-cobalt text-paper hover:bg-cobalt-hover font-ui-mono text-xs font-medium inline-flex items-center gap-2"
+            href="/admin/campaigns"
+            className="min-h-[44px] px-3.5 py-2 border border-cobalt bg-cobalt text-paper hover:bg-cobalt-hover font-ui-mono text-xs font-medium inline-flex items-center gap-2 shadow-hard"
           >
-            <CadIcon name="BarChart2" size={14} />
-            <span>Abrir Inferencia LAK</span>
+            <CadIcon name="Plus" size={14} />
+            <span>Nuevo Experimento A/B</span>
           </Link>
         </div>
       </div>
@@ -166,16 +166,18 @@ export default function DashboardPage() {
       {/* Campaign Filter & Benchmark Seeder Strip */}
       <BlueprintPanel
         codeTag="FILTRO_ACTIVO"
-        title="Selección de Serie Experimental y Datos de Referencia"
+        title="Selección de Serie Experimental"
         headerSlot={
-          <SplitButton
-            variant="secondary"
-            iconBox="Database"
-            loading={seeding}
+          <button
+            type="button"
+            disabled={seeding}
             onClick={handleSeedBenchmark}
+            className="min-h-[44px] px-3 py-1.5 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink-2 hover:text-ink inline-flex items-center gap-1.5"
+            title="Carga 18 sesiones simuladas para explorar las gráficas y pruebas de hipótesis sin alumnos reales"
           >
-            Cargar Benchmark ISDDE (N=9)
-          </SplitButton>
+            <CadIcon name="Database" size={13} />
+            <span>{seeding ? 'Cargando muestra…' : 'Cargar datos de prueba (N=9)'}</span>
+          </button>
         }
       >
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">

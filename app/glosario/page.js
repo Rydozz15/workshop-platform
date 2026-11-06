@@ -62,7 +62,7 @@ const GLOSSARY_ENTRIES = [
     symbol: 'U',
     title: 'Prueba U de Mann-Whitney con Corrección por Empates',
     formula: 'U_A = R_A - n_A(n_A + 1)/2',
-    thresholds: 'Estándar obligatorio en LAK para ítems Likert individuales (1–5) o datos continuos asimétricos.',
+    thresholds: 'Estándar recomendado para ítems Likert individuales (1–5) o datos continuos asimétricos.',
     plain:
       'En lugar de promediar números de una encuesta Likert (donde la distancia entre "De acuerdo" y "Muy de acuerdo" no es exacta), ordena todas las respuestas por rangos para evaluar si una condición supera sistemáticamente a la otra.',
     citation: 'Mann, H. B., & Whitney, D. R. (1947). On a test of whether one of two random variables is stochastically larger than the other. Annals of Mathematical Statistics, 18(1), 50–60.',
@@ -219,7 +219,7 @@ export default function GlosarioPage() {
         title="Consulta de Fórmulas, Umbrales e Interpretación Sencilla"
         headerSlot={
           <MarginNote tone="cobalt" rotate={-1.5}>
-            ESTÁNDAR LAK / AIED
+            ESTÁNDAR ACADÉMICO
           </MarginNote>
         }
       >

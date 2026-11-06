@@ -670,48 +670,54 @@ export default function SessionPage({ params }) {
             type="button"
             onClick={() => setCaseOpenMobile(!caseOpenMobile)}
             aria-expanded={caseOpenMobile}
-            className="lg:hidden min-h-[44px] px-3 py-2 border border-line-control bg-paper-subtle hover:bg-paper font-ui-mono text-xs text-ink inline-flex items-center gap-1.5"
+            className={`lg:hidden min-h-[44px] px-3 py-2 border font-ui-mono text-xs inline-flex items-center gap-1.5 transition-colors ${
+              caseOpenMobile
+                ? 'bg-cobalt text-paper border-cobalt font-semibold'
+                : 'border-line-control bg-paper-subtle hover:bg-paper text-ink'
+            }`}
           >
             <CadIcon name="FileText" size={14} />
-            <span>{caseOpenMobile ? 'Ocultar caso' : 'Ver hoja de caso'}</span>
+            <span>{caseOpenMobile ? 'Ocultar caso' : 'Ver caso'}</span>
           </button>
 
-          <SplitButton
-            variant="primary"
-            iconBox="CheckSquare"
+          <button
+            type="button"
             onClick={() => setConfirmCompleteOpen(true)}
             disabled={streaming}
+            className="min-h-[44px] px-3.5 py-2 border border-line-control bg-paper hover:bg-paper-subtle font-ui-mono text-xs text-ink-2 hover:text-ink inline-flex items-center gap-1.5 transition-colors"
           >
-            Finalizar diálogo
-          </SplitButton>
+            <CadIcon name="CheckSquare" size={14} />
+            <span>{studentTurnCount > 0 ? 'Concluir actividad' : 'Pasar a evaluación'}</span>
+          </button>
         </div>
       </header>
 
       {/* Main 2-Column Blueprint Layout: Chat Log (Left 8 cols) + Case Sheet (Right 4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Mobile Collapsible Case Sheet */}
+        {/* Mobile Collapsible Case Sheet (Compact & Scrollable) */}
         {caseOpenMobile && (
-          <div className="lg:hidden col-span-1">
-            <BlueprintPanel
-              codeTag="HOJA_CASO"
-              title={version?.title || 'Escenario de Trabajo'}
-              headerSlot={
+          <div className="lg:hidden col-span-1 mb-2">
+            <div className="p-3.5 bg-paper border-2 border-cobalt shadow-hard space-y-2">
+              <div className="flex items-center justify-between border-b border-line-control pb-2">
+                <span className="font-ui-mono text-xs uppercase tracking-wider font-semibold text-cobalt flex items-center gap-1.5">
+                  <CadIcon name="FileText" size={14} />
+                  <span>{version?.title || 'Escenario de Caso'}</span>
+                </span>
                 <button
                   type="button"
                   onClick={() => setCaseOpenMobile(false)}
                   aria-label="Cerrar hoja de caso"
-                  className="min-h-[44px] min-w-[44px] flex items-center justify-center border border-line-control bg-paper text-ink"
+                  className="min-h-[36px] min-w-[36px] flex items-center justify-center border border-line-control bg-paper text-ink"
                 >
                   <CadIcon name="X" size={14} />
                 </button>
-              }
-            >
-              <div className="font-body text-sm text-ink leading-relaxed prose max-w-none">
+              </div>
+              <div className="font-body text-xs text-ink leading-relaxed prose max-w-none max-h-52 overflow-y-auto pr-1">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {version?.case_content || 'Sin descripción de escenario registrada.'}
                 </ReactMarkdown>
               </div>
-            </BlueprintPanel>
+            </div>
           </div>
         )}
 

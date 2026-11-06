@@ -48,6 +48,7 @@ const T = {
   rule: '#8F8670',
   focus: '#1A3FA8',
   white: '#FFFFFF',
+  cond: ['#5B574F', '#1A3FA8', '#0F4F33', '#86280F', '#6B4F00', '#0B5563'],
 };
 
 // [Foreground, Background, Required Minimum, Label]
@@ -96,6 +97,13 @@ const pairs = [
 
   // Graphite text on paper
   [T.graphite, T.paper, 7.0, 'graphite on paper'],
+
+  // Panel headers & title blocks sit on paper-muted (Phase 1)
+  [T.ink, T.muted, 7.0, 'ink on paper-muted (panel header)'],
+  [T.ink2, T.muted, 7.0, 'ink-2 on paper-muted (title block)'],
+  [T.paper, T.emerald, 7.0, 'paper on emerald (completed step)'],
+  [T.ink, T.cobaltTint, 7.0, 'ink on cobalt-tint (table row hover)'],
+  ...T.cond.map((c, i) => [c, T.paper, 7.0, `condition ${i + 1} on paper (use only on paper surfaces)`]),
 
   // --- Non-Text / Control Contrast: WCAG 2.2 >= 3.0:1 ---
   [T.lineCtl, T.canvas, 3.0, 'line-control on canvas'],

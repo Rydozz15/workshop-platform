@@ -6,7 +6,7 @@ import {
   buildLakReviewerMessages,
   generateDeterministicLakCritique,
   generateDeterministicStudyDesign,
-} from '@/lib/lak-reviewer-prompt';
+} from '@/lib/methodology-reviewer-prompt';
 
 function resolveActiveProvider(settings = {}, requestedProvider, requestedModel) {
   const candidates = [
@@ -132,7 +132,7 @@ export async function POST(request) {
       });
     }
 
-    // Default mode: 'lak-review' (Critical LAK Methodological Peer Reviewer)
+    // Default mode: 'lak-review' (methodological peer reviewer; mode id kept for API compatibility)
     if (active.isLive) {
       try {
         const response = await chat({
@@ -153,7 +153,7 @@ export async function POST(request) {
           });
         }
       } catch (err) {
-        console.warn('LAK Reviewer live call failed, using deterministic mathematical audit:', err.message);
+        console.warn('Methodological reviewer live call failed, using deterministic mathematical audit:', err.message);
       }
     }
 

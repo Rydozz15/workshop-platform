@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
   const [showLatexModal, setShowLatexModal] = useState(false);
   const [copiedLatex, setCopiedLatex] = useState(false);
 
-  // Critical LAK Reviewer state
+  // Methodological reviewer state
   const [lakLoading, setLakLoading] = useState(false);
   const [lakReview, setLakReview] = useState(null);
 
@@ -701,7 +701,7 @@ export default function AnalyticsPage() {
     URL.revokeObjectURL(url);
   };
 
-  // 8. Critical LAK Peer-Reviewer Assistant Invocation
+  // 8. Methodological reviewer assistant invocation
   const handleRunLakReview = async () => {
     setLakLoading(true);
     try {
@@ -778,12 +778,12 @@ export default function AnalyticsPage() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Error en auditoría LAK');
+      if (!res.ok) throw new Error(json.error || 'Error en la revisión metodológica');
       setLakReview(json);
     } catch (err) {
       setStatusBanner({
         tone: 'verm',
-        text: `Error al consultar Revisor Metodológico LAK: ${err.message}`,
+        text: `Error al consultar el revisor metodológico: ${err.message}`,
       });
     } finally {
       setLakLoading(false);
@@ -821,9 +821,9 @@ export default function AnalyticsPage() {
             </MarginNote>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink tracking-tight m-0">
-            Laboratorio Estadístico{' '}
+            Análisis de{' '}
             <HandMark type="underline" tone="cobalt">
-              LAK / AIED
+              resultados
             </HandMark>
           </h1>
           <p className="font-body text-sm text-ink-2 mt-1 max-w-3xl">
@@ -848,7 +848,7 @@ export default function AnalyticsPage() {
             loading={lakLoading}
             onClick={handleRunLakReview}
           >
-            Auditar con Revisor LAK
+            Revisar con asistente metodológico
           </SplitButton>
         </div>
       </header>
@@ -905,7 +905,7 @@ export default function AnalyticsPage() {
           </div>
         }
         titleBlock={{
-          sheetNumber: 'ANL-LAK27',
+          sheetNumber: 'ANL',
           status: (cohortData.analysisType || 'preregistrado').toUpperCase(),
           rev: `FAMILIA m=${inferentialBundle.length}`,
           n: { a: cohortData.sessionsA.length, b: cohortData.sessionsB.length },
@@ -1026,12 +1026,12 @@ export default function AnalyticsPage() {
         )}
       </BlueprintPanel>
 
-      {/* Critical LAK Reviewer Panel (shown right below selector when generated) */}
+      {/* Methodological reviewer panel (shown right below selector when generated) */}
       {lakReview?.critique && (
         <BlueprintPanel
           variant="drawer"
-          codeTag="DICTAMEN LAK"
-          title="Auditoría Metodológica del Par Evaluador (LAK / AIED / EDM)"
+          codeTag="REVISIÓN"
+          title="Revisión metodológica del análisis"
           headerSlot={
             <StatBadge
               label="Motor"

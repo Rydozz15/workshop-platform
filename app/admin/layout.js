@@ -18,14 +18,14 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname();
 
   const navItems = [
-    { num: '01', href: '/admin', label: t('nav.dashboard', 'Tablero'), icon: 'LayoutGrid' },
-    { num: '02', href: '/admin/versions', label: t('nav.versions', 'Bocetos A/B'), icon: 'GitCompare' },
-    { num: '03', href: '/admin/campaigns', label: t('nav.campaigns', 'Experimentos'), icon: 'Layers' },
-    { num: '04', href: '/admin/sessions', label: t('nav.sessions', 'Sesiones'), icon: 'MessageSquare' },
-    { num: '05', href: '/admin/analytics', label: t('nav.analytics', 'Estadística'), icon: 'BarChart2' },
-    { num: '06', href: '/glosario', label: t('nav.glossary', 'Glosario'), icon: 'BookOpen' },
-    { num: '07', href: '/admin/settings', label: t('nav.settings', 'Ajustes'), icon: 'Sliders' },
+    { href: '/admin/campaigns', label: t('nav.campaigns', 'Campañas'), icon: 'Layers', match: ['/admin/campaigns', '/admin/versions'] },
+    { href: '/admin', label: t('nav.live', 'En vivo'), icon: 'Activity', match: ['/admin'], exact: true },
+    { href: '/admin/sessions', label: t('nav.results', 'Resultados'), icon: 'BarChart2', match: ['/admin/sessions', '/admin/analytics'] },
   ];
+  const settingsItem = { href: '/admin/settings', label: t('nav.settings', 'Ajustes'), icon: 'Settings' };
+  const isActiveItem = (item) =>
+    item.exact ? pathname === item.href : (item.match || [item.href]).some((m) => pathname.startsWith(m));
+
 
   const [authed, setAuthed] = useState(false);
   const [password, setPassword] = useState('');
@@ -33,12 +33,13 @@ export default function AdminLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrollYCoord, setScrollYCoord] = useState(0);
   const [grainOff, setGrainOff] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('admin_authed');
-    if (stored === 'true') setAuthed(true);
+    fetch('/api/auth')
+      .then((r) => r.json())
+      .then((d) => setAuthed(Boolean(d.authed)))
+      .catch(() => setAuthed(false));
     const savedGrain = localStorage.getItem('ps_grain_off') === '1';
     setGrainOff(savedGrain);
     if (savedGrain) {
@@ -49,14 +50,6 @@ export default function AdminLayout({ children }) {
       document.documentElement.dataset.motion = 'reduced';
     }
     setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrollYCoord(Math.round(window.scrollY || 0));
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const toggleGrain = () => {
@@ -83,10 +76,11 @@ export default function AdminLayout({ children }) {
       });
       const data = await res.json();
       if (data.success) {
-        sessionStorage.setItem('admin_authed', 'true');
         setAuthed(true);
+      } else if (res.status === 503) {
+        setError('La administración aún no está configurada en este servidor.');
       } else {
-        setError('Credencial inválida. Verifica ADMIN_PASSWORD en tu entorno.');
+        setError('Contraseña incorrecta. Inténtalo de nuevo.');
       }
     } catch {
       setError('Error de conexión al validar credenciales.');
@@ -95,7 +89,7 @@ export default function AdminLayout({ children }) {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('admin_authed');
+    fetch('/api/auth', { method: 'DELETE' }).catch(() => {});
     setAuthed(false);
     setPassword('');
   };
@@ -122,21 +116,19 @@ export default function AdminLayout({ children }) {
             <span>Volver al inicio</span>
           </Link>
           <MarginNote tone="cobalt" rotate={-2}>
-            ÁREA DOCENTE / LAK
+            Área docente
           </MarginNote>
         </div>
 
         <BlueprintPanel
-          codeTag="AUTH // INVESTIGADOR"
-          title="Acceso a Mesa de Investigación PromptSketch"
-          subtitle="Ingresa la clave administrativa para gestionar experimentos, sesiones y análisis estadístico."
+          codeTag="AUTH"
+          title="Ingresa la contraseña de administración"
+          subtitle="Así podrás crear campañas, ver resultados y descargar los datos."
           headingLevel={2}
           titleBlock={{
             sheetNumber: 'SEC-01',
             status: 'PROTEGIDO',
-            rev: 'AUTH v2',
-            title: 'Control de Acceso Investigador',
-            subtitle: 'Clave local por defecto: workshop2025',
+            title: 'Acceso de administración',
           }}
         >
           <form onSubmit={handleLogin} className="space-y-4">
@@ -154,7 +146,7 @@ export default function AdminLayout({ children }) {
               label="Contraseña de administración"
               required={true}
               error={error}
-              help="Definida en ADMIN_PASSWORD (.env.local) o 'workshop2025' en modo local."
+              help="Es la contraseña que definiste al instalar PromptSketch."
             >
               <input
                 type="password"
@@ -197,33 +189,24 @@ export default function AdminLayout({ children }) {
               <CadIcon name="Compass" size={14} />
               <span>PROMPTSKETCH</span>
             </Link>
-            <span
-              aria-hidden="true"
-              className="hidden xl:inline-block font-ui-mono text-xs text-ink-2 stat"
-            >
-              Y:{String(scrollYCoord).padStart(4, '0')}
-            </span>
           </div>
 
           {/* Desktop Primary Navigation */}
           <nav aria-label="Principal" className="hidden lg:flex items-center gap-1 flex-wrap">
             {navItems.map((item) => {
-              const isActive =
-                item.href === '/admin'
-                  ? pathname === '/admin'
-                  : pathname.startsWith(item.href);
+              const isActive = isActiveItem(item);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`min-h-[44px] px-3 py-2 border font-ui-mono text-xs inline-flex items-center gap-1.5 transition-colors ${
+                  className={`min-h-[44px] px-4 py-2 border font-body text-sm inline-flex items-center gap-2 transition-colors ${
                     isActive
                       ? 'bg-cobalt-tint border-cobalt text-cobalt font-semibold'
                       : 'bg-paper border-transparent text-ink hover:border-line-control hover:bg-paper-subtle'
                   }`}
                 >
-                  <span className="text-ink-2 stat">{item.num}</span>
+                  <CadIcon name={item.icon} size={16} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -233,6 +216,18 @@ export default function AdminLayout({ children }) {
           {/* Right Quick Controls */}
           <div className="flex items-center gap-2">
             <LanguageSelector compact={true} />
+
+            <Link
+              href={settingsItem.href}
+              aria-label={settingsItem.label}
+              title={settingsItem.label}
+              aria-current={pathname.startsWith(settingsItem.href) ? 'page' : undefined}
+              className={`hidden sm:inline-flex min-h-[44px] min-w-[44px] border items-center justify-center ${
+                pathname.startsWith(settingsItem.href) ? 'bg-cobalt-tint border-cobalt text-cobalt' : 'border-line-control bg-paper-subtle hover:bg-paper text-ink'
+              }`}
+            >
+              <CadIcon name="Settings" size={18} />
+            </Link>
 
             <button
               type="button"
@@ -273,18 +268,15 @@ export default function AdminLayout({ children }) {
             aria-label="Menú móvil de administración"
             className="lg:hidden border-t border-line-control bg-paper p-3 space-y-1.5"
           >
-            {navItems.map((item) => {
-              const isActive =
-                item.href === '/admin'
-                  ? pathname === '/admin'
-                  : pathname.startsWith(item.href);
+            {[...navItems, settingsItem].map((item) => {
+              const isActive = item.href === settingsItem.href ? pathname.startsWith(item.href) : isActiveItem(item);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`w-full min-h-[44px] px-3 py-2 border font-ui-mono text-xs flex items-center justify-between ${
+                  className={`w-full min-h-[44px] px-3 py-2 border font-body text-sm flex items-center justify-between ${
                     isActive
                       ? 'bg-cobalt-tint border-cobalt text-cobalt font-semibold'
                       : 'bg-paper-subtle border-line-control text-ink'
@@ -292,9 +284,7 @@ export default function AdminLayout({ children }) {
                 >
                   <span className="inline-flex items-center gap-2">
                     <CadIcon name={item.icon} size={14} />
-                    <span>
-                      {item.num} · {item.label}
-                    </span>
+                    <span>{item.label}</span>
                   </span>
                   <CadIcon name="ChevronRight" size={14} />
                 </Link>

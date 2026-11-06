@@ -96,7 +96,6 @@ export function OnboardingStepper({
         titleBlock={{
           sheetNumber: `ONB-${String(stepIndex + 1).padStart(2, '0')}`,
           status: chainOrder > 1 ? `SECUENCIA #${chainOrder}` : 'ACTIVO',
-          rev: 'PROTOCOLO v2',
           title: workshopName || `Sesión ${code}`,
           subtitle: ' Orientación integrada del participante',
         }}

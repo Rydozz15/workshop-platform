@@ -10,6 +10,7 @@ import {
   createMessage,
   incrementInteractionCount,
   getWorkshop,
+  getVersion,
   getSettings,
   addTelemetry,
 } from '@/lib/db';
@@ -34,10 +35,16 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'This session has been completed' }, { status: 403 });
     }
 
-    const [workshop, settings] = await Promise.all([
+    const [workshop, settings, version] = await Promise.all([
       getWorkshop(session.workshop_id),
       Promise.resolve().then(() => getSettings()).catch(() => ({})),
+      session.version_id
+        ? Promise.resolve().then(() => getVersion(session.version_id)).catch(() => null)
+        : null,
     ]);
+
+    // A condition (version) can carry its own assistant instructions; otherwise the step-level prompt applies.
+    const assistantPrompt = (version?.system_prompt || workshop?.system_prompt || '').trim();
 
     const provider = (
       workshop?.ai_provider ||
@@ -71,10 +78,10 @@ export async function POST(request, { params }) {
     const storedMessages = await getMessages(sessionId);
     const conversationHistory = [];
 
-    if (workshop?.system_prompt && workshop.system_prompt.trim() !== '') {
+    if (assistantPrompt !== '') {
       conversationHistory.push({
         role: 'system',
-        content: workshop.system_prompt.trim(),
+        content: assistantPrompt,
       });
     } else {
       conversationHistory.push({

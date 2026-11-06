@@ -29,7 +29,7 @@ export function TitleBlock({
 
   return (
     <dl
-      className={`ps-titleblock grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-line-control border-t border-line-control font-ui-mono text-xs m-0 ${className}`}
+      className={`ps-titleblock grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-px bg-line-control border-t-2 border-line-strong font-ui-mono text-xs m-0 ${className}`}
       {...props}
     >
       <div className="ps-titleblock__cell bg-paper-subtle p-2">

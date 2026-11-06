@@ -44,20 +44,20 @@ export function BlueprintPanel({
 
       {/* Header Bar */}
       {(title || codeTag || headerSlot) && (
-        <header className="ps-sheet__head flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-paper-subtle border-b border-line-control">
+        <header className="ps-sheet__head flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-paper-muted border-b-2 border-line-strong">
           <div className="flex items-center gap-3">
             {codeTag && (
-              <span className="ps-sheet__tag font-ui-mono text-xs font-medium px-1.5 py-0.5 border border-line-control bg-paper-muted text-ink">
+              <span className="ps-sheet__tag font-ui-mono text-xs font-medium px-1.5 py-0.5 border border-line-control bg-paper text-ink">
                 {codeTag}
               </span>
             )}
             {title && (
               <div>
-                <Tag id={headingId} className="ps-sheet__title font-ui-mono text-xs uppercase tracking-wider font-medium text-ink m-0">
+                <Tag id={headingId} className={`ps-sheet__title text-ink m-0 ${headingLevel === 2 ? 'text-xl' : 'text-lg'}`}>
                   {title}
                 </Tag>
                 {subtitle && (
-                  <p className="font-ui-mono text-xs text-ink-2 mt-0.5 m-0">
+                  <p className="font-body text-sm text-ink-2 mt-0.5 m-0">
                     {subtitle}
                   </p>
                 )}

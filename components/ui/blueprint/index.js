@@ -10,3 +10,8 @@ export * from './margin-note';
 export * from './onboarding-stepper';
 export * from './journey-hub';
 export { default as LanguageSelector } from './language-selector';
+export * from './info-tip';
+export * from './kpi';
+export * from './stepper';
+export * from './disclosure';
+export * from './drawer';

@@ -21,6 +21,10 @@ const HEX_REGEX = /#[0-9A-Fa-f]{3,8}\b/;
 const SMALL_FONT_REGEX = /\btext-\[(8|9|10|11)px\]|\bfont-size:\s*['"]?(8|9|10|11)px\b/;
 const PROHIBITED_ICONS_REGEX = /(?:<(?:\w+\.)?(Sparkles|Wand|Wand2|Bot|Brain|BrainCircuit)\b|from\s+['"]lucide-react['"].*\b(Sparkles|Wand|Wand2|Bot|Brain|BrainCircuit)\b|name=['"](Sparkles|Wand|Wand2|Bot|Brain|BrainCircuit)['"])/;
 
+// Phase 1 rules
+const HOVER_SHIFT_REGEX = /\bhover:(border-[lrtbxy]?-?\[?[1-9]|p[xytblr]?-[0-9]|m[xytblr]?-[0-9]|-?translate-[xy]|scale-|w-|h-)/;
+const PRODUCT_JARGON_REGEX = /\b(LAK|AIED)(27)?\b/;
+
 const args = process.argv.slice(2);
 const isStrictAll = !args.includes('--legacy');
 const explicitTargets = args.filter((a) => !a.startsWith('--'));
@@ -133,6 +137,18 @@ for (const filePath of filesToScan) {
     if (SMALL_FONT_REGEX.test(line)) {
       const match = line.match(SMALL_FONT_REGEX);
       fileViolations.push(`Line ${lineNum}: Font size < 12px detected "${match[0]}"`);
+    }
+
+    // 6. Hover must not move layout (change color only)
+    if (HOVER_SHIFT_REGEX.test(line)) {
+      const match = line.match(HOVER_SHIFT_REGEX);
+      fileViolations.push(`Line ${lineNum}: hover effect changes layout "${match[0]}" (change color only)`);
+    }
+
+    // 7. Product must stay general-purpose: no conference-specific naming in UI code
+    if (PRODUCT_JARGON_REGEX.test(line)) {
+      const match = line.match(PRODUCT_JARGON_REGEX);
+      fileViolations.push(`Line ${lineNum}: conference-specific term "${match[0]}" (the product is general-purpose)`);
     }
 
     // 5. Prohibited AI cliché icons
