@@ -1,3 +1,5 @@
+<p align="center"><img src="public/logo.png" alt="PromptSketch" width="320"></p>
+
 # PromptSketch
 
 Design, run and analyze educational activities with an AI assistant. Compare versions of the assistant, watch participants live, download the data and get a first plain-language reading of what worked.
@@ -24,7 +26,7 @@ Conditions are assigned at random and balanced. Two conditions are not a limit: 
 - **AI engine** (`lib/ai-engine.js`): OpenRouter, Groq, OpenAI, Anthropic and Ollama with streaming, `<think>` tag stripping, latency/token/cost telemetry and a simulated fallback when no key is configured. A model picker shows live OpenRouter pricing.
 - **Floating assistant** for facilitators, with an offline answer base.
 - **Participant flow** with visible progress, required-question handling, a case drawer on phones and a completion screen.
-- **Demo mode** loads sample data and removes only that data when you leave.
+- **Demo mode** loads three synthetic sample campaigns (codes `sint01`, `sint11`, `sint21`): a 3-step campaign with randomized step order, 24 participants and every question type; a paused pilot with too few sessions; and an empty one. Leaving demo mode removes only that data.
 - **Accessibility**: WCAG 2.2 AAA contrast for text (checked in CI), 44px targets, keyboard-operable components.
 - **Security**: signed httpOnly admin session; every `/api/admin/*` request is checked in `proxy.js`.
 
@@ -67,7 +69,7 @@ The memory provider keeps data in a single JSON file and is meant for demos and 
 
 ### Supabase
 
-1. Create a project and run `docs/migrations/001_base_schema.sql`, then `002_campaigns.sql` and `003_step_order.sql` (all in `docs/migrations/`) in the SQL editor, in that order. The first file is reconstructed from the code: try it on a scratch project before production. If you already deployed with 001 and 002, run only `003_step_order.sql`: it is needed for the "random order of steps" option to be saved (without it everything else keeps working and every participant follows the fixed order).
+1. Create a project and run `docs/migrations/001_base_schema.sql`, then `002_campaigns.sql`, `003_step_order.sql` and `004_final_message.sql` (all in `docs/migrations/`) in the SQL editor, in that order. The first file is reconstructed from the code: try it on a scratch project before production. If you already deployed an earlier version, run only the files you are missing: `003_step_order.sql` is needed for the "random order of steps" option to be saved, and `004_final_message.sql` for the campaign's final message (without them everything else keeps working: participants follow the fixed order and see no final message).
 2. Set `DB_PROVIDER=supabase`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `ADMIN_PASSWORD` in your host (for example Vercel).
 
 ### Privacy
@@ -77,7 +79,7 @@ Conversations are sent to the AI provider you choose. Review its data policy and
 ## Testing
 
 ```bash
-pnpm test               # unit and logic suites + 126 E2E API/logic tests (no server needed)
+pnpm test               # unit and logic suites + 128 E2E API/logic tests (no server needed)
 pnpm test:ui        # Playwright journeys in Google Chrome (starts its own dev server)
 pnpm test:contrast  # WCAG AAA contrast of the design tokens
 pnpm test:slop      # design-rule lint (no emojis, no layout-shifting hover, ...)

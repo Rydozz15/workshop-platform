@@ -11,7 +11,6 @@
  * 7. Graceful mock fallback stream behavior.
  * 8. Provider health check diagnostics (testConnection).
  * 9. Memory database DB_MEMORY_PATH isolation.
- * 10. Authentic ISDDE benchmark dataset structure and seeding idempotency.
  */
 
 import {
@@ -25,12 +24,6 @@ import {
   testConnection,
   PROVIDER_PRICING,
 } from '../lib/ai-engine.js';
-
-import {
-  isddeBenchmarkData,
-  seedBenchmarkData,
-  getBenchmarkSummary,
-} from '../lib/seeds/isdde-benchmark.js';
 
 import * as dbMemory from '../lib/db-memory.js';
 import path from 'path';
@@ -395,53 +388,6 @@ async function main() {
     assertEqual(sessionTelemetry[0].cost_usd, 0.00012);
 
     // Clean up scratch file
-    try {
-      fs.unlinkSync(scratchPath);
-    } catch {
-      // ignore
-    }
-    delete process.env.DB_MEMORY_PATH;
-  });
-
-  // ============================================================
-  // SECTION 7: Authentic ISDDE N=9 Benchmark Dataset & Seeding
-  // ============================================================
-  console.log('\nTest Group 7: Authentic ISDDE N=9 Benchmark Seeding');
-
-  await runTest('isddeBenchmarkData defines 18 paired sessions, 108 messages, and 46 qualitative codes', () => {
-    assertEqual(isddeBenchmarkData.workshops.length, 2, 'Must define exactly 2 workshops (Naive & Prompted)');
-    assertEqual(isddeBenchmarkData.versions.length, 2, 'Must define exactly 2 versions (Case 1 & Case 2)');
-    assertEqual(isddeBenchmarkData.sessions.length, 18, 'Must define exactly 18 sessions (N=9 paired)');
-    assertEqual(isddeBenchmarkData.messages.length, 108, 'Must define exactly 108 authentic dialogue turns');
-    assertEqual(isddeBenchmarkData.messageCodes.length, 46, 'Must define 46 message-level qualitative codes');
-    assertEqual(isddeBenchmarkData.irrCalibration.pairs.length, 36, 'Must define 36 IRR paired classifications');
-  });
-
-  await runTest('getBenchmarkSummary replicates authentic ISDDE empirical results (0% vs 89% inquiry)', () => {
-    const summary = getBenchmarkSummary();
-    assertEqual(summary.conditionA.contextualInquiryPercent, 0, 'Condition A inquiry must be 0%');
-    assertEqual(summary.conditionB.contextualInquiryPercent, 89, 'Condition B inquiry must be 89% (8/9)');
-    assertEqual(summary.conditionA.meanApplicability, 4.0, 'Condition A applicability must be 4.00');
-    assertEqual(summary.conditionB.meanApplicability, 4.0, 'Condition B applicability must be 4.00');
-    assertEqual(summary.conditionB.superficialCount, 0, 'Condition B must eliminate superficial one-shots');
-  });
-
-  await runTest('seedBenchmarkData successfully seeds records into memory database idempotently', async () => {
-    const scratchPath = path.resolve(process.cwd(), 'scratch', 'seed-test-data.json');
-    process.env.DB_MEMORY_PATH = scratchPath;
-    dbMemory.resetStore();
-
-    // First seed
-    const res1 = await seedBenchmarkData(dbMemory);
-    assert(res1.workshopsCount >= 2, 'Must seed workshops');
-    assert(res1.sessionsCount >= 18, 'Must seed sessions');
-    assert(res1.messagesCount >= 108, 'Must seed messages');
-
-    // Second seed (idempotent: no duplicates)
-    const res2 = await seedBenchmarkData(dbMemory);
-    assertEqual(res2.workshopsCount, 0, 'Second seed must not re-insert existing workshops');
-    assertEqual(res2.sessionsCount, 0, 'Second seed must not re-insert existing sessions');
-
     try {
       fs.unlinkSync(scratchPath);
     } catch {

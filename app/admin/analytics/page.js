@@ -39,7 +39,7 @@ import { useLanguage, useTr } from '@/lib/i18n/context';
 
 /**
  * Resolves a survey answer from a session regardless of whether keys are stored
- * by question ID (new sessions) or by question text / exported Supabase header (ISDDE benchmark).
+ * by question ID (new sessions) or by question text / exported Supabase header (older exports).
  */
 function resolveSurveyValue(session, question) {
   const answers = session?.survey_answers || session?.survey_responses;
@@ -72,14 +72,14 @@ function toNumericRating(val) {
   return null;
 }
 
-function mapIsddeOutcomeConstruct(label = '') {
+function mapOutcomeConstruct(label = '') {
   const s = String(label).toLowerCase();
   if (s.includes('actionable') || s.includes('enriched')) return 'Orientacion_Enriquecida';
   if (s.includes('abandon') || s.includes('fatigue')) return 'Abandono_Fatiga';
   return 'Respuesta_Superficial';
 }
 
-function mapIsddeFlowConstruct(label = '') {
+function mapFlowConstruct(label = '') {
   const s = String(label).toLowerCase();
   if (s.includes('productive') || s.includes('engaged conversation')) return 'Indagacion_Productiva';
   if (s.includes('fatigue') || s.includes('tailspin')) return 'Fatiga_Bucle';
@@ -153,7 +153,7 @@ export default function AnalyticsPage() {
   const [stepMeasureId, setStepMeasureId] = useState('');
 
   // IRR Calibration Mode
-  const [irrMode, setIrrMode] = useState('isdde_outcome'); // 'isdde_outcome' | 'isdde_flow' | 'prevalence_demo' | 'custom'
+  const [irrMode, setIrrMode] = useState('coded_outcome'); // 'coded_outcome' | 'coded_flow' | 'prevalence_demo' | 'custom'
   const [customIrrCsv, setCustomIrrCsv] = useState(PREVALENCE_DEMO_CSV);
 
   // LaTeX drawer & copy state
@@ -590,7 +590,7 @@ export default function AnalyticsPage() {
 
   // The chart metric falls back to the first one (activeChartRow), so no syncing effect is needed.
 
-  // 4. Behavioral Checklist Comparison (e.g. Contextual Inquiry 0% vs 89% in ISDDE)
+  // 4. Behavioral Checklist Comparison (e.g. how often the assistant asked about the context)
   const checklistComparison = useMemo(() => {
     const checklistQ =
       (cohortData.surveyConfigA || []).find((q) => q.type === 'checklist') ||
@@ -698,22 +698,22 @@ export default function AnalyticsPage() {
   const irrResult = useMemo(() => {
     const pairs = raw.irrCalibration?.pairs || [];
 
-    if (irrMode === 'isdde_outcome' && pairs.length > 0) {
+    if (irrMode === 'coded_outcome' && pairs.length > 0) {
       const outcomePairs = pairs.filter((p) => p.dimension === 'outcome');
-      const r1 = outcomePairs.map((p) => mapIsddeOutcomeConstruct(p.rater_human));
-      const r2 = outcomePairs.map((p) => mapIsddeOutcomeConstruct(p.rater_llm));
+      const r1 = outcomePairs.map((p) => mapOutcomeConstruct(p.rater_human));
+      const r2 = outcomePairs.map((p) => mapOutcomeConstruct(p.rater_llm));
       return {
-        title: tr('ISDDE Humano vs. LLM-as-a-Judge (Dimensión: Resultado de Sesión)'),
+        title: tr('Humano vs. LLM-as-a-Judge (Dimensión: Resultado de Sesión)'),
         ...calculateIRR(r1, r2),
       };
     }
 
-    if (irrMode === 'isdde_flow' && pairs.length > 0) {
+    if (irrMode === 'coded_flow' && pairs.length > 0) {
       const flowPairs = pairs.filter((p) => p.dimension === 'flow_pattern');
-      const r1 = flowPairs.map((p) => mapIsddeFlowConstruct(p.rater_human));
-      const r2 = flowPairs.map((p) => mapIsddeFlowConstruct(p.rater_llm));
+      const r1 = flowPairs.map((p) => mapFlowConstruct(p.rater_human));
+      const r2 = flowPairs.map((p) => mapFlowConstruct(p.rater_llm));
       return {
-        title: tr('ISDDE Humano vs. LLM-as-a-Judge (Dimensión: Patrón Dialógico)'),
+        title: tr('Humano vs. LLM-as-a-Judge (Dimensión: Patrón Dialógico)'),
         ...calculateIRR(r1, r2),
       };
     }
@@ -1553,22 +1553,22 @@ export default function AnalyticsPage() {
         <div className="flex flex-wrap gap-2 mb-4">
           <button
             type="button"
-            onClick={() => setIrrMode('isdde_outcome')}
+            onClick={() => setIrrMode('coded_outcome')}
             className={`min-h-[44px] px-3 border font-ui-mono text-xs ${
-              irrMode === 'isdde_outcome'
+              irrMode === 'coded_outcome'
                 ? 'border-cobalt bg-cobalt-tint text-cobalt font-semibold'
                 : 'border-line-control bg-paper-subtle text-ink'
             }`}
-          >{tr('ISDDE: Resultado (N=18)')}</button>
+          >{tr('Demo: Resultado de la sesión')}</button>
           <button
             type="button"
-            onClick={() => setIrrMode('isdde_flow')}
+            onClick={() => setIrrMode('coded_flow')}
             className={`min-h-[44px] px-3 border font-ui-mono text-xs ${
-              irrMode === 'isdde_flow'
+              irrMode === 'coded_flow'
                 ? 'border-cobalt bg-cobalt-tint text-cobalt font-semibold'
                 : 'border-line-control bg-paper-subtle text-ink'
             }`}
-          >{tr('ISDDE: Patrón de Flujo (N=18)')}</button>
+          >{tr('Demo: Patrón de flujo')}</button>
           <button
             type="button"
             onClick={() => setIrrMode('prevalence_demo')}

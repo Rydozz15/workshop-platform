@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import * as db from '@/lib/db';
-import { seedBenchmarkData, getBenchmarkSummary, isBenchmarkLoaded, removeBenchmarkData } from '@/lib/seeds/isdde-benchmark';
+import { seedSyntheticData, removeSyntheticData, isSyntheticLoaded, getSyntheticSummary } from '@/lib/seeds/demo-synthetic';
 
 export async function GET() {
   try {
-    const summary = getBenchmarkSummary();
     return NextResponse.json({
       provider: process.env.DB_PROVIDER || 'memory',
-      loaded: await isBenchmarkLoaded(db),
-      summary,
+      loaded: await isSyntheticLoaded(db),
+      summary: getSyntheticSummary(),
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -24,7 +23,7 @@ export async function POST(request) {
       body = {};
     }
 
-    // Safety invariant: never write benchmark test data into remote Supabase unless explicitly authorized
+    // Safety invariant: never write demo data into remote Supabase unless explicitly authorized
     if (process.env.DB_PROVIDER === 'supabase' && !body.confirmRemoteWrite) {
       return NextResponse.json(
         {
@@ -35,21 +34,20 @@ export async function POST(request) {
       );
     }
 
-    const seeded = await seedBenchmarkData(db);
-    const summary = getBenchmarkSummary();
+    const seeded = await seedSyntheticData(db);
 
     return NextResponse.json({
       success: true,
       seeded,
-      summary,
+      summary: getSyntheticSummary(),
     });
   } catch (error) {
-    console.error('Seed benchmark error:', error);
+    console.error('Demo seed error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-/** Leaves demo mode: removes only the sample data. */
+/** Leaves demo mode: removes only the synthetic sample data. */
 export async function DELETE(request) {
   try {
     let body = {};
@@ -64,7 +62,7 @@ export async function DELETE(request) {
         { status: 403 }
       );
     }
-    const removed = await removeBenchmarkData(db);
+    const removed = await removeSyntheticData(db);
     return NextResponse.json({ success: true, removed });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

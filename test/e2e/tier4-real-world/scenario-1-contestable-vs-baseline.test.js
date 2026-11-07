@@ -1,5 +1,5 @@
 /**
- * Tier 4: Real-World Scenario 1 — Contestable vs Baseline Mentoring (ISDDE N=9 Study)
+ * Tier 4: Real-World Scenario 1 — Contestable vs Baseline Mentoring (N=9 Study)
  * Models the authentic field shift where system contextual inquiry increased from
  * 0% (0/9) in Condition A (Naive) to 89% (8/9) in Condition B (Explore-before-Build),
  * completely eliminating Superficial One-shot interactions.
@@ -8,7 +8,7 @@ import { TestSuite, assert, assertEqual, assertApproxEqual } from '../harness/te
 import { runMannWhitneyU } from '../harness/spec-oracle.js';
 
 export function createScenario1ContestableVsBaselineSuite() {
-  const suite = new TestSuite('Scenario 1: Contestable vs Baseline (ISDDE N=9) (Tier 4)', 4);
+  const suite = new TestSuite('Scenario 1: Contestable vs Baseline (N=9) (Tier 4)', 4);
 
   // Authentic N=9 experimental vectors from docs/ICACIT/
   const conditionA_Naive = {

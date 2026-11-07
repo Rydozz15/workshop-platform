@@ -63,3 +63,6 @@ CLAUDE.local.md
 
 # Local MCP config (Supabase project id): keep on this machine
 .mcp.json
+
+# Manuscript (local only)
+/manuscrito/

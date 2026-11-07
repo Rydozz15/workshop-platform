@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getWorkshops, getSessions, getVersions, getMessages, getAllTelemetry } from '@/lib/db';
 import { filterSessionsByCampaign } from '@/lib/campaigns';
-import { isddeBenchmarkData } from '@/lib/seeds/isdde-benchmark';
+import { getSyntheticCalibration, hasSyntheticWorkshops } from '@/lib/seeds/demo-synthetic';
 
 export async function GET(request) {
   try {
@@ -35,8 +35,8 @@ export async function GET(request) {
       sessions,
       versions,
       telemetry,
-      irrCalibration: isddeBenchmarkData.irrCalibration,
-      messageCodes: isddeBenchmarkData.messageCodes,
+      // Only the demo (synthetic) conversations have human vs. judge codes.
+      irrCalibration: hasSyntheticWorkshops(workshops) ? getSyntheticCalibration() : null,
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

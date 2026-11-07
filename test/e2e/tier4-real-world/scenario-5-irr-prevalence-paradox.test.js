@@ -1,7 +1,7 @@
 /**
  * Tier 4: Real-World Scenario 5 — IRR Judge Calibration under Prevalence Skew
  * Models Human-vs-Human and Human-vs-LLM-as-a-Judge categorical coding
- * on authentic ISDDE dialogue turns, demonstrating how Gwet's AC1 resolves
+ * on authentic dialogue turns, demonstrating how Gwet's AC1 resolves
  * the Feinstein & Cicchetti (1990) Prevalence Paradox when Cohen's kappa collapses.
  */
 import { TestSuite, assert, assertEqual, assertApproxEqual } from '../harness/test-utils.js';
@@ -10,7 +10,7 @@ import { calculateIRR } from '../harness/spec-oracle.js';
 export function createScenario5IRRPrevalenceParadoxSuite() {
   const suite = new TestSuite('Scenario 5: IRR Judge Calibration & Prevalence Paradox (Tier 4)', 4);
 
-  // 18 authentic paired dialogue codings from the ISDDE mentoring study:
+  // 18 authentic paired dialogue codings from the mentoring study:
   // Codes: "Epistemic Inquiry", "Pragmatic Inquiry", "Generic Solution", "Enriched Solution"
   // Note: "Generic Solution" dominates the baseline condition (15 out of 18 cases = 83.3% prevalence)
   const humanCoder = [

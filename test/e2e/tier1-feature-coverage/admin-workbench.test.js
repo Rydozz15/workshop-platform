@@ -43,14 +43,14 @@ export function createAdminWorkbenchSuite() {
     setupTestDatabase();
     const chainedPayload = [
       {
-        name: 'ISDDE Secuencia — Paso 1',
+        name: 'Secuencia — Paso 1',
         selected_version_ids: ['ver-a-baseline'],
         openrouter_model: 'llama-3.3-70b-versatile',
         ai_provider: 'groq',
         system_prompt: '',
       },
       {
-        name: 'ISDDE Secuencia — Paso 2',
+        name: 'Secuencia — Paso 2',
         selected_version_ids: ['ver-b-contestable'],
         openrouter_model: 'llama-3.3-70b-versatile',
         ai_provider: 'groq',

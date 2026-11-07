@@ -6,7 +6,7 @@
  * - Tier 1: Feature Coverage (>= 5 tests per feature across 11 features)
  * - Tier 2: Boundary & Corner Cases (>= 5 tests per category across 8 categories)
  * - Tier 3: Cross-Feature Interactions (5 pairwise integration scenarios)
- * - Tier 4: Real-World Application Scenarios (5 realistic N=9 ISDDE mentoring scenarios)
+ * - Tier 4: Real-World Application Scenarios (5 realistic N=9 mentoring scenarios)
  *
  * Usage:
  *   node test/e2e/runner.js
@@ -44,7 +44,6 @@ async function loadAllSuites() {
     { createDraftingDiffSuite },
     { createAssumptionAnalyticsSuite },
     { createGlossarySuite },
-    { createBenchmarkSeedingSuite },
     { createMultiProviderSettingsSuite },
 
     // Tier 2
@@ -82,7 +81,6 @@ async function loadAllSuites() {
     import('./tier1-feature-coverage/drafting-diff.test.js'),
     import('./tier1-feature-coverage/assumption-analytics.test.js'),
     import('./tier1-feature-coverage/glossary.test.js'),
-    import('./tier1-feature-coverage/benchmark-seeding.test.js'),
     import('./tier1-feature-coverage/multi-provider-settings.test.js'),
 
     // Tier 2
@@ -121,7 +119,6 @@ async function loadAllSuites() {
     createDraftingDiffSuite(),
     createAssumptionAnalyticsSuite(),
     createGlossarySuite(),
-    createBenchmarkSeedingSuite(),
     createMultiProviderSettingsSuite(),
 
     createEmptyInputsSuite(),

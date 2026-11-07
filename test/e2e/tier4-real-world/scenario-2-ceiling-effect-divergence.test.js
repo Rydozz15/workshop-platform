@@ -11,7 +11,7 @@ import { runWelchTTest, runMannWhitneyU } from '../harness/spec-oracle.js';
 export function createScenario2CeilingEffectSuite() {
   const suite = new TestSuite('Scenario 2: Likert Ceiling Effect Divergence (Tier 4)', 4);
 
-  // Empirical data from N=9 ISDDE mentoring field study
+  // Empirical data from N=9 mentoring field study
   // Perceived Applicability (Likert 1-5):
   const surveyApplicability_A = [4, 4, 5, 3, 4, 4, 5, 3, 4]; // M=4.00, SD=0.707
   const surveyApplicability_B = [5, 5, 4, 2, 5, 5, 4, 2, 4]; // M=4.00, SD=1.323

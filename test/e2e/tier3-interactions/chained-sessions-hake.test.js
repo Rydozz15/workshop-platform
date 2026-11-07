@@ -17,7 +17,7 @@ export function createChainedSessionsHakeSuite() {
     setupTestDatabase();
     const chainUserId = 'chain-longitudinal-user-42';
 
-    // 1. Join Step 1 (ISDDE Naive)
+    // 1. Join Step 1 (Naive)
     const join1 = await apiClient.joinSession({
       code: 'CHAIN1',
       participant_name: 'Paired Participant 42',
@@ -35,7 +35,7 @@ export function createChainedSessionsHakeSuite() {
     assertEqual(survey1.data.next_share_code, 'CHAIN2');
     await apiClient.updateSession(sId1, { status: 'completed' });
 
-    // 3. Join Step 2 (ISDDE Prompted) using next_share_code and same chain_user_id
+    // 3. Join Step 2 (Prompted) using next_share_code and same chain_user_id
     const join2 = await apiClient.joinSession({
       code: survey1.data.next_share_code,
       participant_name: 'Paired Participant 42',
