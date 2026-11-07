@@ -3,6 +3,7 @@
 import React, { useState, useId } from 'react';
 import DataTable from './data-table';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * ChartFrame - Accessible statistical chart container.
@@ -22,6 +23,7 @@ export function ChartFrame({
   ...props
 }) {
   const [showTable, setShowTable] = useState(false);
+  const tr = useTr();
   const chartId = useId();
   const summaryId = `chart-summary-${chartId}`;
   const captionId = `chart-caption-${chartId}`;
@@ -290,7 +292,7 @@ export function ChartFrame({
           aria-expanded={showTable}
         >
           <CadIcon name={showTable ? 'BarChart2' : 'Table'} size={14} />
-          <span>{showTable ? 'Ver como gráfico' : 'Ver como tabla'}</span>
+          <span>{showTable ? tr('Ver como gráfico') : tr('Ver como tabla')}</span>
         </button>
       </figcaption>
 
@@ -300,7 +302,7 @@ export function ChartFrame({
           <DataTable
             columns={derivedColumns}
             data={derivedTableData}
-            caption={`Representación tabular de: ${title || 'Métricas'}`}
+            caption={tr('Representación tabular de: {title}', { title: title || tr('Métricas') })}
           />
         ) : (
           children || renderDefaultSvg()

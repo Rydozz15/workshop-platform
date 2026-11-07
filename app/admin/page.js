@@ -142,9 +142,9 @@ export default function LivePage() {
                     <li key={a.id} className={`border-2 p-3 flex gap-3 ${sev.box}`}>
                       <CadIcon name={sev.icon} size={20} className={`${sev.text} shrink-0 mt-0.5`} />
                       <div className="min-w-0">
-                        <p className={`font-body text-sm font-semibold m-0 ${sev.text}`}>{a.title}</p>
-                        <p className="font-body text-sm text-ink m-0 mt-0.5">{a.detail}</p>
-                        {a.action && <Link href={a.action.href} className="font-body text-sm font-semibold text-cobalt underline mt-1 inline-block min-h-[44px] leading-[44px]">{a.action.label}</Link>}
+                        <p className={`font-body text-sm font-semibold m-0 ${sev.text}`}>{a.titleKey ? tr(a.titleKey, a.params || undefined) : a.title}</p>
+                        <p className="font-body text-sm text-ink m-0 mt-0.5">{a.detailKey ? tr(a.detailKey, a.params || undefined) : a.detail}</p>
+                        {a.action && <Link href={a.action.href} className="font-body text-sm font-semibold text-cobalt underline mt-1 inline-block min-h-[44px] leading-[44px]">{a.action.labelKey ? tr(a.action.labelKey) : a.action.label}</Link>}
                       </div>
                     </li>
                   );

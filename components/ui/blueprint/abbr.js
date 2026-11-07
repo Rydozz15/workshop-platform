@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useId } from 'react';
 import Link from 'next/link';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 export const GLOSSARY_TERMS = {
   p: {
@@ -110,6 +111,7 @@ export const GLOSSARY_TERMS = {
  * Displays definition popover on click or Enter/Space, closes on Escape.
  */
 export function Abbr({ term, text, children, className = '' }) {
+  const tr = useTr();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
   const popoverId = useId();
@@ -187,7 +189,7 @@ export function Abbr({ term, text, children, className = '' }) {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              aria-label="Cerrar definición"
+              aria-label={tr('Cerrar definición')}
               className="font-ui-mono text-xs text-ink-2 hover:text-ink min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               <CadIcon name="X" size={14} />

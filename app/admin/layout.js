@@ -68,12 +68,12 @@ export default function AdminLayout({ children }) {
       if (data.success) {
         setAuthed(true);
       } else if (res.status === 503) {
-        setError('La administración aún no está configurada en este servidor.');
+        setError(tr('La administración aún no está configurada en este servidor.'));
       } else {
-        setError('Contraseña incorrecta. Inténtalo de nuevo.');
+        setError(tr('Contraseña incorrecta. Inténtalo de nuevo.'));
       }
     } catch {
-      setError('Error de conexión al validar credenciales.');
+      setError(tr('Error de conexión al validar credenciales.'));
     }
     setSubmitting(false);
   };

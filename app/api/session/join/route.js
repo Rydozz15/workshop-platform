@@ -51,11 +51,11 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     if (!code) {
-      return NextResponse.json({ error: 'Workshop code is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Workshop code is required', code: 'code_required' }, { status: 400 });
     }
     const workshop = await getWorkshopByCode(code);
     if (!workshop) {
-      return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Workshop not found', code: 'workshop_not_found' }, { status: 404 });
     }
     return NextResponse.json({
       id: workshop.id,
@@ -92,13 +92,13 @@ export async function POST(request) {
     const { code, participant_name, chain_user_id, onboarding_answers } = await request.json();
 
     if (!code) {
-      return NextResponse.json({ error: 'Workshop code is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Workshop code is required', code: 'code_required' }, { status: 400 });
     }
 
     // Find the workshop by share code
     const codeWorkshop = await getWorkshopByCode(code);
     if (!codeWorkshop) {
-      return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Workshop not found', code: 'workshop_not_found' }, { status: 404 });
     }
 
     // With a randomized order the participant may start in a different step than the code's.
@@ -110,7 +110,7 @@ export async function POST(request) {
     }
 
     if (!workshop.selected_version_ids || workshop.selected_version_ids.length === 0) {
-      return NextResponse.json({ error: 'No versions available for this workshop' }, { status: 400 });
+      return NextResponse.json({ error: 'No versions available for this workshop', code: 'no_versions' }, { status: 400 });
     }
 
     // Version assignment logic
@@ -152,7 +152,7 @@ export async function POST(request) {
     const version = await getVersion(assignedVersionId);
 
     if (!version) {
-      return NextResponse.json({ error: 'Assigned version not found' }, { status: 500 });
+      return NextResponse.json({ error: 'Assigned version not found', code: 'no_versions' }, { status: 500 });
     }
 
     // Create the session

@@ -23,6 +23,6 @@ export async function POST(request) {
     return NextResponse.json(campaign, { status: 201 });
   } catch (error) {
     const status = error instanceof CampaignValidationError ? 400 : 500;
-    return NextResponse.json({ error: error.message }, { status });
+    return NextResponse.json({ error: error.message, ...(error instanceof CampaignValidationError ? { error_key: error.key, error_params: error.params } : {}) }, { status });
   }
 }

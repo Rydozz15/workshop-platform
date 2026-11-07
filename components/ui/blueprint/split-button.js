@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * SplitButton - PromptSketch signature interactive control.
@@ -22,6 +23,7 @@ export const SplitButton = forwardRef(function SplitButton(
   },
   ref
 ) {
+  const tr = useTr();
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -96,8 +98,8 @@ export const SplitButton = forwardRef(function SplitButton(
             disabled={disabled || loading}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
-            aria-label="Más acciones"
-            title="Más acciones"
+            aria-label={tr('Más acciones')}
+            title={tr('Más acciones')}
             onClick={() => setMenuOpen(!menuOpen)}
             className={`min-h-[44px] min-w-[44px] px-2 flex items-center justify-center border border-line-control bg-paper hover:bg-paper-subtle active:translate-y-px ${
               variant === 'primary' ? 'bg-cobalt text-paper border-cobalt border-l-paper/40 hover:bg-cobalt-hover' : 'text-ink'

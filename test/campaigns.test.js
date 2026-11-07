@@ -50,6 +50,14 @@ await check('groups chained workshops into one campaign and solo workshops into 
 await check('validation explains what is missing', () => {
   assert.throws(() => validateCampaignPayload({ name: '', steps: [] }), /nombre/);
   assert.throws(() => validateCampaignPayload({ name: 'X', steps: [] }), /al menos un paso/);
+  try {
+    validateCampaignPayload({ name: 'X', steps: [{ name: 'Paso A', conditions: [] }] });
+    assert.fail('should throw');
+  } catch (e) {
+    assert.equal(e.key, '"{step}" necesita al menos una condición.');
+    assert.deepEqual(e.params, { step: 'Paso A' });
+    assert.match(e.message, /"Paso A" necesita al menos una condición/);
+  }
   assert.throws(() => validateCampaignPayload({ name: 'X', steps: [step('P', [])] }), /al menos una condición/);
   assert.throws(() => validateCampaignPayload({ name: 'X', steps: [step('P', [{ title: 'A', case_content: ' ' }])] }), /caso/);
   assert.throws(

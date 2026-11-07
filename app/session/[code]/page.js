@@ -154,7 +154,13 @@ export default function SessionPage({ params }) {
         setError(
           data.code === 'campaign_closed'
             ? tr('Esta campaña ya terminó: ya no se aceptan nuevos participantes.')
-            : data.error || tr('No se pudo iniciar la sesión.')
+            : data.code === 'workshop_not_found'
+              ? tr('No encontramos una actividad con ese código. Revisa que esté bien escrito.')
+              : data.code === 'no_versions'
+                ? tr('Esta actividad todavía no está lista. Avisa a quien la dirige.')
+                : data.code === 'code_required'
+                  ? tr('Escribe el código que te dieron para poder entrar.')
+                  : tr('No se pudo iniciar la sesión.')
         );
         setJoining(false);
         return;
@@ -429,7 +435,7 @@ export default function SessionPage({ params }) {
       if (res.ok) {
         await finalizeSession(data.next_share_code);
       } else {
-        setSurveyError(data.error || tr('No se pudo guardar la encuesta.'));
+        setSurveyError(tr('No se pudo guardar la encuesta.'));
         setSubmittingSurvey(false);
       }
     } catch {

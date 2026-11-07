@@ -1,6 +1,6 @@
 /** Tests: live monitor status and alerts. Run with: node test/live-monitor.test.js */
 import assert from 'node:assert/strict';
-import { computeLiveStatus } from '../lib/live-monitor.js';
+import { ALERT_TEXT_KEYS, computeLiveStatus } from '../lib/live-monitor.js';
 
 let passed = 0;
 const check = (name, fn) => {
@@ -66,6 +66,18 @@ check('recent list is newest first and capped', () => {
   const r = computeLiveStatus({ campaign, versions, sessions, now });
   assert.equal(r.recent.length, 8);
   assert.equal(r.recent[0].id, 'r0');
+});
+
+check('alerts carry translatable keys and params next to the Spanish text', () => {
+  const two = computeLiveStatus({ campaign, versions, now, sessions: [mk('1', { interaction_count: 0, started_at: ago(15) }), mk('2', { interaction_count: 0, started_at: ago(20) })] });
+  const many = two.alerts.find((a) => a.id === 'stalled');
+  assert.equal(many.titleKey, '{n} personas entraron y no han escrito');
+  assert.deepEqual(many.params, { n: 2 });
+  assert.match(many.title, /^2 personas entraron/);
+  const paused = two.alerts.find((a) => a.id === 'paused-s2');
+  assert.equal(paused.titleKey, 'El paso "{name}" está pausado');
+  assert.equal(paused.action.labelKey, 'Editar campaña');
+  assert.ok(ALERT_TEXT_KEYS.includes(paused.detailKey));
 });
 
 console.log(`\nlive-monitor: ${passed} tests passed`);

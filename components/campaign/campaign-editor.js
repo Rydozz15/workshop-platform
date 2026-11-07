@@ -188,7 +188,7 @@ export default function CampaignEditor({ campaignId = null }) {
         body: JSON.stringify(toPayload(meta, steps)),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || tr('No se pudo guardar la campaña.'));
+      if (!res.ok) throw new Error(data.error_key ? tr(data.error_key, data.error_params || undefined) : tr('No se pudo guardar la campaña.'));
       router.push('/admin/campaigns');
     } catch (e) {
       setError(e.message);
