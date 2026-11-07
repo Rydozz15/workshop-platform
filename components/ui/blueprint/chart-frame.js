@@ -31,16 +31,16 @@ export function ChartFrame({
 
   // Default table columns fallback if tableData is provided
   const derivedColumns = tableColumns || [
-    { key: 'metric', label: 'Métrica / Dimensión' },
-    { key: 'conditionA', label: 'Condición A (Baseline)', align: 'right' },
-    { key: 'conditionB', label: 'Condición B (Socrático)', align: 'right' },
-    { key: 'effect', label: 'Efecto / Dif.', align: 'right' },
+    { key: 'metric', label: tr('Métrica / Dimensión') },
+    { key: 'conditionA', label: tr('Condición A (Baseline)'), align: 'right' },
+    { key: 'conditionB', label: tr('Condición B (Socrático)'), align: 'right' },
+    { key: 'effect', label: tr('Efecto / Dif.'), align: 'right' },
   ];
 
   const derivedTableData = tableData || (data ? [
     {
       id: 1,
-      metric: title || 'Puntuación promedio',
+      metric: title || tr('Puntuación promedio'),
       conditionA: data.conditionA ? `${data.conditionA.mean ?? data.conditionA.value ?? '—'} (±${data.conditionA.sd ?? '0.0'})` : '—',
       conditionB: data.conditionB ? `${data.conditionB.mean ?? data.conditionB.value ?? '—'} (±${data.conditionB.sd ?? '0.0'})` : '—',
       effect: data.diff ? `${data.diff > 0 ? '+' : ''}${data.diff}` : '—',
@@ -51,8 +51,8 @@ export function ChartFrame({
   const renderDefaultSvg = () => {
     const valA = Number(data?.conditionA?.mean ?? data?.conditionA?.value ?? 3.2);
     const valB = Number(data?.conditionB?.mean ?? data?.conditionB?.value ?? 4.1);
-    const labelA = data?.conditionA?.label || 'Condición A (Baseline)';
-    const labelB = data?.conditionB?.label || 'Condición B (Socrático)';
+    const labelA = data?.conditionA?.label || tr('Condición A (Baseline)');
+    const labelB = data?.conditionB?.label || tr('Condición B (Socrático)');
     const maxVal = Math.max(5, Math.ceil(Math.max(valA, valB) * 1.25));
 
     // SVG coordinates
@@ -82,7 +82,7 @@ export function ChartFrame({
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-auto max-h-[260px] bg-paper border border-line-control"
         role="img"
-        aria-label={ariaLabel || title || 'Comparación gráfica entre condición A y B'}
+        aria-label={ariaLabel || title || tr('Comparación gráfica entre condición A y B')}
         aria-describedby={summaryId}
       >
         <defs>
@@ -316,7 +316,7 @@ export function ChartFrame({
           className="mt-3 p-2.5 bg-paper-subtle border-l-2 border-cobalt font-body text-xs text-ink leading-relaxed"
         >
           <span className="font-ui-mono font-semibold uppercase text-cobalt mr-1">
-            Resumen de tendencia:
+            {tr('Resumen de tendencia:')}
           </span>
           {trendSummary}
         </div>

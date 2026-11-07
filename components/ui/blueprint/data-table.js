@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import CadIcon from '../cad-icon';
+import { useTr } from '@/lib/i18n/context';
 
 /**
  * DataTable - Accessible publication-grade data table.
@@ -13,9 +14,10 @@ export function DataTable({
   keyField = 'id',
   caption,
   className = '',
-  emptyText = 'No hay datos registrados en esta serie.',
+  emptyText,
   ...props
 }) {
+  const tr = useTr();
   const [sortField, setSortField] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc'); // 'asc' | 'desc'
 
@@ -55,7 +57,7 @@ export function DataTable({
     <div
       role="region"
       tabIndex={0}
-      aria-label={caption || 'Tabla de datos experimentales'}
+      aria-label={caption || tr('Tabla de datos experimentales')}
       className={`ps-table-container w-full overflow-x-auto border border-line-control bg-paper ${className}`}
       {...props}
     >
@@ -91,7 +93,7 @@ export function DataTable({
                       type="button"
                       onClick={() => handleSort(col.key)}
                       className="min-h-[44px] min-w-[44px] px-2 inline-flex items-center gap-1.5 font-ui-mono text-xs uppercase text-ink-2 hover:text-ink"
-                      aria-label={`Ordenar por ${col.label}`}
+                      aria-label={tr('Ordenar por {label}', { label: col.label })}
                     >
                       <span>{col.label}</span>
                       <span aria-hidden="true" className="shrink-0">
@@ -121,7 +123,7 @@ export function DataTable({
                 colSpan={columns.length}
                 className="p-6 text-center font-ui-mono text-xs text-ink-2 bg-paper"
               >
-                {emptyText}
+                {emptyText || tr('No hay datos registrados en esta serie.')}
               </td>
             </tr>
           ) : (

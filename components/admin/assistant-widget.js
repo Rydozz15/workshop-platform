@@ -51,7 +51,7 @@ export default function AssistantWidget() {
         body: JSON.stringify({ mode: 'assist', messages: next.map(({ role, content }) => ({ role, content })), page: pathname, lang: locale }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || tr('No pude responder ahora.'));
+      if (!res.ok) throw new Error(tr('No pude responder ahora.'));
       setMessages([...next, { role: 'assistant', content: data.reply, links: data.links || [] }]);
     } catch (e) {
       setMessages([...next, { role: 'assistant', content: e.message || tr('No pude responder ahora. Inténtalo de nuevo.'), links: [] }]);

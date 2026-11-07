@@ -397,6 +397,29 @@ async function main() {
   });
 
   // ============================================================
+  // Simulated assistant speaks the participant's language
+  // ============================================================
+  console.log('\nTest Group: Simulated assistant language');
+
+  const readMock = async (locale) => {
+    const stream = await streamChat({ provider: 'openrouter', apiKey: 'mock', messages: [{ role: 'user', content: 'hi' }], locale });
+    const text = await new Response(stream).text();
+    return text
+      .split('\n')
+      .filter((l) => l.startsWith('data: ') && l.includes('"chunk"'))
+      .map((l) => JSON.parse(l.slice(6)).chunk)
+      .join('');
+  };
+
+  await runTest('the simulated reply follows the interface language and defaults to Spanish', async () => {
+    assert((await readMock('en')).includes('I understand the situation'), 'English reply expected');
+    assert((await readMock('pt-BR')).includes('Entendo a situação'), 'Portuguese reply expected');
+    assert((await readMock('es')).includes('Entiendo la situación'), 'Spanish reply expected');
+    assert((await readMock(undefined)).includes('Entiendo la situación'), 'Spanish is the default');
+    assert((await readMock('fr')).includes('Entiendo la situación'), 'unknown languages fall back to Spanish');
+  });
+
+  // ============================================================
   // SUMMARY
   // ============================================================
   console.log(`\n==========================================================`);

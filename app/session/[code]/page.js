@@ -29,7 +29,7 @@ function stripThinkingTags(text) {
 export default function SessionPage({ params }) {
   const tr = useTr();
   const { code } = use(params);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
 
   const [phase, setPhase] = useState('welcome'); // 'welcome' | 'chat' | 'survey' | 'completed'
@@ -304,7 +304,7 @@ export default function SessionPage({ params }) {
       const res = await fetch(`/api/session/${sessionId}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg, client_telemetry: clientTelemetry }),
+        body: JSON.stringify({ message: userMsg, client_telemetry: clientTelemetry, locale }),
       });
 
       if (!res.ok) {

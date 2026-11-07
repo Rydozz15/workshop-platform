@@ -20,7 +20,7 @@ export async function POST(request, { params }) {
   try {
     const { sessionId } = await params;
     const body = await request.json();
-    const { message, client_telemetry = null } = body;
+    const { message, client_telemetry = null, locale = 'es' } = body;
 
     if (!message || !String(message).trim()) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -104,6 +104,7 @@ export async function POST(request, { params }) {
       messages: conversationHistory,
       apiKey: apiKeyOverride,
       baseUrl,
+      locale,
     });
 
     let assistantText = '';

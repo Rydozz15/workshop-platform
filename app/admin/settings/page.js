@@ -101,7 +101,7 @@ export default function SettingsPage() {
       for (const [p, v] of Object.entries(keyInputs)) if (v) body[`api_key_${p}`] = v;
       const res = await fetch('/api/admin/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error ? tr(data.error) : tr('No se pudo guardar. Inténtalo de nuevo.'));
       applySettings(data);
       setKeyInputs({});
       flash(true, tr('Cambios guardados.'));
@@ -117,7 +117,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/admin/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [AI_CONSENT_KEY]: '' }) });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error ? tr(data.error) : tr('No se pudo guardar. Inténtalo de nuevo.'));
       applySettings(data);
       flash(true, tr('Permiso revocado. Te lo volveremos a preguntar.'));
     } catch {
@@ -157,7 +157,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/admin/seed', { method: enable ? 'POST' : 'DELETE' });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error ? tr(data.error) : tr('No se pudo guardar. Inténtalo de nuevo.'));
       setDemo((d) => ({ ...d, loaded: enable, busy: false }));
       flash(true, enable ? tr('Datos de ejemplo cargados.') : tr('Saliste del modo demo: se quitaron los datos de ejemplo.'));
     } catch (e) {
@@ -277,7 +277,7 @@ export default function SettingsPage() {
                 </div>
                 {t?.result && (
                   <p role="status" className={`font-body text-sm m-0 ${t.result.ok ? 'text-emerald' : 'text-vermilion-ink'}`}>
-                    {t.result.ok ? tr('Funciona: respondió en {ms} ms.', { ms: t.result.latency_ms }) : `${tr('No funcionó')}: ${t.result.error || ''}`}
+                    {t.result.ok ? tr('Funciona: respondió en {ms} ms.', { ms: t.result.latency_ms }) : `${tr('No funcionó')}: ${t.result.error ? tr(t.result.error) : ''}`}
                   </p>
                 )}
               </li>

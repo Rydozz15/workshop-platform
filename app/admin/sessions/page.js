@@ -195,7 +195,7 @@ export default function SessionsPage() {
   const columns = [
     {
       key: 'participant_name',
-      label: 'Participante',
+      label: tr('Participante'),
       sortable: true,
       format: (val, row) => (
         <div>
@@ -213,12 +213,12 @@ export default function SessionsPage() {
     },
     {
       key: 'version_title',
-      label: 'Escenario',
+      label: tr('Escenario'),
       sortable: true,
     },
     {
       key: 'status',
-      label: 'Estado',
+      label: tr('Estado'),
       sortable: true,
       format: (val) => (
         <StatBadge
@@ -230,13 +230,13 @@ export default function SessionsPage() {
     },
     {
       key: 'turnsCount',
-      label: 'Mensajes',
+      label: tr('Mensajes'),
       align: 'right',
       sortable: true,
     },
     {
       key: 'wordBalance',
-      label: 'Palabras (participante / asistente)',
+      label: tr('Palabras (participante / asistente)'),
       align: 'right',
     },
     {
@@ -246,7 +246,7 @@ export default function SessionsPage() {
     },
     {
       key: 'actions',
-      label: 'Acciones',
+      label: tr('Acciones'),
       align: 'center',
       format: (_, row) => (
         <div className="inline-flex items-center gap-2">
@@ -318,7 +318,7 @@ export default function SessionsPage() {
             loading={Boolean(exportingLabel)}
             disabled={sessions.length === 0}
             primaryAction={{
-              label: 'Descargar sesiones (.csv)',
+              label: tr('Descargar sesiones (.csv)'),
               icon: 'Download',
               onClick: () =>
                 triggerExport({
@@ -330,7 +330,7 @@ export default function SessionsPage() {
             }}
             menuActions={[
               {
-                label: 'Descargar mensajes (.csv)',
+                label: tr('Descargar mensajes (.csv)'),
                 icon: 'FileSpreadsheet',
                 onClick: () =>
                   triggerExport({
@@ -352,7 +352,7 @@ export default function SessionsPage() {
                   }),
               },
               {
-                label: 'Transcripciones Completas (.json)',
+                label: tr('Transcripciones Completas (.json)'),
                 icon: 'FileCode',
                 onClick: () =>
                   triggerExport({

@@ -851,7 +851,7 @@ export default function AnalyticsPage() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || tr('Error en la revisión metodológica'));
+      if (!res.ok) throw new Error(tr('Error en la revisión metodológica'));
       setLakReview(json);
     } catch (err) {
       setStatusBanner({
@@ -1164,9 +1164,9 @@ export default function AnalyticsPage() {
                 : `${r.lev.varianceRatio.toFixed(2)}x`,
             selectedRoute:
               r.testUsed === 'welch_t'
-                ? 'Welch t + d de Cohen'
-                : 'Mann-Whitney U + δ de Cliff',
-            rationale: r.gate.explanation,
+                ? tr('Welch t + d de Cohen')
+                : tr('Mann-Whitney U + δ de Cliff'),
+            rationale: r.gate.explanationKey ? tr(r.gate.explanationKey, r.gate.explanationParams) : r.gate.explanation,
           }))}
         />
 
@@ -1638,7 +1638,7 @@ export default function AnalyticsPage() {
 
             {irrResult.prevalenceWarning && (
               <div className="p-3 bg-vermilion-tint border border-vermilion-ink font-ui-mono text-xs text-vermilion-ink">
-                [!] {irrResult.warningMessage}
+                [!] {tr(irrResult.warningMessage)}
               </div>
             )}
 
