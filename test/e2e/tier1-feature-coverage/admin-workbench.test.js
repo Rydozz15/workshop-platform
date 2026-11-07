@@ -23,7 +23,7 @@ export function createAdminWorkbenchSuite() {
   suite.test('POST /api/admin/workshops creates a single workshop with survey config', async () => {
     setupTestDatabase();
     const payload = {
-      name: 'Nueva Campaña LAK27',
+      name: 'Nueva Campaña',
       selected_version_ids: ['ver-a-baseline', 'ver-b-contestable'],
       openrouter_model: 'llama-3.3-70b-versatile',
       ai_provider: 'groq',
@@ -34,7 +34,7 @@ export function createAdminWorkbenchSuite() {
     };
     const res = await apiClient.createWorkshop(payload);
     assertEqual(res.status, 201);
-    assertEqual(res.data.name, 'Nueva Campaña LAK27');
+    assertEqual(res.data.name, 'Nueva Campaña');
     assert(res.data.share_code, 'Must generate share_code');
   });
 

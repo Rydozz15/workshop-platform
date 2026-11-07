@@ -9,7 +9,7 @@ import { generateBooktabsTable } from '../harness/spec-oracle.js';
 export function createScenario4LatexTidyExportsSuite() {
   const suite = new TestSuite('Scenario 4: LaTeX booktabs & Tidy Data Exports (Tier 4)', 4);
 
-  // Test 1: Generates valid LaTeX table matching ICACIT/LAK27 publication template
+  // Test 1: Generates valid LaTeX table matching a journal publication template
   suite.test('LaTeX generator produces compilable booktabs table with toprule, midrule, and bottomrule', () => {
     const results = {
       continuous: [

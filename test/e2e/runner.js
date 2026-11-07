@@ -149,7 +149,7 @@ async function main() {
   const startTime = performance.now();
   console.log(`\n${colors.bold}${colors.blue}================================================================${colors.reset}`);
   console.log(`${colors.bold}${colors.blue}   PromptSketch Opaque-Box E2E Test Suite (Tiers 1-4)           ${colors.reset}`);
-  console.log(`${colors.bold}${colors.blue}   Target: LAK27 Interactive Demo Track / Memory Persistence    ${colors.reset}`);
+  console.log(`${colors.bold}${colors.blue}   Target: memory persistence, in-process route handlers        ${colors.reset}`);
   console.log(`${colors.bold}${colors.blue}================================================================${colors.reset}`);
   console.log(`${colors.dim}DB_PROVIDER = ${process.env.DB_PROVIDER}${colors.reset}`);
   console.log(`${colors.dim}DB_MEMORY_PATH = ${process.env.DB_MEMORY_PATH}${colors.reset}`);

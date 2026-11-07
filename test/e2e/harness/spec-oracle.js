@@ -1,8 +1,8 @@
 /**
  * Authoritative Mathematical and Algorithmic Oracle for PromptSketch.
  * Derived strictly from:
- * - survey_stats.md (LAK27 Scientific Analytics Specification)
- * - PROJECT.md § Interface Contracts
+ * - the analytics specification (survey_stats.md)
+ * - the interface contracts of the project
  * Zero hardcoding. Zero approximations. Exact mathematical formulas.
  */
 

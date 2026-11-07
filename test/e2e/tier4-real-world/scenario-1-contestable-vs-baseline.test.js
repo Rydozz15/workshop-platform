@@ -10,7 +10,7 @@ import { runMannWhitneyU } from '../harness/spec-oracle.js';
 export function createScenario1ContestableVsBaselineSuite() {
   const suite = new TestSuite('Scenario 1: Contestable vs Baseline (N=9) (Tier 4)', 4);
 
-  // Authentic N=9 experimental vectors from docs/ICACIT/
+  // Authentic N=9 experimental vectors from a published study
   const conditionA_Naive = {
     contextualInquiryRates: [0, 0, 0, 0, 0, 0, 0, 0, 0], // 0/9 = 0%
     superficialOneShotCounts: [1, 1, 0, 1, 0, 1, 0, 0, 0], // 4/9 = 44.4%

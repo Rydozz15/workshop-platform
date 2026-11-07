@@ -44,18 +44,18 @@ export function createOnboardingStepperSuite() {
   suite.test('Navigation between steps preserves state without reset', () => {
     const stepperState = {
       currentStep: 1,
-      name: 'Gabriel Astudillo',
+      name: 'Test Participant',
       agreedToTelemetry: false,
     };
     // Step forward to 2
     stepperState.currentStep = 2;
-    assertEqual(stepperState.name, 'Gabriel Astudillo');
+    assertEqual(stepperState.name, 'Test Participant');
     // Step forward to 3
     stepperState.currentStep = 3;
     stepperState.agreedToTelemetry = true;
     // Step backward to 2
     stepperState.currentStep = 2;
-    assertEqual(stepperState.name, 'Gabriel Astudillo');
+    assertEqual(stepperState.name, 'Test Participant');
     assertEqual(stepperState.agreedToTelemetry, true);
   });
 

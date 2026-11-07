@@ -375,7 +375,7 @@ runTest('Auto-generated Codebook documents variable definitions and units', () =
   assert(cb.schema.every(item => item.var && item.type && item.unit && item.formula), 'Every entry has metadata');
 });
 
-runTest('Generates compilable LaTeX booktabs table matching ICACIT/LAK publication styles', () => {
+runTest('Generates compilable LaTeX booktabs table matching journal publication styles', () => {
   const results = {
     continuous: [
       {
