@@ -118,15 +118,15 @@ async function waitForServer(port, tries = 60) {
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
   if (!nodeIsSupported()) {
-    console.error(`\nSe necesita Node.js ${MIN_NODE} o superior (tienes ${process.versions.node}). Descárgalo en https://nodejs.org (versión LTS).`);
+    console.error(`\nNode.js ${MIN_NODE} or newer is required (you have ${process.versions.node}). Download it at https://nodejs.org (LTS version).`);
     process.exit(1);
   }
 
-  console.log('\n=== PromptSketch: modo local ===\n');
+  console.log('\n=== PromptSketch: local mode ===\n');
   if (!fs.existsSync(path.join(ROOT, 'node_modules'))) {
-    console.log('Instalando componentes (solo la primera vez, puede tardar unos minutos)...');
+    console.log('Installing components (first run only, it can take a few minutes)...');
     if (!installDependencies()) {
-      console.error('\nNo se pudo instalar. Revisa tu conexión a internet y vuelve a intentarlo.');
+      console.error('\nInstallation failed. Check your internet connection and try again.');
       process.exit(1);
     }
   }
@@ -135,9 +135,9 @@ async function main() {
   const nextBin = path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next');
   const built = fs.existsSync(path.join(ROOT, '.next', 'BUILD_ID'));
   if (!built || opts.rebuild) {
-    console.log('Preparando la aplicación (solo la primera vez, ~1-2 minutos)...');
+    console.log('Preparing the app (first run only, ~1-2 minutes)...');
     if (!run(process.execPath, [nextBin, 'build'], { env: { ...process.env, DB_PROVIDER: env.DB_PROVIDER } })) {
-      console.error('\nNo se pudo preparar la aplicación.');
+      console.error('\nCould not prepare the app.');
       process.exit(1);
     }
   }
@@ -156,17 +156,17 @@ async function main() {
 
   if (await waitForServer(opts.port)) {
     console.log('\n----------------------------------------------------------');
-    console.log(' PromptSketch está funcionando.');
-    console.log(`  Administración:  ${base}/admin`);
-    console.log(`  Contraseña:      ${env.ADMIN_PASSWORD}${env.created ? '   (guardada en el archivo .env.local)' : ''}`);
-    console.log('  Participantes:   comparte el código o el QR de tu campaña;');
-    console.log('                   deben estar en el mismo Wi-Fi que este computador.');
-    console.log('  Tus datos:       se guardan en el archivo data.json (haz copias de respaldo).');
-    console.log('  Para cerrar:     presiona Ctrl + C en esta ventana.');
+    console.log(' PromptSketch is running.');
+    console.log(`  Admin:           ${base}/admin`);
+    console.log(`  Password:        ${env.ADMIN_PASSWORD}${env.created ? '   (saved in the .env.local file)' : ''}`);
+    console.log('  Participants:    share the code or QR of your campaign;');
+    console.log('                   they must be on the same Wi-Fi as this computer.');
+    console.log('  Your data:       saved in the data.json file (keep backups).');
+    console.log('  To stop:         press Ctrl + C in this window.');
     console.log('----------------------------------------------------------\n');
     if (opts.open) openBrowser(`${base}/admin`);
   } else {
-    console.error('\nLa aplicación no respondió a tiempo. Revisa los mensajes de arriba.');
+    console.error('\nThe app did not respond in time. Check the messages above.');
   }
 }
 

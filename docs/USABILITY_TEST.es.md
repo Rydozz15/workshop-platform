@@ -1,5 +1,7 @@
 # Protocolo de prueba de usabilidad con docentes
 
+> English version: [USABILITY_TEST.md](USABILITY_TEST.md).
+
 Estado: **preparado, aún no ejecutado.** Este documento sirve para realizar la prueba con 3 a 5 docentes o investigadores reales por cada momento de uso y comparar el resultado con la evaluación heurística de Nielsen hecha sobre el prototipo anterior.
 
 ## Objetivo

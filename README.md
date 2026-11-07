@@ -41,7 +41,7 @@ pnpm install
 
 Open `http://localhost:3000/admin`. Outside production the local default password is `workshop2025`; set `ADMIN_PASSWORD` to use your own. In **production the admin stays locked until `ADMIN_PASSWORD` is set**.
 
-**Not a programmer, or on Windows?** Double-click `iniciar.bat` (Windows) or `iniciar.command` (macOS); both run `pnpm run local`. Step-by-step guide in Spanish: [`docs/MODO_LOCAL.md`](docs/MODO_LOCAL.md). The `.sh` scripts need a Unix shell (macOS, Linux, or WSL on Windows).
+**Not a programmer, or on Windows?** Double-click `start.bat` (Windows) or `start.command` (macOS); both run `pnpm run local`. Step-by-step guide: [`docs/LOCAL_MODE.md`](docs/LOCAL_MODE.md) ([Spanish](docs/LOCAL_MODE.es.md)). The `.sh` scripts need a Unix shell (macOS, Linux, or WSL on Windows).
 
 For a booth or classroom demo with a public HTTPS link and a terminal QR code:
 
@@ -111,7 +111,7 @@ The first iteration of PromptSketch, its features and its product direction were
 - **Known limits.**
   - The code has not had an independent security audit.
   - The English and Portuguese translations have not been reviewed by native speakers.
-  - The earlier iteration was validated with facilitators; this latest version has not yet been tested with real facilitators. A protocol for that is in `docs/PRUEBA_USABILIDAD.md`.
+  - The earlier iteration was validated with facilitators; this latest version has not yet been tested with real facilitators. A protocol for that is in `docs/USABILITY_TEST.md`.
   - Check privacy, consent and data-protection requirements before using it with real participants.
 
 If you contribute, please say how AI was used in your pull request, keep the test suites green and review generated code as you would any other.

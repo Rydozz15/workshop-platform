@@ -1,12 +1,14 @@
 # Usar PromptSketch en tu computador (sin saber programar)
 
+> English version: [LOCAL_MODE.md](LOCAL_MODE.md).
+
 Sirve para probar la plataforma o hacer un taller pequeño desde tu propio computador. Funciona en **Windows, macOS y Linux**. No necesitas cuenta en ningún servicio ni base de datos.
 
 ## Windows
 
 1. **Instala Node.js** (solo una vez): entra a <https://nodejs.org>, descarga la versión **LTS** e instálala con "Siguiente" en todo. Si prefieres la terminal: `winget install OpenJS.NodeJS.LTS`.
 2. **Descarga PromptSketch** desde GitHub (botón verde *Code* → *Download ZIP*) y descomprímelo.
-3. Haz **doble clic en `iniciar.bat`**.
+3. Haz **doble clic en `start.bat`**.
    - La primera vez instala y prepara todo (unos minutos, necesita internet).
    - Si Windows pregunta por el **Firewall**, elige **"Permitir acceso"** (en redes privadas). Es lo que permite que los celulares de los participantes entren.
 4. Se abre el navegador en la página de administración. La **contraseña** aparece en la ventana negra y queda guardada en el archivo `.env.local`.
@@ -14,7 +16,7 @@ Sirve para probar la plataforma o hacer un taller pequeño desde tu propio compu
 
 ## macOS
 
-Instala Node.js (LTS) desde <https://nodejs.org> y haz doble clic en `iniciar.command`. Si macOS dice que no tiene permisos, abre la Terminal en esa carpeta y escribe `chmod +x iniciar.command`.
+Instala Node.js (LTS) desde <https://nodejs.org> y haz doble clic en `start.command`. Si macOS dice que no tiene permisos, abre la Terminal en esa carpeta y escribe `chmod +x start.command`.
 
 ## Linux
 
@@ -40,12 +42,12 @@ pnpm run local       # igual que Windows y macOS
 
 | Problema | Qué hacer |
 | --- | --- |
-| "Falta instalar Node.js" | Instálalo (paso 1) y vuelve a abrir `iniciar.bat`. |
+| "Falta instalar Node.js" | Instálalo (paso 1) y vuelve a abrir `start.bat`. |
 | "No se pudo instalar" | Revisa tu conexión a internet y vuelve a intentarlo. |
 | La ventana se cierra sola | Abre `cmd` en la carpeta y ejecuta `node scripts\start-local.js` para ver el mensaje. |
 | Entro al admin pero no puedo hacer nada ("No pudimos actualizar los datos") | Actualiza PromptSketch: el modo local ya no marca la sesión como "segura", que es lo que impedía guardarla al entrar por la dirección con IP. |
 | El celular no abre la página | Mismo Wi-Fi, Firewall permitido y dirección con la IP (no `localhost`). |
-| Otro programa usa el puerto 3000 | `iniciar.bat --port 3001` |
+| Otro programa usa el puerto 3000 | `start.bat --port 3001` |
 | Quiero actualizar PromptSketch | Descarga el ZIP nuevo, copia tu `data.json` y `.env.local` a la carpeta nueva y ejecuta con `--rebuild` la primera vez. |
 
 Para publicar la plataforma en internet (con muchos participantes a la vez) este modo no es suficiente: ver el README (Supabase y despliegue).

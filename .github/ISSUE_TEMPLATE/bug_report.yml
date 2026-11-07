@@ -20,7 +20,7 @@ body:
     id: setup
     attributes:
       label: How are you running it?
-      placeholder: "e.g. iniciar.bat on Windows 11 / Vercel + Supabase / pnpm dev on Linux"
+      placeholder: "e.g. start.bat on Windows 11 / Vercel + Supabase / pnpm dev on Linux"
   - type: textarea
     id: logs
     attributes:
