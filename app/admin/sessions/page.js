@@ -13,7 +13,7 @@ import {
   HandMark,
 } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useTr } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 import { displayAnswer, otherKey } from '@/lib/survey-schema';
 import useSelectedCampaign from '@/lib/use-selected-campaign';
 import SectionTrail from '@/components/admin/section-trail';
@@ -39,6 +39,7 @@ function formatDuration(seconds) {
 
 export default function SessionsPage() {
   const tr = useTr();
+  const { locale } = useLanguage();
   const [sessions, setSessions] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useSelectedCampaign();
@@ -529,7 +530,7 @@ export default function SessionsPage() {
                             {tel?.ttft_ms ? <span>{tr('· TTFT')}{' '}{Math.round(tel.ttft_ms)}{' '}{tr('ms')}</span> : null}
                             {tel?.cost_usd ? <span>{tr('· USD')}{' '}{Number(tel.cost_usd).toFixed(5)}</span> : null}
                             {msg.created_at ? (
-                              <span>· {new Date(msg.created_at).toLocaleTimeString()}</span>
+                              <span>· {new Date(msg.created_at).toLocaleTimeString(locale)}</span>
                             ) : null}
                           </div>
                         </div>

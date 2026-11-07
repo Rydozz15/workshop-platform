@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BlueprintPanel, Field, Disclosure, InfoTip } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useTr } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 import { AI_CONSENT_KEY } from '@/lib/ai-consent';
 
 const SELECT = 'w-full min-h-[44px] font-body text-sm text-ink bg-paper border border-line-control px-3 py-2';
@@ -35,6 +35,7 @@ function Toggle({ id, checked, onChange, label, hint }) {
 
 export default function SettingsPage() {
   const tr = useTr();
+  const { locale } = useLanguage();
   const [loaded, setLoaded] = useState(false);
   const [provider, setProvider] = useState('openrouter');
   const [model, setModel] = useState('');
@@ -294,7 +295,7 @@ export default function SettingsPage() {
       <BlueprintPanel title={tr('Privacidad de las respuestas abiertas')} subtitle={tr('Si usas el resumen con IA, lo que escribieron tus participantes se envía al proveedor de IA configurado.')}>
         <p className="font-body text-sm text-ink m-0 mb-3">
           {consent.at
-            ? tr('Aceptaste este envío el {date}.', { date: new Date(consent.at).toLocaleDateString() })
+            ? tr('Aceptaste este envío el {date}.', { date: new Date(consent.at).toLocaleDateString(locale) })
             : tr('Todavía no has aceptado este envío: te lo preguntaremos la primera vez que uses el resumen con IA.')}
         </p>
         {consent.at && (

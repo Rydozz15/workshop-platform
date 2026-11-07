@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BlueprintPanel, Kpi } from '@/components/ui/blueprint';
 import CadIcon from '@/components/ui/cad-icon';
-import { useTr } from '@/lib/i18n/context';
+import { useLanguage, useTr } from '@/lib/i18n/context';
 import useSelectedCampaign from '@/lib/use-selected-campaign';
 import StepProgressChart from '@/components/admin/step-progress-chart';
 import QrProjector from '@/components/admin/qr-projector';
@@ -27,6 +27,7 @@ function timeAgo(iso) {
 
 export default function LivePage() {
   const tr = useTr();
+  const { locale } = useLanguage();
   const [campaignId, setCampaignId] = useSelectedCampaign();
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
@@ -123,7 +124,7 @@ export default function LivePage() {
             subtitle={st.alerts.length ? tr('Lo más importante primero.') : tr('No detectamos problemas en este momento.')}
             headerSlot={
               <div className="flex flex-wrap items-center gap-3">
-                {updatedAt && <span className="ps-meta">{tr('Actualizado')}{' '}{updatedAt.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>}
+                {updatedAt && <span className="ps-meta">{tr('Actualizado')}{' '}{updatedAt.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>}
                 <button type="button" onClick={toggleAlerts} aria-pressed={!alertsHidden} className={BTN}>
                   <CadIcon name={alertsHidden ? 'Eye' : 'EyeOff'} size={16} />{' '}{alertsHidden ? tr('Mostrar') : tr('Ocultar')}
                 </button>
