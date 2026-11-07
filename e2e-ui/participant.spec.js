@@ -35,7 +35,7 @@ test('a participant goes from the code to the thank-you screen', async ({ page, 
   await submit.click();
 
   await expect(page.getByRole('heading', { name: /Gracias, Participante UI/ })).toBeVisible();
-  await expect(page.getByText('Ya puedes cerrar esta ventana.')).toBeVisible();
+  await expect(page.getByText(/No tienes nada más que hacer en esta pantalla/)).toBeVisible();
 });
 
 test('informed consent is required when the campaign asks for it', async ({ page, request }) => {
